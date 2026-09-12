@@ -118,14 +118,14 @@ export const VersionSchema = z.object({
 
 export const ResolutionSchema = z.object({
   status: z.enum([
-    'ready', 'partial', 'profile_required',
-    'unavailable', 'mapping_required', 'ambiguous',
+    'ready', 'partial', 'profile_required', 'profile_incomplete',
+    'curriculum_pending', 'unavailable', 'mapping_required', 'ambiguous',
   ]),
   release_id: z.string().uuid().nullable(),
-  unmapped_subject_keys: z.array(z.string()),
-  unavailable_subject_keys: z.array(z.string()),
-  needs_path_mapping: z.boolean(),
-  subjects: z.array(PlacementSchema),
+  unmapped_subject_keys: z.array(z.string()).default([]),
+  unavailable_subject_keys: z.array(z.string()).default([]),
+  needs_path_mapping: z.boolean().default(false),
+  subjects: z.array(PlacementSchema).default([]),
 });
 
 export const AssetSchema = z.object({

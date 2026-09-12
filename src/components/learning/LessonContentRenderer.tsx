@@ -1,5 +1,3 @@
-import React from 'react'
-
 type ContentBlock = {
   id?: string
   block_key: string

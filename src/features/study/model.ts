@@ -1,10 +1,11 @@
 import { DocumentSchema, type ContentBlock, type LearningDocument, type RichText } from '@/features/learning/content/schema';
 import { blockAnchor } from '@/features/learning/reading';
 import type { Lesson } from '@/features/curriculum/model';
+import type { NormalizedStudyResources } from '@/features/curriculum/normalized-content';
 import type { BridgeQuestion } from '@/features/competitive/practice-bridge';
 
 export type StudyMode = 'revision' | 'quick' | 'formulas' | 'flashcards' | 'practice';
-export type StudyLesson = { lesson: Lesson; document: LearningDocument };
+export type StudyLesson = { lesson: Lesson; document: LearningDocument; resources?: NormalizedStudyResources };
 export type FormulaBlock = Extract<ContentBlock, { type: 'formula' | 'equation' }>;
 export type CheckBlock = Extract<ContentBlock, { type: 'checkpoint' }>;
 export type StudyItem<T extends ContentBlock = ContentBlock> = { key: string; lesson: Lesson; block: T; document: LearningDocument };
