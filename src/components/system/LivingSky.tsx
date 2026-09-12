@@ -168,20 +168,26 @@ export function LivingSky({
   const weather = useLocalWeather(live && preferences.liveWeather);
   const phase = phaseForTime(now, weather.sunriseMinutes, weather.sunsetMinutes);
   const minute = minutesOfDay(now);
-  const dayProgress = minute / 1440;
   const rise = weather.sunriseMinutes ?? 390;
   const set = weather.sunsetMinutes ?? 1110;
   const sunProgress = clamp((minute - rise) / Math.max(1, set - rise), 0, 1);
-  const moonProgress = minute >= set ? clamp((minute - set) / Math.max(1, 1440 - set + rise), 0, 1) : clamp((minute + (1440 - set)) / Math.max(1, 1440 - set + rise), 0, 1);
+  const moonProgress = minute >= set
+    ? clamp((minute - set) / Math.max(1, 1440 - set + rise), 0, 1)
+    : clamp((minute + (1440 - set)) / Math.max(1, 1440 - set + rise), 0, 1);
+  const sunX = 6 + sunProgress * 86;
+  const sunY = 76 - Math.sin(sunProgress * Math.PI) * 62;
+  const moonX = 7 + moonProgress * 86;
+  const moonY = 78 - Math.sin(moonProgress * Math.PI) * 60;
   const tip = preferences.liveWeather ? wellbeingTip(weather) : null;
   const quiet = lowPowerMode || reducedMotion || surface !== 'app';
 
   if (!live || surface === 'immersive') return null;
 
   const style = {
-    '--sky-day-progress': dayProgress,
-    '--sky-sun-progress': sunProgress,
-    '--sky-moon-progress': moonProgress,
+    '--sky-sun-x': `${sunX}%`,
+    '--sky-sun-y': `${sunY}%`,
+    '--sky-moon-x': `${moonX}%`,
+    '--sky-moon-y': `${moonY}%`,
     '--sky-cloud-cover': weather.cloudCover / 100,
   } as React.CSSProperties;
 
