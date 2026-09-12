@@ -37,7 +37,10 @@ export async function loadStudyContent(chapterId: string, active: () => boolean 
   for (let offset = 0; offset < metadata.length && active(); offset += 4) {
     const batch = await Promise.allSettled(metadata.slice(offset, offset + 4).map(async (lesson) => {
       const version = await curriculumRepository.getLatestContent(lesson.id);
-      return { lesson, document: parseStudyDocument(version.content) };
+      const resources = version.content_schema_version >= 3
+        ? await curriculumRepository.getStudyResources(version.id)
+        : undefined;
+      return { lesson, document: parseStudyDocument(version.content), resources };
     }));
     for (const result of batch) {
       if (result.status === 'fulfilled') lessons.push(result.value);
