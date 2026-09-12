@@ -4,6 +4,7 @@
 @import './typography.css';
 @import './atmosphere.css';
 @import './reader.css';
+@import './entry.css';
 
 @tailwind base;
 @tailwind components;
@@ -12,16 +13,16 @@
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
   body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
-  ::selection { background: var(--accent-quiet); color: var(--text-primary); }
+  ::selection { background: var(--accent-quiet); color: rgb(var(--text-primary)); }
 
   /* no global smooth scroll — a11y + scroll-jacking risk */
   html { scroll-behavior: auto; }
   html:focus-within { scroll-behavior: auto; }
 
   /* scrollbars that don't shout */
-  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  * { scrollbar-width: thin; scrollbar-color: rgb(var(--border-strong) / var(--border-strong-a)) transparent; }
   *::-webkit-scrollbar { width: 10px; height: 10px; }
-  *::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+  *::-webkit-scrollbar-thumb { background: rgb(var(--border-strong) / var(--border-strong-a)); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
   *::-webkit-scrollbar-track { background: transparent; }
 }
 
@@ -36,5 +37,5 @@
   }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
   .safe-top { padding-top: env(safe-area-inset-top); }
-  .stack-divide > * + * { border-top: 1px solid var(--border-subtle); }
+  .stack-divide > * + * { border-top: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); }
 }

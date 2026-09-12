@@ -1,4 +1,4 @@
-.off-bar { padding: 8px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.85rem; margin: 0 0 10px; }
+.off-bar { padding: 8px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); color: var(--text-muted); font-size: 0.85rem; margin: 0 0 10px; }
 .off-note { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
 .off-panel { display: grid; gap: 10px; }
 .off-panel h3 { margin: 0; font-size: 0.98rem; }

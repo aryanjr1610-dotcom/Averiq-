@@ -62,7 +62,7 @@ export function FormulaDetail({ f }: { f: Formula }) {
         <>
           <h2 className="t-section mt-10 border-b border-line-subtle pb-2.5">Worked example</h2>
           <p className="t-body mt-4 text-content-secondary">{f.example.prompt}</p>
-          <div className="mt-4 rounded-md border-l-2 border-subject/60 bg-subject/5 p-4 t-body">
+          <div className="mt-4 rounded-md border border-subject/20 bg-subject/5 p-4 t-body">
             {f.example.solution}
           </div>
         </>

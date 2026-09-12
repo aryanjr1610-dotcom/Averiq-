@@ -14,10 +14,6 @@ export default function WelcomePage() {
       <div className="welcome-copy">
         <Brand />
 
-        <p className="type-overline">
-          A deeper way to learn
-        </p>
-
         <h1 id="welcome-title" className="type-hero">
           Learn beyond
           <br />

@@ -98,7 +98,7 @@ export default function CompletionPage() {
         </Link>
 
         <p className="type-caption">
-          Your profile is saved. The full Dashboard arrives in its own phase.
+          Your dashboard is ready with your subjects, goals and study tools.
         </p>
       </div>
     </Surface>

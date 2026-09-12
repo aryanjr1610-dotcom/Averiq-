@@ -102,6 +102,7 @@ export function ExamsHomePage() {
   if (exams.length === 0) {
     return (
       <Container>
+        <h1>Competitive preparation</h1>
         <EmptyState
           title="No competitive exam selected"
           description="Add a competitive goal such as JEE, NEET or NDA in your profile to unlock exam preparation."

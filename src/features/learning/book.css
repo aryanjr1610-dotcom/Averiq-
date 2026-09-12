@@ -1,9 +1,9 @@
 .book-reader {
-  --book-line: var(--border-subtle);
+  --book-line: rgb(var(--border-subtle) / var(--border-subtle-a));
 }
 
 .reader-study-tools { min-width: 0; }
-.reader-study-tools summary { min-height: 44px; align-content: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--border-default); border-radius: var(--radius-medium); cursor: pointer; }
+.reader-study-tools summary { min-height: 44px; align-content: center; padding: var(--space-2) var(--space-3); border: 1px solid rgb(var(--border-default) / var(--border-default-a)); border-radius: var(--radius-medium); cursor: pointer; }
 .reader-study-tools nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); padding: var(--space-3); }
 .reader-study-tools a { min-height: 44px; display: inline-flex; align-items: center; }
 .reader-study-tools[open] { flex-basis: 100%; }
@@ -35,7 +35,7 @@
 
 .reader-modes legend {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
   margin-bottom: 8px;
 }
 
@@ -80,12 +80,12 @@
 .book-outline a {
   display: block;
   min-height: 36px;
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
   overflow-wrap: anywhere;
 }
 
 .book-outline a[aria-current="location"] {
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
   text-decoration-thickness: 2px;
 }
 
@@ -101,7 +101,7 @@
 
 .book-section-placeholder {
   min-height: 65vh;
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
 }
 
 .book-reader .lesson-document {
@@ -253,21 +253,21 @@
 .book-reader .lesson-document h2 { font-size: var(--font-section); }
 .book-reader .lesson-document h3 { font-size: var(--font-subsection); }
 .book-outline a { min-height: 44px; padding-block: var(--space-2); font-size: var(--font-label); }
-.book-outline a[aria-current="location"] { border-inline-start: 2px solid var(--accent); padding-inline-start: var(--space-3); }
+.book-outline a[aria-current="location"] { border-inline-start: 2px solid rgb(var(--accent)); padding-inline-start: var(--space-3); }
 .book-reader .katex-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-block: var(--space-2); }
 @media (min-width: 768px) and (max-width: 1023px) {
   .book-grid { grid-template-columns: 160px minmax(0, 1fr); gap: var(--space-6); }
 }
 
 /* Reader tools use the same control language as the rest of the study space. */
-.book-subject { color: var(--text-secondary); font-size: var(--font-body-sm); margin-bottom: var(--space-2); }
-.reader-controls { gap: var(--space-3); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
+.book-subject { color: rgb(var(--text-secondary)); font-size: var(--font-body-sm); margin-bottom: var(--space-2); }
+.reader-controls { gap: var(--space-3); padding-block: var(--space-5); border-block: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); }
 .reader-modes { flex-basis: 100%; gap: var(--space-2); }
 .reader-modes legend { font-size: var(--font-label); margin-bottom: var(--space-3); }
-.reader-modes label { padding: var(--space-2) var(--space-3); background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-medium); font-size: var(--font-label); }
-.reader-modes label:has(input:checked) { background: var(--accent-muted); border-color: var(--accent); }
-.reader-modes label:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.reader-modes label { padding: var(--space-2) var(--space-3); background: var(--surface-1); border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); border-radius: var(--radius-medium); font-size: var(--font-label); }
+.reader-modes label:has(input:checked) { background: var(--accent-muted); border-color: rgb(var(--accent)); }
+.reader-modes label:has(input:focus-visible) { outline: 2px solid rgb(var(--focus-ring)); outline-offset: 3px; }
 .reader-modes input { margin: 0; width: 16px; height: 16px; }
 .reader-controls > label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--font-label); }
-.reader-controls .button[aria-pressed="true"] { color: var(--accent); background: var(--surface-2); }
+.reader-controls .button[aria-pressed="true"] { color: rgb(var(--accent)); background: var(--surface-2); }
 @media (max-width: 480px) { .reader-modes label { flex: 1 1 auto; justify-content: center; } }

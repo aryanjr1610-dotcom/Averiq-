@@ -1,17 +1,17 @@
 .focus { display: grid; gap: 18px; max-width: 640px; margin: 0 auto; }
 .focus-head h1 { margin: 0 0 4px; }
 .focus-note { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
-.focus-stage { display: grid; gap: 14px; justify-items: center; padding: 32px 20px; border: 1px solid var(--border-subtle); border-radius: 20px; background: var(--surface-1); text-align: center; }
+.focus-stage { display: grid; gap: 14px; justify-items: center; padding: 32px 20px; border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); border-radius: 20px; background: var(--surface-1); text-align: center; }
 .focus-clock { font-size: clamp(3rem, 12vw, 4.6rem); font-variant-numeric: tabular-nums; margin: 0; letter-spacing: 0.02em; }
 .focus-label { margin: 0; color: var(--text-muted); }
 .focus-presets { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.focus-chip { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle); background: var(--surface-2); color: inherit; cursor: pointer; font: inherit; }
-.focus-chip--on { border-color: var(--accent); }
-.focus-custom input, .focus-field input { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--surface-2); color: inherit; font: inherit; width: 110px; }
+.focus-chip { padding: 8px 14px; border-radius: 999px; border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); background: var(--surface-2); color: inherit; cursor: pointer; font: inherit; }
+.focus-chip--on { border-color: rgb(var(--accent)); }
+.focus-custom input, .focus-field input { padding: 8px 12px; border-radius: 10px; border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); background: var(--surface-2); color: inherit; font: inherit; width: 110px; }
 .focus-field input { width: min(360px, 80vw); }
 .focus-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.focus-primary { padding: 10px 22px; border-radius: 12px; border: none; background: var(--accent); color: var(--on-accent); font-weight: 600; cursor: pointer; }
-.focus-secondary { padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border-subtle); background: transparent; color: inherit; cursor: pointer; }
+.focus-primary { padding: 10px 22px; border-radius: 12px; border: none; background: rgb(var(--accent)); color: var(--on-accent); font-weight: 600; cursor: pointer; }
+.focus-secondary { padding: 10px 20px; border-radius: 12px; border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); background: transparent; color: inherit; cursor: pointer; }
 .focus-ghost { background: none; border: none; color: var(--text-muted); cursor: pointer; font: inherit; }
 .focus-toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 0.85rem; color: var(--text-muted); }
 .focus--calm .focus-head, .focus--calm .focus-toggle { opacity: 0.35; }
@@ -23,7 +23,7 @@
 .focus-clock { font-weight: var(--weight-medium); letter-spacing: -0.04em; line-height: 1.1; }
 .focus-chip, .focus-primary, .focus-secondary, .focus-ghost, .focus-toggle { min-height: 44px; }
 .focus-chip { border-radius: var(--radius-medium); }
-.focus-chip--on { background: var(--accent-muted); box-shadow: inset 0 -2px var(--accent); }
+.focus-chip--on { background: var(--accent-muted); box-shadow: inset 0 -2px rgb(var(--accent)); }
 .focus-field { max-width: 100%; }
 .focus-field input { width: 100%; max-width: 360px; min-width: 0; }
 .focus--calm .focus-head, .focus--calm .focus-toggle { opacity: 1; }

@@ -69,16 +69,16 @@ export function Dialog({
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: duration.base, ease: ease.standard }}
+            transition={{ duration: duration.base, ease: ease.out }}
             onClick={dismissible ? handleClose : undefined} className="fixed inset-0 z-[70] bg-scrim"
           />
           <motion.div
             ref={panelRef}
             role="dialog" aria-modal="true" aria-label={title}
-            initial={{ opacity: 0, scale: reduced ? 1 : 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: reduced ? 1 : 0.99 }}
-            transition={{ duration: reduced ? 0.01 : duration.medium, ease: ease.standard }}
+            initial={{ opacity: 0, transform: reduced ? "none" : "scale(0.97)" }}
+            animate={{ opacity: 1, transform: "scale(1)" }}
+            exit={{ opacity: 0, transform: reduced ? "none" : "scale(0.99)" }}
+            transition={{ duration: reduced ? 0.01 : duration.medium, ease: ease.out }}
             className="fixed left-1/2 top-1/2 z-[71] w-[min(480px,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-edge bg-surface-3 p-6 shadow-3"
           >
             <div className="flex items-start gap-4">

@@ -16,10 +16,9 @@ export function Callout({
   const { icon: Icon, tint, label } = CALLOUT[kind];
   return (
     <aside
-      className="my-7 flex gap-3.5 rounded-md border border-l-2 p-4 font-sans"
+      className="my-7 flex gap-3.5 rounded-md border p-4 font-sans"
       style={{
         borderColor: `rgb(var(${tint}) / 0.22)`,
-        borderLeftColor: `rgb(var(${tint}) / 0.65)`,
         background: `rgb(var(${tint}) / 0.05)`,
       }}
     >
@@ -170,10 +169,10 @@ export function ChapterReader({
                       href={`#${s.id}`}
                       aria-current={active ? "location" : undefined}
                       className={[
-                        "-ml-px block border-l-2 py-1.5 pl-3.5 t-body-sm transition-colors duration-fast",
+                        "block rounded-sm px-3 py-1.5 t-body-sm transition-colors duration-fast",
                         active
-                          ? "border-subject text-content"
-                          : "border-transparent text-content-tertiary hover:border-line-strong hover:text-content-secondary",
+                          ? "bg-subject/10 text-content"
+                          : "text-content-tertiary hover:bg-surface-interactive hover:text-content-secondary",
                       ].join(" ")}
                     >
                       {s.label}

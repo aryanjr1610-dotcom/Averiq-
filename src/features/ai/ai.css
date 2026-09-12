@@ -42,7 +42,7 @@
 .ai-mode { flex: none; white-space: nowrap; font-size: var(--font-label); }
 .ai-modes { padding-block: var(--space-3); }
 .ai-composer textarea { min-width: 0; }
-.ai-composer button[type="submit"] { background: var(--accent); color: var(--on-accent); }
+.ai-composer button[type="submit"] { background: rgb(var(--accent)); color: var(--on-accent); }
 .ai-composer button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 768px) { .ai-launcher { display: none; } }
 @media (min-width: 900px) { .ai-panel { width: min(480px, 42vw); } }

@@ -14,7 +14,7 @@
 .reading-position span {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: rgb(var(--accent));
 }
 
 .reader-grid {
@@ -60,14 +60,14 @@
 .mobile-page-toc a {
   display: block;
   padding-block: var(--space-2);
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
   text-decoration: none;
   overflow-wrap: anywhere;
 }
 
 .chapter-outline a[aria-current="page"] {
-  color: var(--text-primary);
-  border-inline-start: 2px solid var(--accent);
+  color: rgb(var(--text-primary));
+  border-inline-start: 2px solid rgb(var(--accent));
   padding-inline-start: var(--space-3);
 }
 
@@ -113,7 +113,7 @@
   margin: 0;
   padding: var(--space-6);
   background: var(--surface-1);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a));
   border-radius: var(--radius-large);
 }
 
@@ -176,7 +176,7 @@
 
 .symbol-list dd {
   margin: 0;
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
 }
 
 .solution-steps {
@@ -188,7 +188,7 @@
 .lesson-table-scroll {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--border-default);
+  border: 1px solid rgb(var(--border-default) / var(--border-default-a));
   border-radius: var(--radius-medium);
 }
 
@@ -210,7 +210,7 @@
   padding: var(--space-4);
   text-align: start;
   vertical-align: top;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a));
 }
 
 .lesson-table th {
@@ -231,7 +231,7 @@
 }
 
 .lesson-figure figcaption {
-  color: var(--text-tertiary);
+  color: rgb(var(--text-tertiary));
   font-size: var(--font-caption);
 }
 
@@ -283,7 +283,7 @@
 
 .content-unavailable {
   padding: var(--space-4);
-  color: var(--text-secondary);
+  color: rgb(var(--text-secondary));
   background: var(--surface-2);
   border-radius: var(--radius-medium);
   font-size: var(--font-body);
@@ -296,7 +296,7 @@
   gap: var(--space-6);
   margin-top: var(--space-12);
   padding-top: var(--space-6);
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid rgb(var(--border-default) / var(--border-default-a));
 }
 
 .lesson-neighbors a {
@@ -307,7 +307,7 @@
 
 .content-inspector {
   padding: var(--space-5);
-  border: 1px solid var(--border-default);
+  border: 1px solid rgb(var(--border-default) / var(--border-default-a));
   border-radius: var(--radius-medium);
 }
 

@@ -8,6 +8,7 @@ import { MobileTabBar } from '@/components/nav/MobileTabBar';
 import { Sheet } from '@/components/ui/Sheet';
 import { SECONDARY_NAV, isImmersive } from '@/components/nav/navConfig';
 import { PageTransition } from '@/components/system/PageTransition';
+import { cn } from '@/lib/cn';
 import { Atmosphere } from '@/components/system/Atmosphere';
 import type { Stream, Subject } from '@/components/system/Atmosphere';
 
@@ -37,8 +38,8 @@ export function AppShell({
   React.useEffect(() => setMoreOpen(false), [pathname]);
 
   const immersive = isImmersive(pathname);
-  const isLaunch = pathname === '/';
-  const showNav = !isLaunch && !immersive;
+  const isProductRoute = pathname.startsWith('/app') || pathname.startsWith('/admin');
+  const showNav = isProductRoute && !immersive;
 
   return (
     <LowPowerContext.Provider value={lowPower}>
@@ -50,7 +51,12 @@ export function AppShell({
       >
         <div className="flex min-h-dvh w-full">
           {showNav && <DesktopSidebar />}
-          <div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
+          <div
+            className={cn(
+              'flex min-w-0 flex-1 flex-col',
+              showNav && 'px-page-x pt-6 pb-24 md:pb-10 lg:pt-10',
+            )}
+          >
             <AnimatePresence mode="wait" initial={false}>
               <PageTransition routeKey={pathname} lowPowerMode={lowPower}>
                 {children}

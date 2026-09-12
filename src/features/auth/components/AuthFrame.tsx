@@ -22,6 +22,16 @@ export function AuthFrame({
 
   return (
     <div className="auth-layout">
+      <aside className="auth-visual" aria-hidden="true">
+        <Brand variant="wordmark" />
+        <div className="auth-visual__orbit">
+          <span />
+          <span />
+          <span />
+        </div>
+        <p>Ideas become understanding.</p>
+      </aside>
+
       <Surface className="auth-surface" padding="lg">
         <div className="auth-stack">
           <Link className="brand-link" to="/welcome" aria-label="Averiq welcome">

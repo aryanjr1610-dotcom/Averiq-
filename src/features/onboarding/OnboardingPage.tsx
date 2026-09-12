@@ -173,7 +173,6 @@ function OnboardingWizard({ user }: { user: User }) {
 
       <Surface className="onboarding-surface" padding="lg">
         <div className="onboarding-stack">
-          <p className="type-overline">Your learning identity</p>
 
           <h1 id="onboarding-heading" tabIndex={-1}>
             {stepTitles[step]}

@@ -49,5 +49,3 @@
 .anatomy-controls button, .anatomy-actions button, .anatomy-structure-list button, .anatomy-layers label { min-height: 44px; }
 .anatomy-note, .anatomy-credit, .anatomy-system em, .anatomy-layers legend, .anatomy-layers label { font-size: var(--font-caption); }
 @media (max-width: 899px) { .anatomy-panel { position: static; } }
-
-.anatomy-viewport { --text-primary: var(--lab-label); --text-muted: var(--raw-slate-300); --color-text-muted: var(--raw-slate-300); --color-border: var(--edge); }

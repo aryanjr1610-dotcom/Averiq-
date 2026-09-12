@@ -57,8 +57,8 @@
 .runner-bar { flex-wrap: wrap; }
 .runner-prompt { font-size: var(--font-reading); max-width: 68ch; line-height: 1.85; }
 .runner-options label { padding: var(--space-4); border-radius: var(--radius-medium); cursor: pointer; }
-.runner-options label:has(input:checked) { background: var(--accent-muted); border-color: var(--accent); }
-.runner-options label:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.runner-options label:has(input:checked) { background: var(--accent-muted); border-color: rgb(var(--accent)); }
+.runner-options label:has(input:focus-visible) { outline: 2px solid rgb(var(--focus-ring)); outline-offset: 3px; }
 .runner-clock { font-variant-numeric: tabular-nums; }
 .runner-palette { z-index: var(--z-sticky); }
 .palette-dot--answered::after { content: '\2713'; margin-inline-start: 2px; }

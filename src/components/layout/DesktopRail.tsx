@@ -11,7 +11,7 @@ export function DesktopRail({
     <nav
       aria-label="Primary"
       className="sticky top-0 hidden h-dvh shrink-0 flex-col gap-1 border-r border-line-subtle bg-surface/40 px-3 py-5 lg:flex"
-      style={{ width: collapsed ? 68 : 236, transition: "width var(--dur-standard) var(--ease-out)" }}
+      style={{ width: collapsed ? 68 : 236 }}
     >
       <div className="mb-6 flex items-center gap-2.5 px-2">
         <AveriqMark />

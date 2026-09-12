@@ -7,7 +7,6 @@ import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 
 import '@/styles/globals.css';
 import 'katex/dist/katex.min.css';
-import './styles/averiq-fix.css';
 
 /** Runs before paint — set data-theme + visual mode from storage, no FOUC. */
 (function bootTheme() {

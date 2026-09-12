@@ -1,10 +1,10 @@
 .averiq-reader {
-  background: var(--surface-reading);
+  background: rgb(var(--surface-reading));
   font-family: var(--font-reading);
   font-size: var(--t-reading);
   line-height: 1.75;
   letter-spacing: .003em;
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
   padding-block: var(--space-10) var(--space-24);
 }
 
@@ -33,18 +33,18 @@
 .averiq-reader .katex-display {
   margin: var(--space-6) auto;
   padding: var(--space-3) var(--space-4);
-  border-left: 2px solid var(--border-default);
+  border-left: 2px solid rgb(var(--border-default) / var(--border-default-a));
   overflow-x: auto;
   overflow-y: hidden;
   max-width: var(--measure-reading);
 }
 .averiq-reader .katex-display::-webkit-scrollbar { height: 4px; }
-.averiq-reader .katex-display::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+.averiq-reader .katex-display::-webkit-scrollbar-thumb { background: rgb(var(--border-strong) / var(--border-strong-a)); border-radius: 2px; }
 
 /* callouts — flat, no glow */
 .averiq-callout {
   background: var(--surface-2);
-  border-left: 3px solid var(--border-strong);
+  border: 1px solid rgb(var(--border-default) / var(--border-default-a));
   border-radius: var(--radius-md);
   padding: var(--space-4) var(--space-5);
   margin: var(--space-6) auto;
@@ -52,14 +52,14 @@
   font-size: var(--t-body);
   line-height: 1.6;
 }
-.averiq-callout[data-kind="definition"] { border-left-color: var(--accent); }
+.averiq-callout[data-kind="definition"] { border-left-color: rgb(var(--accent)); }
 .averiq-callout[data-kind="insight"]    { border-left-color: var(--success); }
 .averiq-callout[data-kind="warning"]    { border-left-color: var(--warning); }
 .averiq-callout[data-kind="exam"]       { border-left-color: var(--danger); }
 .averiq-callout .callout-label {
   display: block; font-size: var(--t-label); font-weight: 550;
   letter-spacing: .02em; text-transform: uppercase;
-  color: var(--text-secondary); margin-bottom: var(--space-2);
+  color: rgb(var(--text-secondary)); margin-bottom: var(--space-2);
 }
 
 /* figures */
@@ -67,15 +67,15 @@
 .averiq-reader figure img, .averiq-reader figure svg { width: 100%; height: auto; border-radius: var(--radius-lg); }
 .averiq-reader figcaption {
   font-family: var(--font-ui); font-size: var(--t-caption);
-  color: var(--text-secondary); margin-top: var(--space-2);
+  color: rgb(var(--text-secondary)); margin-top: var(--space-2);
 }
 
 /* margin notes: rail on wide screens, inline below */
 .averiq-margin-note {
   font-family: var(--font-ui);
   font-size: var(--t-caption);
-  color: var(--text-secondary);
-  border-left: 2px solid var(--border-subtle);
+  color: rgb(var(--text-secondary));
+  border-left: 2px solid rgb(var(--border-subtle) / var(--border-subtle-a));
   padding-left: var(--space-3);
   margin: var(--space-4) auto;
 }
@@ -85,7 +85,7 @@
     position: absolute;
     right: max(var(--space-6), calc(50% - (var(--measure-reading) / 2) - 260px));
     width: 220px; margin: 0; border-left: none;
-    padding-left: 0; border-top: 1px solid var(--border-subtle); padding-top: var(--space-2);
+    padding-left: 0; border-top: 1px solid rgb(var(--border-subtle) / var(--border-subtle-a)); padding-top: var(--space-2);
   }
 }
 

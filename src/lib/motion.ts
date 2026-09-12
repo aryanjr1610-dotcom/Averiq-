@@ -19,9 +19,9 @@ export const distance = {
 } as const;
 
 export const ease = {
-  standard: [0.4, 0, 0.2, 1],
-  out: [0.16, 1, 0.3, 1],
-  inOut: [0.65, 0, 0.35, 1],
+  standard: [0.25, 0.1, 0.25, 1],
+  out: [0.23, 1, 0.32, 1],
+  inOut: [0.77, 0, 0.175, 1],
 } as const;
 
 export const spring = {
@@ -38,9 +38,9 @@ export const tr = {
 
 /* ---- Route transition: opacity + 8px rise. Nothing else. ---- */
 export const routeVariants: Variants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0, transition: { duration: duration.standard, ease: ease.out } },
-  exit:    { opacity: 0, y: -4, transition: { duration: duration.fast, ease: ease.standard } },
+  initial: { opacity: 0, transform: "translateY(8px)" },
+  animate: { opacity: 1, transform: "translateY(0px)", transition: { duration: duration.standard, ease: ease.out } },
+  exit:    { opacity: 0, transform: "translateY(-4px)", transition: { duration: duration.fast, ease: ease.standard } },
 };
 
 /* ---- Section stagger: hero first, then sections. Total < 420ms. ---- */
@@ -49,15 +49,15 @@ export const staggerParent: Variants = {
   animate: { transition: { staggerChildren: 0.045, delayChildren: 0.02 } },
 };
 export const staggerChild: Variants = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0, transition: { duration: duration.standard, ease: ease.out } },
+  initial: { opacity: 0, transform: "translateY(10px)" },
+  animate: { opacity: 1, transform: "translateY(0px)", transition: { duration: duration.standard, ease: ease.out } },
 };
 
 /* ---- Mobile sheet ---- */
 export const sheetVariants: Variants = {
-  initial: { y: "100%" },
-  animate: { y: 0, transition: spring.sheet },
-  exit:    { y: "100%", transition: { duration: duration.standard, ease: ease.standard } },
+  initial: { transform: "translateY(100%)" },
+  animate: { transform: "translateY(0%)", transition: spring.sheet },
+  exit:    { transform: "translateY(100%)", transition: { duration: duration.standard, ease: ease.standard } },
 };
 
 /* Reduced-motion overrides applied at runtime */
