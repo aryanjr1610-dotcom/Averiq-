@@ -111,15 +111,14 @@ export const progressRepository = {
   }): Promise<void> {
     const uid = await userId()
     if (!uid) throw new Error('Sign in to save your study activity.')
-    const { error } = await client().from('activity_events').insert({
-      user_id: uid,
-      kind: input.kind,
-      subject_id: input.subjectId ?? null,
-      chapter_id: input.chapterId ?? null,
-      topic_id: input.topicId ?? null,
-      lesson_id: input.lessonId ?? null,
-      exam_key: input.examKey ?? null,
-      metadata: input.metadata ?? {},
+    const { error } = await getSupabase().rpc('log_activity_v1', {
+      p_kind: input.kind,
+      p_subject_id: input.subjectId ?? null,
+      p_chapter_id: input.chapterId ?? null,
+      p_topic_id: input.topicId ?? null,
+      p_lesson_id: input.lessonId ?? null,
+      p_exam_key: input.examKey ?? null,
+      p_metadata: input.metadata ?? {},
     })
     if (error) throw new Error(error.message)
   },
@@ -144,8 +143,8 @@ export const progressRepository = {
     startedAt: string
   }): Promise<void> {
     const uid = await userId()
-    if (!uid || input.activeSeconds < 20) return // ignore trivial visits
-    await client().from('learning_sessions').insert({
+    if (!uid || input.activeSeconds < 20) return
+    const { error } = await client().from('learning_sessions').insert({
       user_id: uid,
       activity_type: input.activityType,
       subject_id: input.subjectId ?? null,
@@ -156,6 +155,7 @@ export const progressRepository = {
       ended_at: new Date().toISOString(),
       active_seconds: Math.min(input.activeSeconds, 86_400),
     })
+    if (error) throw new Error(error.message)
   },
 
   /** Active study seconds per day for the trend chart. */
@@ -189,7 +189,7 @@ export const progressRepository = {
   async cacheMastery(results: MasteryResult[]): Promise<void> {
     const uid = await userId()
     if (!uid || results.length === 0) return
-    await client()
+    const { error } = await client()
       .from('topic_mastery')
       .upsert(
         results.map((result) => ({
@@ -209,5 +209,6 @@ export const progressRepository = {
         })),
         { onConflict: 'user_id,topic_id,scope,exam_key' },
       )
+    if (error) throw new Error(error.message)
   },
 }
