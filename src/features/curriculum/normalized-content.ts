@@ -94,10 +94,6 @@ function stringValue(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
 }
 
-function numberValue(value: unknown, fallback = 0): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
-}
-
 function safeId(prefix: string, value: string, index = 0): string {
   const compact = value
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
