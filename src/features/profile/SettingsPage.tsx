@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { useAuth } from '../auth/useAuth'
 import { check, db } from '../../lib/db-client'
 import { DownloadsPanel } from '../offline/DownloadsPanel'
-import { usePreferences, type Atmosphere, type Depth, type LearningStyle, type MotionMode, type ThemeMode, type VisualQuality } from './preferences'
+import { usePreferences, type Atmosphere, type Depth, type LearningStyle, type MotionMode, type ThemeMode, type UIStyle, type VisualQuality } from './preferences'
 import './profile.css'
 
 const CATEGORIES = ['Account', 'Academic', 'Learning', 'Appearance', 'Notifications', 'AI', 'Accessibility', 'Privacy', 'Storage', 'About'] as const
@@ -175,8 +175,26 @@ export const SettingsPage = () => {
 
 				{tab === 'Appearance' ? (
 					<>
+						<Choice<UIStyle>
+							label="Interface style"
+							value={prefs.appearance.uiStyle}
+							options={[
+								{ id: 'living-sky', label: 'Living Sky' },
+								{ id: 'academic', label: 'Academic' },
+							]}
+							onChange={(uiStyle) => void update('appearance', { uiStyle })}
+						/>
+						<p className="pf-note">Living Sky changes continuously with local time. Dawn, daylight, golden hour, evening, moonlight and stars blend naturally through the day.</p>
+						{prefs.appearance.uiStyle === 'living-sky' ? (
+							<Toggle
+								label="Use local weather and sunrise/sunset"
+								hint="When enabled, your browser asks for location permission. Averiq uses it only to request local sky and weather conditions."
+								checked={prefs.appearance.liveWeather}
+								onChange={(liveWeather) => void update('appearance', { liveWeather })}
+							/>
+						) : null}
 						<Choice<ThemeMode> label="Theme" value={prefs.appearance.mode} options={[{ id: 'system', label: 'System' }, { id: 'dark', label: 'Dark' }, { id: 'light', label: 'Light' }]} onChange={(mode) => void update('appearance', { mode })} />
-						<Choice<Atmosphere> label="Academic atmosphere" value={prefs.appearance.atmosphere} options={[{ id: 'full', label: 'Full' }, { id: 'reduced', label: 'Reduced' }, { id: 'minimal', label: 'Minimal' }]} onChange={(atmosphere) => void update('appearance', { atmosphere })} />
+						<Choice<Atmosphere> label="Atmosphere detail" value={prefs.appearance.atmosphere} options={[{ id: 'full', label: 'Full' }, { id: 'reduced', label: 'Reduced' }, { id: 'minimal', label: 'Minimal' }]} onChange={(atmosphere) => void update('appearance', { atmosphere })} />
 						<Choice<VisualQuality> label="Visual quality (2D/3D)" value={prefs.appearance.visualQuality} options={[{ id: 'auto', label: 'Auto' }, { id: 'low', label: 'Low' }, { id: 'medium', label: 'Medium' }, { id: 'high', label: 'High' }]} onChange={(visualQuality) => void update('appearance', { visualQuality })} />
 					</>
 				) : null}
