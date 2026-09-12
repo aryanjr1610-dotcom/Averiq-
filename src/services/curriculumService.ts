@@ -44,6 +44,26 @@ export type ResolvedCurriculum = {
   }>
 }
 
+export type VerifiedLessonContentExport = {
+  version_id: string
+  lesson_id: string
+  blocks: unknown[]
+  key_terms: unknown[]
+  formulas: unknown[]
+  examples: unknown[]
+  exercises: unknown[]
+  verification_summary: {
+    verified: number
+    out_of_scope: number
+    pending: number
+    needs_correction: number
+    needs_source: number
+    ambiguous: number
+  }
+  is_fully_verified: boolean
+  generated_at: string
+}
+
 const client = () => getSupabase()
 const DEFAULT_CACHE_TTL_MS = 2 * 60_000
 const LESSON_CACHE_TTL_MS = 5 * 60_000
@@ -231,6 +251,10 @@ export async function getChapterTree(chapterId: string) {
   })
 }
 
+/**
+ * Production lesson reader. Only complete lesson versions that passed every
+ * publication gate are returned here.
+ */
 export async function getLessonContent(lessonId: string) {
   return cached(`lesson:${lessonId}`, async () => {
     const { data, error } = await client()
@@ -256,5 +280,42 @@ export async function getLessonContent(lessonId: string) {
 
     if (error) throw error
     return data
+  }, LESSON_CACHE_TTL_MS)
+}
+
+/**
+ * Verified-only content stream for building/previewing the lesson UI while
+ * full factual verification is still running. The database export contains
+ * only source rows whose extracted claims have no unresolved factual state.
+ * Unverified claims never appear in this payload.
+ *
+ * Do not treat `is_fully_verified=false` as a complete lesson. The production
+ * reader above remains the only path for fully published lesson versions.
+ */
+export async function getVerifiedLessonContent(
+  lessonId: string
+): Promise<VerifiedLessonContentExport | null> {
+  return cached(`verified-lesson:${lessonId}`, async () => {
+    const { data, error } = await client()
+      .from('lesson_verified_content_exports')
+      .select(`
+        version_id,
+        lesson_id,
+        blocks,
+        key_terms,
+        formulas,
+        examples,
+        exercises,
+        verification_summary,
+        is_fully_verified,
+        generated_at
+      `)
+      .eq('lesson_id', lessonId)
+      .order('generated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (error) throw error
+    return data as VerifiedLessonContentExport | null
   }, LESSON_CACHE_TTL_MS)
 }
