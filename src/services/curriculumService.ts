@@ -1,6 +1,12 @@
-import { supabase } from '../lib/supabase'
+import { getSupabase } from '../lib/supabase'
 
 export type BoardCode = 'cbse' | 'cisce'
+
+type TrackRow = {
+  id: string
+  minimum_grade: number | null
+  maximum_grade: number | null
+}
 
 export type ResolvedCurriculum = {
   status: 'ready' | 'profile_required' | 'profile_incomplete' | 'curriculum_pending'
@@ -38,13 +44,15 @@ export type ResolvedCurriculum = {
   }>
 }
 
+const client = () => getSupabase()
+
 /**
  * Preferred student-facing resolver.
  * Supabase resolves the signed-in user's board, class, academic year and
  * selected subjects. Draft academic releases remain invisible.
  */
 export async function resolveMyCurriculum(): Promise<ResolvedCurriculum> {
-  const { data, error } = await supabase.rpc('resolve_my_curriculum')
+  const { data, error } = await client().rpc('resolve_my_curriculum')
 
   if (error) throw error
 
@@ -63,7 +71,7 @@ export async function getRelease(
   gradeLevel: number,
   academicYear = '2026-27'
 ) {
-  const { data: board, error: boardError } = await supabase
+  const { data: board, error: boardError } = await client()
     .from('education_boards')
     .select('id')
     .eq('code', boardCode)
@@ -71,7 +79,7 @@ export async function getRelease(
 
   if (boardError) throw boardError
 
-  const { data: year, error: yearError } = await supabase
+  const { data: year, error: yearError } = await client()
     .from('academic_years')
     .select('id')
     .eq('code', academicYear)
@@ -79,7 +87,7 @@ export async function getRelease(
 
   if (yearError) throw yearError
 
-  const { data: tracks, error: trackError } = await supabase
+  const { data: tracks, error: trackError } = await client()
     .from('curriculum_tracks')
     .select('id, minimum_grade, maximum_grade')
     .eq('board_id', board.id)
@@ -88,13 +96,13 @@ export async function getRelease(
 
   if (trackError) throw trackError
 
-  const matchingTracks = (tracks ?? [])
+  const matchingTracks = ((tracks ?? []) as TrackRow[])
     .filter(
-      item =>
+      (item: TrackRow) =>
         (item.minimum_grade === null || item.minimum_grade <= gradeLevel) &&
         (item.maximum_grade === null || item.maximum_grade >= gradeLevel)
     )
-    .sort((a, b) => {
+    .sort((a: TrackRow, b: TrackRow) => {
       const aSpan = (a.maximum_grade ?? 12) - (a.minimum_grade ?? 6)
       const bSpan = (b.maximum_grade ?? 12) - (b.minimum_grade ?? 6)
       return aSpan - bSpan
@@ -106,7 +114,7 @@ export async function getRelease(
     throw new Error(`No curriculum track found for ${boardCode} Class ${gradeLevel}`)
   }
 
-  const { data: releases, error: releaseError } = await supabase
+  const { data: releases, error: releaseError } = await client()
     .from('curriculum_releases')
     .select(`
       id,
@@ -130,7 +138,7 @@ export async function getRelease(
 }
 
 export async function getSubjects(releaseId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await client()
     .from('curriculum_subjects')
     .select('id, subject_id, title, slug, position, status')
     .eq('release_id', releaseId)
@@ -142,7 +150,7 @@ export async function getSubjects(releaseId: string) {
 }
 
 export async function getChapters(curriculumSubjectId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await client()
     .from('chapters')
     .select(`
       id,
@@ -163,7 +171,7 @@ export async function getChapters(curriculumSubjectId: string) {
 }
 
 export async function getChapterTree(chapterId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await client()
     .from('topics')
     .select(`
       id,
@@ -189,7 +197,7 @@ export async function getChapterTree(chapterId: string) {
 }
 
 export async function getLessonContent(lessonId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await client()
     .from('lesson_version_content_v3')
     .select(`
       version_id,
