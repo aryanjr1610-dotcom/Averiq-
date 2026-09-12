@@ -51,6 +51,8 @@ export type AcademicPage =
   | 'anatomy'
   | 'exam';
 
+export type UiStyle = 'academic' | 'living-sky';
+
 export interface AcademicContext {
   grade?: GradeLevel;
   boardId?: string;
@@ -70,6 +72,8 @@ export interface VisualPreferences {
   pointerResponse: boolean;
   focusMode: boolean;
   largerText?: boolean;
+  uiStyle: UiStyle;
+  liveWeather: boolean;
 }
 
 export interface ThemeLayer {
