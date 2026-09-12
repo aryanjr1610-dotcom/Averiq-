@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { asObject, check, db } from '../../lib/db-client'
 import { useAuth } from '../auth/useAuth'
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider'
-import type { VisualPreferences } from '@/types/academic-theme'
+import type { UiStyle, VisualPreferences } from '@/types/academic-theme'
 
 export type LearningStyle = 'detailed' | 'balanced' | 'visual' | 'practice'
 export type ThemeMode = 'system' | 'dark' | 'light'
@@ -10,10 +10,11 @@ export type Atmosphere = 'full' | 'reduced' | 'minimal'
 export type MotionMode = 'system' | 'reduced'
 export type VisualQuality = 'auto' | 'low' | 'medium' | 'high'
 export type Depth = 'concise' | 'standard' | 'deep'
+export type UIStyle = UiStyle
 
 export type Preferences = {
 	learning: { style: LearningStyle; dailyTargetMinutes: number }
-	appearance: { mode: ThemeMode; atmosphere: Atmosphere; visualQuality: VisualQuality }
+	appearance: { mode: ThemeMode; atmosphere: Atmosphere; visualQuality: VisualQuality; uiStyle: UIStyle; liveWeather: boolean }
 	notifications: { studyReminder: boolean; plannerReminder: boolean; revisionReminder: boolean; achievements: boolean }
 	ai: { depth: Depth; keepHistory: boolean }
 	accessibility: { motion: MotionMode; largerText: boolean }
@@ -22,7 +23,7 @@ export type Preferences = {
 
 export const DEFAULT_PREFERENCES: Preferences = {
 	learning: { style: 'balanced', dailyTargetMinutes: 30 },
-	appearance: { mode: 'system', atmosphere: 'full', visualQuality: 'auto' },
+	appearance: { mode: 'system', atmosphere: 'full', visualQuality: 'auto', uiStyle: 'living-sky', liveWeather: false },
 	notifications: { studyReminder: false, plannerReminder: false, revisionReminder: false, achievements: true },
 	ai: { depth: 'standard', keepHistory: true },
 	accessibility: { motion: 'system', largerText: false },
@@ -37,6 +38,8 @@ export function visualPreferencesFromSettings(prefs: Preferences): Partial<Visua
 		motion: prefs.accessibility.motion === 'reduced' ? 'reduce' : 'system',
 		decoration: prefs.appearance.atmosphere === 'minimal' ? 'off' : prefs.appearance.atmosphere === 'reduced' ? 'minimal' : 'standard',
 		largerText: prefs.accessibility.largerText,
+		uiStyle: prefs.appearance.uiStyle,
+		liveWeather: prefs.appearance.liveWeather,
 	}
 }
 
@@ -73,13 +76,20 @@ export const preferencesService = {
 export const applyPreferences = (prefs: Preferences): void => {
 	const root = document.documentElement
 	root.dataset.atmosphere = prefs.appearance.atmosphere
+	root.dataset.uiStyle = prefs.appearance.uiStyle
+	root.dataset.liveWeather = prefs.appearance.liveWeather ? 'true' : 'false'
 	root.dataset.textScale = prefs.accessibility.largerText ? 'large' : 'normal'
 	try {
 		const raw = window.localStorage.getItem(VISUAL_QUALITY_KEY)
 		const existing = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
 		window.localStorage.setItem(
 			VISUAL_QUALITY_KEY,
-			JSON.stringify({ ...existing, quality: prefs.appearance.visualQuality }),
+			JSON.stringify({
+				...existing,
+				quality: prefs.appearance.visualQuality,
+				uiStyle: prefs.appearance.uiStyle,
+				liveWeather: prefs.appearance.liveWeather,
+			}),
 		)
 	} catch {
 		/* storage unavailable */
