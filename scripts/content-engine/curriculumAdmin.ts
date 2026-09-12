@@ -125,6 +125,10 @@ export async function seedSubject(options: {
   }
 
   const source = units[0]
+  if (!source) {
+    throw new Error(`Cannot seed ${subject.title}: source metadata is missing`)
+  }
+
   const payload = units.map(unit => ({
     number: unit.number,
     title: unit.title,
