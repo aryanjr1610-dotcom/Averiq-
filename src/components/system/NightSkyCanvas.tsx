@@ -127,8 +127,9 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
+    const maybeContext = canvas.getContext('2d', { alpha: true });
+    if (!maybeContext) return;
+    const ctx: CanvasRenderingContext2D = maybeContext;
 
     let frame = 0;
     let width = 0;
