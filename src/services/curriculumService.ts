@@ -45,11 +45,38 @@ export type ResolvedCurriculum = {
 }
 
 const client = () => getSupabase()
+const DEFAULT_CACHE_TTL_MS = 2 * 60_000
+const LESSON_CACHE_TTL_MS = 5 * 60_000
+
+type CacheEntry = { expiresAt: number; value: Promise<unknown> }
+const readCache = new Map<string, CacheEntry>()
+
+function cached<T>(key: string, loader: () => Promise<T>, ttlMs = DEFAULT_CACHE_TTL_MS): Promise<T> {
+  const now = Date.now()
+  const hit = readCache.get(key)
+  if (hit && hit.expiresAt > now) return hit.value as Promise<T>
+  if (hit) readCache.delete(key)
+
+  const value = loader().catch((error) => {
+    readCache.delete(key)
+    throw error
+  })
+  readCache.set(key, { expiresAt: now + ttlMs, value })
+  return value
+}
+
+/** Clear after an academic-profile edit or when an admin publishes a new release in-session. */
+export function clearCurriculumCache(): void {
+  readCache.clear()
+}
 
 /**
  * Preferred student-facing resolver.
  * Supabase resolves the signed-in user's board, class, academic year and
  * selected subjects. Draft academic releases remain invisible.
+ *
+ * This call is intentionally not cached because onboarding/profile changes
+ * must be reflected immediately.
  */
 export async function resolveMyCurriculum(): Promise<ResolvedCurriculum> {
   const { data, error } = await client().rpc('resolve_my_curriculum')
@@ -71,153 +98,163 @@ export async function getRelease(
   gradeLevel: number,
   academicYear = '2026-27'
 ) {
-  const { data: board, error: boardError } = await client()
-    .from('education_boards')
-    .select('id')
-    .eq('code', boardCode)
-    .single()
+  return cached(`release:${boardCode}:${gradeLevel}:${academicYear}`, async () => {
+    const { data: board, error: boardError } = await client()
+      .from('education_boards')
+      .select('id')
+      .eq('code', boardCode)
+      .single()
 
-  if (boardError) throw boardError
+    if (boardError) throw boardError
 
-  const { data: year, error: yearError } = await client()
-    .from('academic_years')
-    .select('id')
-    .eq('code', academicYear)
-    .single()
+    const { data: year, error: yearError } = await client()
+      .from('academic_years')
+      .select('id')
+      .eq('code', academicYear)
+      .single()
 
-  if (yearError) throw yearError
+    if (yearError) throw yearError
 
-  const { data: tracks, error: trackError } = await client()
-    .from('curriculum_tracks')
-    .select('id, minimum_grade, maximum_grade')
-    .eq('board_id', board.id)
-    .eq('learning_context', 'school')
-    .eq('status', 'active')
+    const { data: tracks, error: trackError } = await client()
+      .from('curriculum_tracks')
+      .select('id, minimum_grade, maximum_grade')
+      .eq('board_id', board.id)
+      .eq('learning_context', 'school')
+      .eq('status', 'active')
 
-  if (trackError) throw trackError
+    if (trackError) throw trackError
 
-  const matchingTracks = ((tracks ?? []) as TrackRow[])
-    .filter(
-      (item: TrackRow) =>
-        (item.minimum_grade === null || item.minimum_grade <= gradeLevel) &&
-        (item.maximum_grade === null || item.maximum_grade >= gradeLevel)
-    )
-    .sort((a: TrackRow, b: TrackRow) => {
-      const aSpan = (a.maximum_grade ?? 12) - (a.minimum_grade ?? 6)
-      const bSpan = (b.maximum_grade ?? 12) - (b.minimum_grade ?? 6)
-      return aSpan - bSpan
-    })
+    const matchingTracks = ((tracks ?? []) as TrackRow[])
+      .filter(
+        (item: TrackRow) =>
+          (item.minimum_grade === null || item.minimum_grade <= gradeLevel) &&
+          (item.maximum_grade === null || item.maximum_grade >= gradeLevel)
+      )
+      .sort((a: TrackRow, b: TrackRow) => {
+        const aSpan = (a.maximum_grade ?? 12) - (a.minimum_grade ?? 6)
+        const bSpan = (b.maximum_grade ?? 12) - (b.minimum_grade ?? 6)
+        return aSpan - bSpan
+      })
 
-  const track = matchingTracks[0]
+    const track = matchingTracks[0]
 
-  if (!track) {
-    throw new Error(`No curriculum track found for ${boardCode} Class ${gradeLevel}`)
-  }
+    if (!track) {
+      throw new Error(`No curriculum track found for ${boardCode} Class ${gradeLevel}`)
+    }
 
-  const { data: releases, error: releaseError } = await client()
-    .from('curriculum_releases')
-    .select(`
-      id,
-      grade_level,
-      revision,
-      status,
-      verification_status,
-      source_name,
-      source_url
-    `)
-    .eq('academic_year_id', year.id)
-    .eq('track_id', track.id)
-    .eq('grade_level', gradeLevel)
-    .eq('status', 'published')
-    .eq('verification_status', 'verified')
-    .order('revision', { ascending: false })
-    .limit(1)
+    const { data: releases, error: releaseError } = await client()
+      .from('curriculum_releases')
+      .select(`
+        id,
+        grade_level,
+        revision,
+        status,
+        verification_status,
+        source_name,
+        source_url
+      `)
+      .eq('academic_year_id', year.id)
+      .eq('track_id', track.id)
+      .eq('grade_level', gradeLevel)
+      .eq('status', 'published')
+      .eq('verification_status', 'verified')
+      .order('revision', { ascending: false })
+      .limit(1)
 
-  if (releaseError) throw releaseError
-  return releases?.[0] ?? null
+    if (releaseError) throw releaseError
+    return releases?.[0] ?? null
+  })
 }
 
 export async function getSubjects(releaseId: string) {
-  const { data, error } = await client()
-    .from('curriculum_subjects')
-    .select('id, subject_id, title, slug, position, status')
-    .eq('release_id', releaseId)
-    .eq('status', 'published')
-    .order('position', { ascending: true })
+  return cached(`subjects:${releaseId}`, async () => {
+    const { data, error } = await client()
+      .from('curriculum_subjects')
+      .select('id, subject_id, title, slug, position, status')
+      .eq('release_id', releaseId)
+      .eq('status', 'published')
+      .order('position', { ascending: true })
 
-  if (error) throw error
-  return data ?? []
+    if (error) throw error
+    return data ?? []
+  })
 }
 
 export async function getChapters(curriculumSubjectId: string) {
-  const { data, error } = await client()
-    .from('chapters')
-    .select(`
-      id,
-      chapter_number,
-      title,
-      slug,
-      position,
-      description,
-      estimated_minutes,
-      status
-    `)
-    .eq('curriculum_subject_id', curriculumSubjectId)
-    .eq('status', 'published')
-    .order('position', { ascending: true })
+  return cached(`chapters:${curriculumSubjectId}`, async () => {
+    const { data, error } = await client()
+      .from('chapters')
+      .select(`
+        id,
+        chapter_number,
+        title,
+        slug,
+        position,
+        description,
+        estimated_minutes,
+        status
+      `)
+      .eq('curriculum_subject_id', curriculumSubjectId)
+      .eq('status', 'published')
+      .order('position', { ascending: true })
 
-  if (error) throw error
-  return data ?? []
+    if (error) throw error
+    return data ?? []
+  })
 }
 
 export async function getChapterTree(chapterId: string) {
-  const { data, error } = await client()
-    .from('topics')
-    .select(`
-      id,
-      title,
-      slug,
-      position,
-      lessons (
+  return cached(`chapter-tree:${chapterId}`, async () => {
+    const { data, error } = await client()
+      .from('topics')
+      .select(`
         id,
         title,
         slug,
         position,
-        lesson_type,
-        estimated_minutes,
-        status
-      )
-    `)
-    .eq('chapter_id', chapterId)
-    .eq('status', 'published')
-    .order('position', { ascending: true })
+        lessons (
+          id,
+          title,
+          slug,
+          position,
+          lesson_type,
+          estimated_minutes,
+          status
+        )
+      `)
+      .eq('chapter_id', chapterId)
+      .eq('status', 'published')
+      .order('position', { ascending: true })
 
-  if (error) throw error
-  return data ?? []
+    if (error) throw error
+    return data ?? []
+  })
 }
 
 export async function getLessonContent(lessonId: string) {
-  const { data, error } = await client()
-    .from('lesson_version_content_v3')
-    .select(`
-      version_id,
-      lesson_id,
-      version,
-      status,
-      content_schema_version,
-      blocks,
-      key_terms,
-      formulas,
-      examples,
-      exercises,
-      sources
-    `)
-    .eq('lesson_id', lessonId)
-    .eq('status', 'published')
-    .order('version', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  return cached(`lesson:${lessonId}`, async () => {
+    const { data, error } = await client()
+      .from('lesson_version_content_v3')
+      .select(`
+        version_id,
+        lesson_id,
+        version,
+        status,
+        content_schema_version,
+        blocks,
+        key_terms,
+        formulas,
+        examples,
+        exercises,
+        sources
+      `)
+      .eq('lesson_id', lessonId)
+      .eq('status', 'published')
+      .order('version', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-  if (error) throw error
-  return data
+    if (error) throw error
+    return data
+  }, LESSON_CACHE_TTL_MS)
 }
