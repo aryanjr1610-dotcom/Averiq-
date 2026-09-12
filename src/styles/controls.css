@@ -1,0 +1,60 @@
+/* src/styles/controls.css — import after tokens.css */
+
+/* ---------- RANGE: the blue sliders in your screenshot ---------- */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 28px; background: transparent; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px; border-radius: var(--radius-full);
+  background: linear-gradient(
+    to right,
+    rgb(var(--subject-accent)) 0 var(--fill, 50%),
+    rgb(var(--border-strong) / 0.18) var(--fill, 50%) 100%
+  );
+}
+input[type="range"]::-moz-range-track {
+  height: 3px; border-radius: var(--radius-full);
+  background: rgb(var(--border-strong) / 0.18);
+}
+input[type="range"]::-moz-range-progress {
+  height: 3px; border-radius: var(--radius-full); background: rgb(var(--subject-accent));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  height: 16px; width: 16px; margin-top: -6.5px;
+  border-radius: var(--radius-full);
+  background: rgb(var(--text-primary));
+  border: 1px solid rgb(var(--canvas));
+  box-shadow: var(--shadow-1);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+input[type="range"]::-moz-range-thumb {
+  height: 16px; width: 16px; border-radius: var(--radius-full);
+  background: rgb(var(--text-primary)); border: 1px solid rgb(var(--canvas));
+}
+input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.12); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(0.96); }
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid rgb(var(--focus-ring)); outline-offset: 2px;
+}
+
+/* ---------- CHECKBOX: kills the native blue tick ---------- */
+input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none;
+  height: 18px; width: 18px; margin: 0; flex: 0 0 auto;
+  border: 1.5px solid rgb(var(--border-strong) / 0.35);
+  border-radius: var(--radius-xs);
+  background: rgb(var(--surface-interactive));
+  display: grid; place-content: center; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-standard),
+              border-color var(--dur-fast) var(--ease-standard);
+}
+input[type="checkbox"]::before {
+  content: ""; height: 9px; width: 9px;
+  clip-path: polygon(14% 44%, 0 60%, 40% 100%, 100% 18%, 84% 4%, 38% 68%);
+  background: rgb(var(--text-onaccent));
+  transform: scale(0); transition: transform var(--dur-fast) var(--ease-out);
+}
+input[type="checkbox"]:checked { background: rgb(var(--subject-accent)); border-color: rgb(var(--subject-accent)); }
+input[type="checkbox"]:checked::before { transform: scale(1); }

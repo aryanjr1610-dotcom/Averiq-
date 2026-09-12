@@ -1,0 +1,252 @@
+/* ============================================================
+   AVERIQ DESIGN TOKENS
+   Channel triplets so Tailwind can do  rgb(var(--x) / <alpha>)
+   ============================================================ */
+
+:root {
+  /* ---- RAW NEUTRALS (warm graphite, never pure black/white) ---- */
+  --n-1000: 10 11 13;      /* deepest canvas   #0A0B0D */
+  --n-950:  15 16 19;      /* app canvas       #0F1013 */
+  --n-900:  21 23 27;      /* base surface     #15171B */
+  --n-850:  27 30 35;      /* raised           #1B1E23 */
+  --n-800:  34 38 44;      /* interactive      #22262C */
+  --n-700:  50 55 63;      /* border strong    */
+  --n-600:  74 81 91;
+  --n-500:  110 119 131;
+  --n-400:  150 158 170;
+  --n-300:  186 192 201;
+  --n-200:  216 220 226;
+  --n-100:  234 236 240;
+  --n-50:   245 246 248;   /* softened white   */
+
+  /* ---- BRAND: brass. One accent carries the system. ---- */
+  --brand-300: 226 199 142;
+  --brand-400: 208 176 112;
+  --brand-500: 184 149  84;   /* #B89554 */
+  --brand-600: 154 122  64;
+
+  /* ---- SEMANTIC STATES (hue + never used alone) ---- */
+  --ok-500:    82 158 112;
+  --warn-500: 197 150  66;
+  --bad-500:  198  95  88;
+  --info-500:  94 137 178;
+
+  /* ---- SUBJECT ACCENTS (set via [data-subject]) ---- */
+  --subject-accent: var(--brand-500);
+  --subject-motif-opacity: 0.035;
+
+  /* ---- RADIUS: hierarchy, not bubbles ---- */
+  --radius-xs: 4px;    /* chips, checkbox        */
+  --radius-sm: 6px;    /* inputs, small controls */
+  --radius-md: 10px;   /* buttons               */
+  --radius-lg: 14px;   /* cards                 */
+  --radius-xl: 20px;   /* major surfaces        */
+  --radius-2xl: 26px;  /* sheets, modals        */
+  --radius-full: 999px;
+
+  /* ---- SPACING RHYTHM (4px base, named steps) ---- */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px;  --space-5: 20px;  --space-6: 24px;
+  --space-8: 32px;  --space-10: 40px; --space-12: 48px;
+  --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  /* ---- SECTION RHYTHM (responsive vertical beat) ---- */
+  --rhythm-page-x: clamp(16px, 4vw, 40px);
+  --rhythm-section: clamp(40px, 6vw, 80px);
+  --rhythm-block: clamp(20px, 3vw, 32px);
+
+  /* ---- MEASURE ---- */
+  --measure-reading: 68ch;
+  --measure-prose: 74ch;
+  --width-app: 1400px;
+  --width-content: 1120px;
+
+  /* ---- ELEVATION: 3 levels only, low-contrast, no glow ---- */
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.24);
+  --shadow-2: 0 2px 4px rgb(0 0 0 / 0.20), 0 8px 20px -8px rgb(0 0 0 / 0.32);
+  --shadow-3: 0 8px 24px -6px rgb(0 0 0 / 0.40), 0 24px 60px -20px rgb(0 0 0 / 0.48);
+
+  /* ---- MOTION ---- */
+  --dur-instant: 90ms;
+  --dur-fast: 140ms;
+  --dur-standard: 220ms;
+  --dur-slow: 360ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---- Z ---- */
+  --z-atmosphere: 0;
+  --z-content: 10;
+  --z-sticky: 20;
+  --z-nav: 30;
+  --z-sheet: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+}
+
+/* ============================ DARK (default) ============================ */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+
+  --canvas:             var(--n-950);
+  --surface-base:       var(--n-900);
+  --surface-raised:     var(--n-850);
+  --surface-interactive:var(--n-800);
+  --surface-reading:    var(--n-900);
+  --surface-immersive:  var(--n-1000);
+  --surface-overlay:    27 30 35;
+
+  --text-primary:   var(--n-50);
+  --text-secondary: var(--n-300);   /* 7.1:1 on canvas — no tiny gray text */
+  --text-tertiary:  var(--n-400);   /* 4.8:1 — labels only, never body     */
+  --text-onaccent:  var(--n-1000);
+
+  --border-subtle: 255 255 255;  --border-subtle-a: 0.06;
+  --border-default:255 255 255;  --border-default-a: 0.10;
+  --border-strong: 255 255 255;  --border-strong-a: 0.18;
+
+  --accent:      var(--brand-500);
+  --accent-hover:var(--brand-400);
+  --accent-text: var(--brand-300);
+
+  --focus-ring: var(--brand-300);
+  --glass-tint: 21 23 27;
+  --glass-alpha: 0.72;
+}
+
+/* ============================ LIGHT ============================ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --canvas:             250 249 247;   /* warm paper */
+  --surface-base:       255 255 254;
+  --surface-raised:     255 255 254;
+  --surface-interactive:243 242 239;
+  --surface-reading:    253 252 250;
+  --surface-immersive:  238 236 232;
+  --surface-overlay:    255 255 254;
+
+  --text-primary:   24 26 30;
+  --text-secondary: 78 84 93;
+  --text-tertiary:  108 115 125;
+  --text-onaccent:  255 255 255;
+
+  --border-subtle: 24 26 30;  --border-subtle-a: 0.07;
+  --border-default:24 26 30;  --border-default-a: 0.12;
+  --border-strong: 24 26 30;  --border-strong-a: 0.20;
+
+  --accent:      var(--brand-600);
+  --accent-hover:var(--brand-500);
+  --accent-text: var(--brand-600);
+
+  --focus-ring: var(--brand-600);
+  --glass-tint: 255 255 254;
+  --glass-alpha: 0.78;
+  --subject-motif-opacity: 0.035;
+  --shadow-1: 0 1px 2px rgb(24 26 30 / 0.06);
+  --shadow-2: 0 1px 3px rgb(24 26 30 / 0.08), 0 8px 20px -10px rgb(24 26 30 / 0.10);
+  --shadow-3: 0 8px 24px -8px rgb(24 26 30 / 0.12), 0 24px 60px -24px rgb(24 26 30 / 0.16);
+}
+
+/* ================= ACADEMIC STREAM + SUBJECT ATMOSPHERE ================= */
+/* Only the accent + motif change. The brand neutrals never change. */
+[data-stream="pcm"]        { --subject-accent: 122 152 186; } /* structural blue  */
+[data-stream="pcb"]        { --subject-accent:  96 152 128; } /* organic green    */
+[data-stream="pcmb"]       { --subject-accent: 108 152 158; } /* blended teal     */
+[data-stream="commerce"]   { --subject-accent: 168 142  96; } /* analytical brass */
+[data-stream="humanities"] { --subject-accent: 176 124 104; } /* cultural terra   */
+[data-stream="foundation"] { --subject-accent: 138 144 176; } /* multidisciplinary*/
+
+[data-subject="physics"]   { --subject-accent: 118 150 190; }
+[data-subject="maths"]     { --subject-accent: 132 140 180; }
+[data-subject="chemistry"] { --subject-accent: 158 142 186; }
+[data-subject="biology"]   { --subject-accent:  96 152 122; }
+[data-subject="english"]   { --subject-accent: 172 138 110; }
+[data-subject="history"]   { --subject-accent: 170 126  98; }
+[data-subject="economics"] { --subject-accent: 152 148  98; }
+
+/* Density modes — Learn vs Revision vs Competitive, same brand */
+[data-density="editorial"] { --density-row: 56px; --density-gap: var(--space-6); }
+[data-density="default"]   { --density-row: 48px; --density-gap: var(--space-4); }
+[data-density="compact"]   { --density-row: 40px; --density-gap: var(--space-3); }
+
+/* ============================ BASE RESET ============================ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: rgb(var(--canvas));
+  color: rgb(var(--text-primary));
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Focus: never removed, always replaced. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--focus-ring));
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+::selection { background: rgb(var(--accent) / 0.28); }
+
+/* Scrollbar — quiet, not decorative */
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--n-600)) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--n-600) / 0.6);
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Safe areas for Capacitor/Android + iOS */
+.safe-t { padding-top: env(safe-area-inset-top, 0px); }
+.safe-b { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ============================ REDUCED MOTION ============================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-ambient] { animation: none !important; transform: none !important; }
+}
+
+/* Low-power / reduced-visual mode set by app state */
+[data-visual-mode="reduced"] {
+  --subject-motif-opacity: 0;
+  --shadow-2: var(--shadow-1);
+  --shadow-3: var(--shadow-1);
+}
+[data-visual-mode="reduced"] [data-ambient] { display: none; }
+[data-visual-mode="reduced"] .glass { backdrop-filter: none; --glass-alpha: 0.96; }
+
+/* glass is a named material, used in 3 places only */
+.glass {
+  background-color: rgb(var(--glass-tint) / var(--glass-alpha));
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+@supports not (backdrop-filter: blur(1px)) { .glass { --glass-alpha: 0.97; } }
+
+/* skeleton animation, transform/opacity only */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgb(var(--surface-interactive)) 0%,
+    rgb(var(--surface-interactive) / 0.55) 42%,
+    rgb(var(--surface-interactive)) 84%);
+  background-size: 220% 100%;
+  animation: sk 1.5s var(--ease-in-out) infinite;
+}
+@keyframes sk { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; opacity: 0.7; } }

@@ -1,0 +1,6 @@
+@import url("https://rsms.me/inter/inter.css");
+
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, Inter, ui-sans-serif, system-ui, sans-serif; }
+}

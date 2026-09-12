@@ -1,0 +1,313 @@
+{
+  "board_code": "cbse",
+  "track_code": "cbse-middle",
+  "track_title": "CBSE Middle School",
+  "minimum_grade": 6,
+  "maximum_grade": 8,
+  "grade_level": 6,
+  "academic_year": "2026-27",
+  "source_name": "NCERT Rationalised Syllabus",
+  "source_url": "https://ncert.nic.in/",
+  "source_document": "Class 6 Science NCERT Textbook",
+  "syllabus_verified": true,
+  "subjects": [
+    {
+      "code": "science",
+      "title": "Science",
+      "slug": "science",
+      "position": 1,
+      "chapters": [
+        {
+          "chapter_number": "1",
+          "title": "Components of Food",
+          "slug": "components-of-food",
+          "position": 1,
+          "description": "Understanding what makes up our food, the essential nutrients, tests to detect them, and the importance of a balanced diet and preventing deficiency diseases.",
+          "lessons": [
+            {
+              "topic": {
+                "title": "Nutrients in Food",
+                "slug": "nutrients-in-food",
+                "position": 1
+              },
+              "lesson": {
+                "title": "What Do Different Food Items Contain?",
+                "slug": "what-do-different-food-items-contain",
+                "position": 1,
+                "lesson_type": "concept",
+                "estimated_minutes": 20
+              },
+              "blocks": [
+                {
+                  "block_key": "introduction",
+                  "position": 10,
+                  "block_type": "introduction",
+                  "depth_level": "foundation",
+                  "heading": "Introduction to Food Components",
+                  "body": "Every dish we eat is usually made of one or more ingredients, which we get from plants or animals. These ingredients contain some components that are needed by our body. These components are called **nutrients**."
+                },
+                {
+                  "block_key": "major-nutrients",
+                  "position": 20,
+                  "block_type": "concept",
+                  "depth_level": "board",
+                  "heading": "The Major Nutrients",
+                  "body": "The major nutrients in our food are named **carbohydrates**, **proteins**, **fats**, **vitamins**, and **minerals**. In addition, food contains **dietary fibres** (roughage) and **water** which are also needed by our body."
+                },
+                {
+                  "block_key": "carbohydrates-info",
+                  "position": 30,
+                  "block_type": "explanation",
+                  "depth_level": "board",
+                  "heading": "Carbohydrates",
+                  "body": "Carbohydrates mainly provide energy to our body. The main carbohydrates found in our food are in the form of starch and sugars."
+                },
+                {
+                  "block_key": "test-for-starch",
+                  "position": 40,
+                  "block_type": "explanation",
+                  "depth_level": "board",
+                  "heading": "Test for Starch (Carbohydrates)",
+                  "body": "To test for starch, put 2-3 drops of dilute iodine solution on a small quantity of a food item. A blue-black colour indicates that it contains starch."
+                }
+              ],
+              "key_terms": [
+                {
+                  "term": "Nutrients",
+                  "definition": "Essential components in food that our body needs to grow, repair itself, and function properly.",
+                  "position": 10
+                },
+                {
+                  "term": "Dietary Fibres",
+                  "definition": "Also known as roughage, it is mainly provided by plant products in our foods and helps our body get rid of undigested food.",
+                  "position": 20
+                }
+              ],
+              "exercises": [
+                {
+                  "question_key": "q-nutrients-mcq",
+                  "position": 10,
+                  "question_type": "mcq",
+                  "question_text": "Which of the following is NOT a major nutrient?",
+                  "options": [
+                    { "key": "a", "text": "Carbohydrates" },
+                    { "key": "b", "text": "Proteins" },
+                    { "key": "c", "text": "Water" },
+                    { "key": "d", "text": "Fats" }
+                  ],
+                  "answer": "c",
+                  "solution": "Water",
+                  "explanation": "While water is essential for our body, the major nutrients are carbohydrates, proteins, fats, vitamins, and minerals.",
+                  "difficulty": "easy",
+                  "marks": 1,
+                  "competency_tags": ["remembering"]
+                }
+              ],
+              "sources": [
+                {
+                  "source_key": "ncert-class6-science",
+                  "source_name": "NCERT Class 6 Science Textbook",
+                  "source_url": "https://ncert.nic.in/",
+                  "source_role": "textbook_reference",
+                  "authority_level": "official",
+                  "rights_status": "reference_only"
+                }
+              ]
+            },
+            {
+              "topic": {
+                "title": "Balanced Diet",
+                "slug": "balanced-diet",
+                "position": 2
+              },
+              "lesson": {
+                "title": "Importance of a Balanced Diet",
+                "slug": "importance-of-a-balanced-diet",
+                "position": 1,
+                "lesson_type": "concept",
+                "estimated_minutes": 15
+              },
+              "blocks": [
+                {
+                  "block_key": "balanced-diet-def",
+                  "position": 10,
+                  "block_type": "definition",
+                  "depth_level": "foundation",
+                  "heading": "What is a Balanced Diet?",
+                  "body": "A diet that contains all the nutrients that our body needs, in right quantities, along with an adequate amount of roughage and water, is called a balanced diet."
+                },
+                {
+                  "block_key": "cooking-effects",
+                  "position": 20,
+                  "block_type": "explanation",
+                  "depth_level": "board",
+                  "heading": "Effects of Cooking",
+                  "body": "Eating the right kind of food is not enough; it should also be cooked properly so that its nutrients are not lost. Repeated washing of vegetables and fruits after cutting or peeling them may result in the loss of some vitamins."
+                },
+                {
+                  "block_key": "obesity",
+                  "position": 30,
+                  "block_type": "concept",
+                  "depth_level": "board",
+                  "heading": "Obesity",
+                  "body": "Eating too much of fat-rich foods can be harmful. It may lead to a condition called obesity, which is excessive weight gain and can cause health issues."
+                },
+                {
+                  "block_key": "quick-rev",
+                  "position": 40,
+                  "block_type": "quick_revision",
+                  "depth_level": "board",
+                  "heading": "Quick Revision",
+                  "body": "A balanced diet provides all nutrients in the right proportions. Overeating fats leads to obesity. Overcooking destroys vitamins like Vitamin C."
+                }
+              ],
+              "key_terms": [
+                {
+                  "term": "Balanced Diet",
+                  "definition": "A diet containing all essential nutrients in proper amounts.",
+                  "position": 10
+                },
+                {
+                  "term": "Obesity",
+                  "definition": "A condition caused by eating too much fat-rich foods, leading to excess body weight.",
+                  "position": 20
+                }
+              ],
+              "exercises": [
+                {
+                  "question_key": "q-obesity",
+                  "position": 10,
+                  "question_type": "short_answer",
+                  "question_text": "What happens if you eat too much fat-rich food?",
+                  "answer": { "expected": "Obesity" },
+                  "solution": "Eating too much fat-rich food can lead to a condition called obesity.",
+                  "explanation": "Excess fats that are not burned for energy are stored in the body, leading to excessive weight gain (obesity).",
+                  "difficulty": "easy",
+                  "marks": 2,
+                  "competency_tags": ["understanding"]
+                }
+              ],
+              "sources": [
+                {
+                  "source_key": "ncert-class6-science",
+                  "source_name": "NCERT Class 6 Science Textbook",
+                  "source_url": "https://ncert.nic.in/",
+                  "source_role": "textbook_reference",
+                  "authority_level": "official",
+                  "rights_status": "reference_only"
+                }
+              ]
+            },
+            {
+              "topic": {
+                "title": "Deficiency Diseases",
+                "slug": "deficiency-diseases",
+                "position": 3
+              },
+              "lesson": {
+                "title": "Diseases caused by Nutritional Deficiency",
+                "slug": "diseases-caused-by-nutritional-deficiency",
+                "position": 1,
+                "lesson_type": "concept",
+                "estimated_minutes": 25
+              },
+              "blocks": [
+                {
+                  "block_key": "deficiency-intro",
+                  "position": 10,
+                  "block_type": "introduction",
+                  "depth_level": "foundation",
+                  "heading": "What are Deficiency Diseases?",
+                  "body": "A person may be getting enough food to eat, but sometimes the food may not contain a particular nutrient. If this continues over a long period of time, the person may suffer from its deficiency. Diseases that occur due to lack of nutrients over a long period are called deficiency diseases."
+                },
+                {
+                  "block_key": "protein-deficiency",
+                  "position": 20,
+                  "block_type": "explanation",
+                  "depth_level": "board",
+                  "heading": "Protein Deficiency",
+                  "body": "If a person does not get enough proteins in their food for a long time, they are likely to have stunted growth, swelling of face, discolouration of hair, skin diseases, and diarrhoea."
+                },
+                {
+                  "block_key": "vitamins-minerals-deficiency",
+                  "position": 30,
+                  "block_type": "table",
+                  "depth_level": "board",
+                  "heading": "Some Diseases caused by deficiency of Vitamins and Minerals",
+                  "body": "| Vitamin/Mineral | Deficiency disease/disorder | Symptoms |\n| --- | --- | --- |\n| Vitamin A | Loss of vision | Poor vision, loss of vision in darkness (night) |\n| Vitamin B1 | Beriberi | Weak muscles and very little energy to work |\n| Vitamin C | Scurvy | Bleeding gums, wounds take longer to heal |\n| Vitamin D | Rickets | Bones become soft and bent |\n| Calcium | Bone and tooth decay | Weak bones, tooth decay |\n| Iodine | Goiter | Glands in the neck appear swollen, mental disability in children |\n| Iron | Anaemia | Weakness |"
+                },
+                {
+                  "block_key": "prevention",
+                  "position": 40,
+                  "block_type": "concept",
+                  "depth_level": "board",
+                  "heading": "Prevention",
+                  "body": "All deficiency diseases can be prevented by taking a balanced diet."
+                }
+              ],
+              "key_terms": [
+                {
+                  "term": "Deficiency Disease",
+                  "definition": "A disease that occurs due to the lack of nutrients over a long period of time.",
+                  "position": 10
+                },
+                {
+                  "term": "Scurvy",
+                  "definition": "A deficiency disease caused by lack of Vitamin C, characterized by bleeding gums.",
+                  "position": 20
+                },
+                {
+                  "term": "Beriberi",
+                  "definition": "A disease caused by Vitamin B1 deficiency, leading to weak muscles.",
+                  "position": 30
+                }
+              ],
+              "exercises": [
+                {
+                  "question_key": "q-scurvy",
+                  "position": 10,
+                  "question_type": "mcq",
+                  "question_text": "Which vitamin deficiency causes Scurvy?",
+                  "options": [
+                    { "key": "a", "text": "Vitamin A" },
+                    { "key": "b", "text": "Vitamin B1" },
+                    { "key": "c", "text": "Vitamin C" },
+                    { "key": "d", "text": "Vitamin D" }
+                  ],
+                  "answer": "c",
+                  "solution": "Vitamin C",
+                  "explanation": "Scurvy is caused by a deficiency of Vitamin C.",
+                  "difficulty": "easy",
+                  "marks": 1,
+                  "competency_tags": ["remembering"]
+                },
+                {
+                  "question_key": "q-prevention",
+                  "position": 20,
+                  "question_type": "short_answer",
+                  "question_text": "How can deficiency diseases be prevented?",
+                  "answer": { "expected": "Balanced Diet" },
+                  "solution": "All deficiency diseases can be prevented by taking a balanced diet.",
+                  "explanation": "A balanced diet provides all necessary nutrients, preventing any long-term lack of specific vitamins or minerals.",
+                  "difficulty": "easy",
+                  "marks": 1,
+                  "competency_tags": ["understanding"]
+                }
+              ],
+              "sources": [
+                {
+                  "source_key": "ncert-class6-science",
+                  "source_name": "NCERT Class 6 Science Textbook",
+                  "source_url": "https://ncert.nic.in/",
+                  "source_role": "textbook_reference",
+                  "authority_level": "official",
+                  "rights_status": "reference_only"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "releaseKey": "cbse-2026-27-v1",
+  "academicYear": "2026-27",
+  "boardKey": "cbse-senior-secondary",
+  "classLevel": "12",
+  "batches": [
+    {
+      "kind": "curriculum",
+      "label": "Physics subject",
+      "source": {
+        "name": "CBSE Senior Secondary Curriculum 2026-27 (Physics)",
+        "url": "https://REPLACE-WITH-OFFICIAL-SYLLABUS-PDF",
+        "publishedOn": "2026-03-31"
+      },
+      "rows": [{ "subjectSlug": "physics", "subjectName": "Physics" }]
+    },
+    {
+      "kind": "chapters",
+      "label": "Physics chapters",
+      "source": {
+        "name": "CBSE Senior Secondary Curriculum 2026-27 (Physics)",
+        "url": "https://REPLACE-WITH-OFFICIAL-SYLLABUS-PDF"
+      },
+      "rows": [
+        { "subjectSlug": "physics", "chapterSlug": "electric-charges-and-fields", "chapterTitle": "Electric Charges and Fields", "position": 1 }
+      ]
+    }
+  ],
+  "chapterAuthoringPlan": {
+    "chapterSlug": "electric-charges-and-fields",
+    "targetPages": 32,
+    "sections": [
+      "Prerequisite recall",
+      "Motivation and intuition",
+      "Formal definitions",
+      "Coulomb's law and its development",
+      "Superposition and field concept",
+      "Field derivations with reasons",
+      "Worked numericals",
+      "Graphs and diagrams",
+      "Applications",
+      "Special cases and limitations",
+      "Common misconceptions",
+      "Exam relevance",
+      "Summary"
+    ],
+    "reviewGates": ["technical", "academic", "copyright"],
+    "note": "Each section is drafted, validated and appended separately; the version stays draft until academic review approves it."
+  }
+}

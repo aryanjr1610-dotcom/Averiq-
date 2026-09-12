@@ -1,0 +1,53 @@
+.anatomy-lede, .anatomy-note { color: var(--color-text-muted); }
+.anatomy-note { font-size: 0.8125rem; }
+.anatomy-crumb { font-size: 0.875rem; }
+.anatomy-home { display: grid; gap: 1.5rem; }
+.anatomy-systems, .anatomy-plain, .anatomy-structure-list { list-style: none; padding: 0; margin: 0; }
+.anatomy-system, .anatomy-plain > li { padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); }
+.anatomy-system a, .anatomy-system__pending { display: grid; gap: 0.15rem; text-decoration: none; }
+.anatomy-system em { font-size: 0.75rem; color: var(--color-text-muted); font-style: normal; }
+.anatomy-system--on { outline: 1px solid currentColor; outline-offset: 4px; border-radius: 8px; }
+.body-map { margin: 0; }
+.body-map svg { width: 100%; max-width: 260px; height: auto; }
+.body-map__silhouette { fill: rgba(255,255,255,0.05); stroke: var(--color-border); }
+.body-map__region { fill: rgba(168,119,111,0.35); stroke: transparent; cursor: pointer; }
+.body-map__region:hover, .body-map__region:focus-visible { fill: rgba(168,119,111,0.65); outline: none; stroke: currentColor; }
+.body-map__region--on { fill: rgba(168,119,111,0.85); }
+.anatomy-stage { display: grid; gap: 1.25rem; margin-block: 1.5rem; }
+.anatomy-viewport { position: relative; min-height: 320px; border: 1px solid var(--color-border); border-radius: 16px; padding: 1rem; }
+.heart-2d { width: 100%; height: auto; }
+.heart-2d__part { fill: rgba(168,119,111,0.4); stroke: var(--color-border); cursor: pointer; }
+.heart-2d__part--on { fill: rgba(168,119,111,0.9); }
+.heart-2d__part:focus-visible { outline: 2px solid currentColor; }
+.heart-2d__label { font-size: 7px; fill: currentColor; }
+.anatomy-controls, .anatomy-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; align-items: center; }
+.anatomy-controls button, .anatomy-actions button, .anatomy-structure-list button, .anatomy-error button { min-height: 40px; padding: 0 0.8rem; border-radius: 10px; border: 1px solid var(--color-border); background: transparent; color: inherit; cursor: pointer; }
+.anatomy-layers { display: flex; flex-wrap: wrap; gap: 0.6rem; border: 0; padding: 0.75rem 0 0; }
+.anatomy-layers legend { font-size: 0.8125rem; color: var(--color-text-muted); }
+.anatomy-layers label { display: inline-flex; gap: 0.3rem; align-items: center; font-size: 0.8125rem; text-transform: capitalize; }
+.anatomy-panel { border: 1px solid var(--color-border); border-radius: 16px; padding: 1rem; }
+.anatomy-structure-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.anatomy-structure-list button[aria-pressed='true'] { outline: 2px solid currentColor; outline-offset: 1px; }
+.anatomy-detail p { line-height: 1.7; margin: 0 0 0.5rem; }
+.anatomy-process { margin-block: 2rem; }
+.anatomy-step { margin-top: 0.75rem; padding: 0.85rem 1rem; border-left: 1px solid var(--color-accent); }
+.anatomy-error { color: var(--color-warning); display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.anatomy-credit { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2rem; }
+@media (min-width: 900px) {
+  .anatomy-home { grid-template-columns: 280px 1fr; align-items: start; }
+  .anatomy-stage { grid-template-columns: minmax(0, 1fr) 340px; }
+}
+@media (max-width: 899px) {
+  .anatomy-panel { position: sticky; bottom: 0; background: var(--color-surface); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heart-2d__part, .body-map__region { transition: none; }
+}
+
+.anatomy-viewport { background: var(--lab-canvas); color: var(--lab-label); border-radius: var(--radius-large); }
+.anatomy-panel { border-radius: var(--radius-large); background: var(--surface-1); }
+.anatomy-controls button, .anatomy-actions button, .anatomy-structure-list button, .anatomy-layers label { min-height: 44px; }
+.anatomy-note, .anatomy-credit, .anatomy-system em, .anatomy-layers legend, .anatomy-layers label { font-size: var(--font-caption); }
+@media (max-width: 899px) { .anatomy-panel { position: static; } }
+
+.anatomy-viewport { --text-primary: var(--lab-label); --text-muted: var(--raw-slate-300); --color-text-muted: var(--raw-slate-300); --color-border: var(--edge); }

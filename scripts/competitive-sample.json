@@ -1,0 +1,15 @@
+{
+  "formatVersion": 1,
+  "label": "sample-competitive-v1",
+  "tables": [
+    {
+      "table": "competitive_exams",
+      "conflict": "key",
+      "rows": [
+        { "key": "jee", "name": "Joint Entrance Examination", "short_name": "JEE", "authority": "National Testing Agency", "status": "published" },
+        { "key": "neet", "name": "National Eligibility cum Entrance Test", "short_name": "NEET", "authority": "National Testing Agency", "status": "published" },
+        { "key": "nda", "name": "National Defence Academy Examination", "short_name": "NDA", "authority": "Union Public Service Commission", "status": "published" }
+      ]
+    }
+  ]
+}

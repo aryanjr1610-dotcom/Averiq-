@@ -1,0 +1,19 @@
+.off-bar { padding: 8px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.85rem; margin: 0 0 10px; }
+.off-note { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+.off-panel { display: grid; gap: 10px; }
+.off-panel h3 { margin: 0; font-size: 0.98rem; }
+.off-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.off-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.off-list li { display: flex; gap: 12px; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); }
+.off-meta { display: block; color: var(--text-muted); font-size: 0.78rem; }
+.off-ghost { background: none; border: none; color: var(--text-muted); cursor: pointer; font: inherit; font-size: 0.85rem; }
+.off-ghost:hover { color: var(--text-strong); }
+.off-inline { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.off-list li { flex-wrap: wrap; }
+.off-list li > * { min-width: 0; overflow-wrap: anywhere; }
+.off-ghost { min-height: 44px; }
+.off-meta { font-size: var(--font-caption); }
+.off-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.off-actions a { display: inline-flex; align-items: center; }
+.off-ghost:disabled { cursor: wait; opacity: 0.65; }

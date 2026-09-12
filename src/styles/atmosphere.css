@@ -1,0 +1,71 @@
+/* src/styles/atmosphere.css — CSS/SVG only, zero WebGL */
+.averiq-atmos {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--bg-canvas);
+  --atmos-hue: 210;
+  --atmos-motif-opacity: .035;
+  --atmos-glow: .06;
+  transition: --atmos-hue var(--dur-ambient) var(--ease-in-out);
+}
+
+.averiq-atmos[data-stream="pcm"]        { --atmos-hue: 210; }
+.averiq-atmos[data-stream="pcb"]        { --atmos-hue: 152; }
+.averiq-atmos[data-stream="pcmb"]       { --atmos-hue: 182; }
+.averiq-atmos[data-stream="commerce"]   { --atmos-hue: 38;  }
+.averiq-atmos[data-stream="humanities"] { --atmos-hue: 24;  }
+.averiq-atmos[data-stream="foundation"] { --atmos-hue: 220; }
+
+.averiq-atmos[data-subject="physics"]   { --atmos-hue: 208; --atmos-motif: var(--motif-field); }
+.averiq-atmos[data-subject="maths"]     { --atmos-hue: 224; --atmos-motif: var(--motif-grid); }
+.averiq-atmos[data-subject="chemistry"] { --atmos-hue: 190; --atmos-motif: var(--motif-lattice); }
+.averiq-atmos[data-subject="biology"]   { --atmos-hue: 148; --atmos-motif: var(--motif-cell); }
+.averiq-atmos[data-subject="english"]   { --atmos-hue: 28;  --atmos-motif: var(--motif-rule); }
+.averiq-atmos[data-subject="history"]   { --atmos-hue: 22;  --atmos-motif: var(--motif-contour); }
+.averiq-atmos[data-subject="economics"] { --atmos-hue: 42;  --atmos-motif: var(--motif-grid); }
+
+.averiq-atmos__layers {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  transition: opacity var(--dur-ambient) var(--ease-in-out);
+  background-image:
+    /* vignette */
+    radial-gradient(120% 80% at 50% 0%, transparent 55%, rgba(0,0,0,.30) 100%),
+    /* ambient glow */
+    radial-gradient(80% 50% at 15% -10%,
+      hsl(var(--atmos-hue) 45% 50% / var(--atmos-glow)) 0%, transparent 70%),
+    /* motif */
+    var(--atmos-motif, var(--motif-grid)),
+    /* noise */
+    var(--motif-noise);
+  background-size: auto, auto, 220px 220px, 180px 180px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 20%, #000 30%, transparent 100%);
+          mask-image: radial-gradient(120% 90% at 50% 20%, #000 30%, transparent 100%);
+  opacity: 1;
+}
+
+.averiq-atmos__content { position: relative; z-index: 1; }
+
+/* reading calms it down; immersive & low power kill it */
+.averiq-atmos[data-surface="reading"]   { --atmos-motif-opacity: .015; --atmos-glow: .02; }
+.averiq-atmos[data-surface="immersive"] .averiq-atmos__layers,
+.averiq-atmos[data-low-power="true"]    .averiq-atmos__layers { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .averiq-atmos__layers { transition: none; }
+}
+
+/* --- motifs, inline SVG data URIs (no network, no WebGL) --- */
+:root {
+  --motif-grid: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g fill='none' stroke='white' stroke-opacity='0.035' stroke-width='1'><path d='M0 55h220M0 110h220M0 165h220M55 0v220M110 0v220M165 0v220'/></g></svg>");
+  --motif-field: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g stroke='white' stroke-opacity='0.04' stroke-width='1' fill='none'><path d='M20 200 Q110 120 200 200'/><path d='M20 160 Q110 80 200 160'/><path d='M20 120 Q110 40 200 120'/><circle cx='110' cy='210' r='2' fill='white' fill-opacity='0.05' stroke='none'/></g></svg>");
+  --motif-lattice: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g stroke='white' stroke-opacity='0.035' stroke-width='1' fill='none'><path d='M110 40l60 35v70l-60 35-60-35V75z'/><circle cx='110' cy='40' r='3'/><circle cx='170' cy='75' r='3'/><circle cx='170' cy='145' r='3'/><circle cx='110' cy='180' r='3'/><circle cx='50' cy='145' r='3'/><circle cx='50' cy='75' r='3'/></g></svg>");
+  --motif-cell: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g stroke='white' stroke-opacity='0.035' stroke-width='1' fill='none'><circle cx='70' cy='80' r='38'/><circle cx='70' cy='80' r='12'/><circle cx='160' cy='150' r='30'/><circle cx='160' cy='150' r='9'/></g></svg>");
+  --motif-contour: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g stroke='white' stroke-opacity='0.035' stroke-width='1' fill='none'><path d='M0 60 Q60 20 120 60 T220 50'/><path d='M0 110 Q60 70 120 110 T220 100'/><path d='M0 160 Q60 120 120 160 T220 150'/></g></svg>");
+  --motif-rule: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g stroke='white' stroke-opacity='0.03' stroke-width='1'><path d='M40 0v220'/><path d='M0 36h220M0 72h220M0 108h220M0 144h220M0 180h220'/></g></svg>");
+  --motif-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='0.015'/></svg>");
+}
+
+[data-theme="light"] {
+  --motif-grid: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><g fill='none' stroke='black' stroke-opacity='0.035' stroke-width='1'><path d='M0 55h220M0 110h220M0 165h220M55 0v220M110 0v220M165 0v220'/></g></svg>");
+}

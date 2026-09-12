@@ -1,0 +1,273 @@
+.book-reader {
+  --book-line: var(--border-subtle);
+}
+
+.reader-study-tools { min-width: 0; }
+.reader-study-tools summary { min-height: 44px; align-content: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--border-default); border-radius: var(--radius-medium); cursor: pointer; }
+.reader-study-tools nav { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); padding: var(--space-3); }
+.reader-study-tools a { min-height: 44px; display: inline-flex; align-items: center; }
+.reader-study-tools[open] { flex-basis: 100%; }
+
+.book-header {
+  max-width: 76ch;
+}
+
+.book-header h1 {
+  line-height: 1.12;
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  letter-spacing: -0.035em;
+}
+
+.reader-controls,
+.reader-modes,
+.subject-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+}
+
+.reader-modes {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.reader-modes legend {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.reader-modes label {
+  min-height: 44px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: start;
+}
+
+.book-main {
+  min-width: 0;
+  width: 100%;
+  max-width: 76ch;
+  margin-inline: auto;
+}
+
+.book-sidebar {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+}
+
+.book-outline,
+.book-outline section {
+  display: grid;
+  gap: 12px;
+}
+
+.book-outline section {
+  margin-bottom: 20px;
+}
+
+.book-outline a {
+  display: block;
+  min-height: 36px;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.book-outline a[aria-current="location"] {
+  color: var(--text-primary);
+  text-decoration-thickness: 2px;
+}
+
+.book-section {
+  scroll-margin-top: 24px;
+}
+
+.book-section + .book-section {
+  padding-top: 64px;
+  margin-top: 64px;
+  border-top: 1px solid var(--book-line);
+}
+
+.book-section-placeholder {
+  min-height: 65vh;
+  color: var(--text-secondary);
+}
+
+.book-reader .lesson-document {
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  line-height: 1.9;
+  overflow-wrap: break-word;
+}
+
+.book-reader .lesson-block + .lesson-block {
+  margin-top: 24px;
+}
+
+.book-reader .lesson-block--heading {
+  margin-top: 52px;
+}
+
+.subject-tools {
+  margin-bottom: 28px;
+  font-size: 0.88rem;
+}
+
+.subject-tools a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.book-reader .lesson-formula,
+.book-reader .worked-example,
+.book-reader .book-derivation,
+.book-reader .quantity-entry,
+.book-reader .book-proof,
+.book-reader .literary-analysis,
+.book-reader .book-reaction {
+  display: block;
+  padding: 24px 0;
+  border: 0;
+  border-top: 1px solid var(--book-line);
+  border-bottom: 1px solid var(--book-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.book-reader .lesson-callout {
+  padding: 18px 22px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+.book-reader .visual-reference {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.book-reader details summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.book-reader .solution-steps li {
+  padding-block: 12px;
+}
+
+.book-vocabulary > div {
+  padding-block: 20px;
+  border-bottom: 1px solid var(--book-line);
+}
+
+.book-vocabulary dt {
+  font-weight: 600;
+}
+
+.book-vocabulary dd {
+  margin: 0;
+}
+
+.biological-stages {
+  display: grid;
+  gap: 24px;
+}
+
+.reaction-equation {
+  overflow-x: auto;
+  padding-block: 20px;
+  white-space: nowrap;
+  font-size: 1.15rem;
+}
+
+.book-reader[data-reading-focus="true"] .book-sidebar {
+  display: none;
+}
+
+.book-reader[data-reading-focus="true"] .book-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.book-reader [data-block-id] {
+  scroll-margin-top: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="reduce"]) .book-reader {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (max-width: 767px) {
+  .book-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .book-sidebar {
+    display: none;
+  }
+
+  .book-reader .lesson-callout {
+    padding: 16px;
+  }
+
+  .book-section + .book-section {
+    padding-top: 40px;
+    margin-top: 40px;
+  }
+}
+
+@media print {
+  .reader-controls,
+  .subject-tools,
+  .book-sidebar,
+  .content-inspector {
+    display: none !important;
+  }
+
+  .book-grid {
+    display: block;
+  }
+
+  .book-main {
+    max-width: none;
+  }
+}
+
+.book-main { max-width: var(--width-reading); }
+.book-header h1 { font-size: var(--font-title); line-height: 1.2; }
+.book-reader .lesson-document { font-size: var(--font-reading); line-height: 1.85; }
+.book-reader .lesson-document p { max-width: 68ch; }
+.book-reader .lesson-document h2 { font-size: var(--font-section); }
+.book-reader .lesson-document h3 { font-size: var(--font-subsection); }
+.book-outline a { min-height: 44px; padding-block: var(--space-2); font-size: var(--font-label); }
+.book-outline a[aria-current="location"] { border-inline-start: 2px solid var(--accent); padding-inline-start: var(--space-3); }
+.book-reader .katex-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-block: var(--space-2); }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .book-grid { grid-template-columns: 160px minmax(0, 1fr); gap: var(--space-6); }
+}
+
+/* Reader tools use the same control language as the rest of the study space. */
+.book-subject { color: var(--text-secondary); font-size: var(--font-body-sm); margin-bottom: var(--space-2); }
+.reader-controls { gap: var(--space-3); padding-block: var(--space-5); border-block: 1px solid var(--border-subtle); }
+.reader-modes { flex-basis: 100%; gap: var(--space-2); }
+.reader-modes legend { font-size: var(--font-label); margin-bottom: var(--space-3); }
+.reader-modes label { padding: var(--space-2) var(--space-3); background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-medium); font-size: var(--font-label); }
+.reader-modes label:has(input:checked) { background: var(--accent-muted); border-color: var(--accent); }
+.reader-modes label:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+.reader-modes input { margin: 0; width: 16px; height: 16px; }
+.reader-controls > label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--font-label); }
+.reader-controls .button[aria-pressed="true"] { color: var(--accent); background: var(--surface-2); }
+@media (max-width: 480px) { .reader-modes label { flex: 1 1 auto; justify-content: center; } }

@@ -1,0 +1,48 @@
+.ai-launcher { position: fixed; right: 1rem; bottom: 1rem; z-index: 40; min-height: 44px; padding: 0 1.1rem; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-surface); color: inherit; cursor: pointer; }
+.ai-panel { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; background: var(--color-surface); border-left: 1px solid var(--color-border); }
+.ai-panel__head { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.85rem 1rem; border-bottom: 1px solid var(--color-border); }
+.ai-panel__actions { display: flex; gap: 0.5rem; }
+.ai-panel__actions button, .ai-mode, .ai-chip button, .ai-composer button, .ai-error button, .ai-selection button { min-height: 36px; padding: 0 0.7rem; border-radius: 8px; border: 1px solid var(--color-border); background: transparent; color: inherit; cursor: pointer; }
+.ai-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.3rem; }
+.ai-chip { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; padding: 0.1rem 0.5rem; border: 1px solid var(--color-border); border-radius: 999px; }
+.ai-chip button { min-height: 20px; padding: 0 0.2rem; border: 0; }
+.ai-thread { flex: 1; overflow-y: auto; padding: 1rem; display: grid; gap: 0.9rem; align-content: start; }
+.ai-message { max-width: 70ch; line-height: 1.7; }
+.ai-message--user { justify-self: end; padding: 0.6rem 0.8rem; border-radius: 12px; border: 1px solid var(--color-border); }
+.ai-message p { margin: 0 0 0.7rem; }
+.ai-list { margin: 0 0 0.7rem 1.1rem; }
+.ai-note { color: var(--color-text-muted); font-size: 0.875rem; }
+.ai-error { color: var(--color-warning); font-size: 0.875rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.ai-modes { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.5rem 1rem; border-top: 1px solid var(--color-border); }
+.ai-mode--on { outline: 2px solid currentColor; outline-offset: 1px; }
+.ai-composer { display: flex; gap: 0.5rem; padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); }
+.ai-composer textarea { flex: 1; resize: none; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--color-border); background: transparent; color: inherit; font: inherit; }
+.ai-math { display: inline-block; max-width: 100%; overflow-x: auto; }
+.ai-math--block { display: block; margin: 0.5rem 0; }
+.ai-selection { position: fixed; z-index: 45; display: flex; gap: 0.25rem; padding: 0.25rem; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-surface); transform: translateX(-50%); }
+.ai-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (min-width: 900px) {
+  .ai-panel { inset: 0 0 0 auto; width: 420px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-panel, .ai-launcher { transition: none; }
+}
+
+.ai-backdrop { position: fixed; inset: 0; z-index: var(--z-overlay); background: var(--overlay); }
+.ai-panel { z-index: var(--z-overlay); height: 100dvh; max-width: 100%; padding-top: env(safe-area-inset-top); box-shadow: var(--shadow-modal); }
+.ai-title { font-size: var(--font-card); }
+.ai-panel__head { flex-wrap: wrap; padding: var(--space-5); }
+.ai-panel__head > div { min-width: 0; }
+.ai-panel__actions { margin-inline-start: auto; }
+.ai-panel__actions button, .ai-mode, .ai-chip button, .ai-composer button, .ai-error button, .ai-selection button { min-height: 44px; }
+.ai-chip { border-radius: var(--radius-small); font-size: var(--font-caption); max-width: 100%; overflow-wrap: anywhere; }
+.ai-chip button { min-width: 44px; }
+.ai-thread { min-height: 0; overscroll-behavior: contain; padding: var(--space-5); }
+.ai-message { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.ai-mode { flex: none; white-space: nowrap; font-size: var(--font-label); }
+.ai-modes { padding-block: var(--space-3); }
+.ai-composer textarea { min-width: 0; }
+.ai-composer button[type="submit"] { background: var(--accent); color: var(--on-accent); }
+.ai-composer button:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (max-width: 768px) { .ai-launcher { display: none; } }
+@media (min-width: 900px) { .ai-panel { width: min(480px, 42vw); } }
