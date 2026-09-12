@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
+import { NightSkyCanvas } from '@/components/system/NightSkyCanvas';
 
 export type SkyPhase = 'dawn' | 'morning' | 'noon' | 'golden' | 'evening' | 'night';
 export type SkyWeather = 'clear' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog';
@@ -178,8 +179,22 @@ export function LivingSky({
   const sunY = 76 - Math.sin(sunProgress * Math.PI) * 62;
   const moonX = 7 + moonProgress * 86;
   const moonY = 78 - Math.sin(moonProgress * Math.PI) * 60;
+  const renderedWeather = preferences.liveWeather ? weather.weather : 'clear';
   const tip = preferences.liveWeather ? wellbeingTip(weather) : null;
   const quiet = lowPowerMode || reducedMotion || surface !== 'app';
+  const cinematicNight = phase === 'night' || phase === 'evening';
+
+  React.useEffect(() => {
+    if (!live) return;
+    const root = document.documentElement;
+    root.dataset.skyPhase = phase;
+    root.dataset.skyWeather = renderedWeather;
+
+    return () => {
+      if (root.dataset.skyPhase === phase) delete root.dataset.skyPhase;
+      if (root.dataset.skyWeather === renderedWeather) delete root.dataset.skyWeather;
+    };
+  }, [live, phase, renderedWeather]);
 
   if (!live || surface === 'immersive') return null;
 
@@ -195,25 +210,35 @@ export function LivingSky({
     <div
       className="living-sky"
       data-phase={phase}
-      data-weather={preferences.liveWeather ? weather.weather : 'clear'}
+      data-weather={renderedWeather}
       data-quiet={quiet ? 'true' : 'false'}
       style={style}
-      aria-hidden="true"
     >
-      <div className="living-sky__gradient" />
-      <div className="living-sky__haze" />
-      <div className="living-sky__stars living-sky__stars--a" />
-      <div className="living-sky__stars living-sky__stars--b" />
-      <div className="living-sky__shooting-star living-sky__shooting-star--one" />
-      <div className="living-sky__shooting-star living-sky__shooting-star--two" />
-      <div className="living-sky__sun" />
-      <div className="living-sky__moon"><span /></div>
-      <div className="living-sky__cloud living-sky__cloud--one" />
-      <div className="living-sky__cloud living-sky__cloud--two" />
-      <div className="living-sky__cloud living-sky__cloud--three" />
-      <div className="living-sky__rain" />
-      <div className="living-sky__lightning" />
-      <div className="living-sky__vignette" />
+      <div className="living-sky__visuals" aria-hidden="true">
+        <div className="living-sky__gradient" />
+        <div className="living-sky__airglow" />
+        <div className="living-sky__haze" />
+        <NightSkyCanvas
+          active={cinematicNight}
+          quiet={quiet}
+          cloudCover={weather.cloudCover / 100}
+        />
+        <div className="living-sky__stars living-sky__stars--a" />
+        <div className="living-sky__stars living-sky__stars--b" />
+        <div className="living-sky__shooting-star living-sky__shooting-star--one" />
+        <div className="living-sky__shooting-star living-sky__shooting-star--two" />
+        <div className="living-sky__sun" />
+        <div className="living-sky__moon"><span /></div>
+        <div className="living-sky__cloud living-sky__cloud--one" />
+        <div className="living-sky__cloud living-sky__cloud--two" />
+        <div className="living-sky__cloud living-sky__cloud--three" />
+        <div className="living-sky__rain" />
+        <div className="living-sky__lightning" />
+        <div className="living-sky__horizon" />
+        <div className="living-sky__foreground" />
+        <div className="living-sky__vignette" />
+        <div className="living-sky__grain" />
+      </div>
       {tip ? <div className="living-sky__tip" role="status">{tip}</div> : null}
     </div>
   );
