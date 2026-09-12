@@ -14,7 +14,7 @@ export function MobileTabBar({ onMore }: { onMore: () => void }) {
     <nav
       aria-label="Primary"
       className={cn(
-        'fixed inset-x-0 bottom-0 md:hidden',
+        'sky-mobile-nav fixed inset-x-0 bottom-0 md:hidden',
         'border-t border-edge-subtle',
         'bg-canvas/85 backdrop-blur-xl',
       )}
@@ -28,20 +28,22 @@ export function MobileTabBar({ onMore }: { onMore: () => void }) {
           const active = item.href !== '#more' && (pathname === item.href || pathname.startsWith(item.href + '/'));
           const Icon = item.icon;
           const inner = (
-            <span className="relative flex h-full min-w-[44px] flex-1 flex-col items-center justify-center gap-1">
+            <span className={cn('sky-mobile-tab relative flex h-full min-w-[44px] flex-1 flex-col items-center justify-center gap-1', active && 'sky-mobile-tab--active')}>
               {active && (
                 <motion.span
                   layoutId="tab-indicator"
-                  className="absolute top-0 h-[2px] w-8 rounded-full bg-accent"
+                  className="sky-mobile-indicator absolute top-0 h-[2px] w-8 rounded-full bg-accent"
                   transition={{ duration: duration.base, ease: ease.standard }}
                 />
               )}
-              <Icon
-                size={20}
-                strokeWidth={active ? 2 : 1.75}
-                className={active ? 'text-ink' : 'text-ink-secondary'}
-                aria-hidden
-              />
+              <span className="sky-mobile-icon">
+                <Icon
+                  size={20}
+                  strokeWidth={active ? 2 : 1.75}
+                  className={active ? 'text-ink' : 'text-ink-secondary'}
+                  aria-hidden
+                />
+              </span>
               <span
                 className={cn(
                   'text-caption leading-none tracking-normal',
