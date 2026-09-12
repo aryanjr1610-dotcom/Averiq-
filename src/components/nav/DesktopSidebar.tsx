@@ -16,14 +16,14 @@ export function DesktopSidebar() {
     <nav
       aria-label="Primary"
       className={cn(
-        'sticky top-0 hidden h-dvh shrink-0 flex-col md:flex',
+        'sky-nav-shell sticky top-0 hidden h-dvh shrink-0 flex-col md:flex',
         'w-[72px] xl:w-[236px]',
         'border-r border-edge-subtle bg-canvas/80 backdrop-blur-xl',
         'px-3 py-5',
       )}
       style={{ zIndex: 40 }}
     >
-      <Link href="/app/dashboard" className="mb-6 px-2 text-card-title tracking-tight text-ink">
+      <Link href="/app/dashboard" className="sky-nav-brand mb-6 px-2 text-card-title tracking-tight text-ink">
         <span className="xl:hidden">A</span>
         <span className="hidden xl:inline">Averiq</span>
       </Link>
@@ -38,21 +38,23 @@ export function DesktopSidebar() {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'relative flex h-10 items-center gap-3 rounded-md px-3',
+                  'sky-nav-item relative flex h-10 items-center gap-3 rounded-md px-3',
                   'text-body-sm transition-colors duration-base',
                   active
-                    ? 'bg-surface-2 text-ink font-[550]'
+                    ? 'sky-nav-item--active bg-surface-2 text-ink font-[550]'
                     : 'text-ink-secondary hover:bg-surface-2 hover:text-ink',
                 )}
               >
                 {active && (
                   <motion.span
                     layoutId="nav-indicator"
-                    className="absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-accent"
+                    className="sky-nav-indicator absolute left-0 top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-full bg-accent"
                     transition={{ duration: duration.base, ease: ease.standard }}
                   />
                 )}
-                <Icon size={18} strokeWidth={1.75} className="shrink-0" aria-hidden />
+                <span className="sky-nav-icon">
+                  <Icon size={18} strokeWidth={1.75} className="shrink-0" aria-hidden />
+                </span>
                 <span className="hidden xl:inline">{item.label}</span>
               </Link>
             </li>
@@ -66,13 +68,15 @@ export function DesktopSidebar() {
           onClick={() => setMoreOpen((v) => !v)}
           aria-expanded={moreOpen}
           className={cn(
-            'flex h-10 w-full items-center gap-3 rounded-md px-3',
+            'sky-nav-item flex h-10 w-full items-center gap-3 rounded-md px-3',
             'text-body-sm text-ink-secondary',
             'hover:bg-surface-2 hover:text-ink',
             'transition-colors duration-base',
           )}
         >
-          <MoreHorizontal size={18} strokeWidth={1.75} aria-hidden />
+          <span className="sky-nav-icon">
+            <MoreHorizontal size={18} strokeWidth={1.75} aria-hidden />
+          </span>
           <span className="hidden xl:inline">More</span>
         </button>
 
@@ -82,7 +86,7 @@ export function DesktopSidebar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: duration.base, ease: ease.out }}
             className={cn(
-              'absolute bottom-16 left-3 w-[220px]',
+              'sky-nav-popover absolute bottom-16 left-3 w-[220px]',
               'rounded-lg border border-edge',
               'bg-surface-3 p-2 shadow-3',
             )}
@@ -97,7 +101,7 @@ export function DesktopSidebar() {
                       key={item.key}
                       href={item.href}
                       onClick={() => setMoreOpen(false)}
-                      className="flex h-9 items-center gap-2.5 rounded-sm px-2 text-body-sm text-ink-secondary hover:bg-surface-2 hover:text-ink"
+                      className="sky-nav-subitem flex h-9 items-center gap-2.5 rounded-sm px-2 text-body-sm text-ink-secondary hover:bg-surface-2 hover:text-ink"
                     >
                       <Icon size={16} strokeWidth={1.75} aria-hidden />
                       {item.label}
