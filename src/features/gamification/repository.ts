@@ -92,8 +92,11 @@ export const gamificationRepository = {
 	async record(
 		userId: string,
 		event: XpEvent,
-		_delta: Partial<DayStats> = {},
+		delta: Partial<DayStats> = {},
 	): Promise<{ xpAwarded: number; unlocked: AchievementDefinition[] }> {
+		// Keep the compatibility parameter so older callers do not break. The
+		// server now derives authoritative rollups from the recorded activity.
+		void delta
 		const before = await gamificationRepository.summary(userId)
 		let kind: string | null = null
 		let metadata: Record<string, unknown> = {}
