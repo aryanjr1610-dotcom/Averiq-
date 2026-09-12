@@ -28,14 +28,11 @@ export interface UnitInput {
   title: string
   slug: string
   position: number
-  /**
-   * Detailed explanation of exactly
-   * what this chapter/unit must teach.
-   */
   focus: string
   /**
-   * Every major concept that must
-   * occur in this unit.
+   * Prefer `Concept name::Detailed explanation` entries.
+   * The v2 database seeder turns each item into its own structured
+   * explanation block and key-term record.
    */
   concepts: string[]
   sourceName: string
@@ -61,53 +58,37 @@ export async function ensureRelease(input: ReleaseInput) {
     }
   )
 
-  if (error) {
-    throw error
-  }
-
-  return data as string
-}
-
-export async function ensureSubject(
-  releaseId: string,
-  input: SubjectInput
-) {
-  const { data, error } = await supabaseAdmin.rpc(
-    'ensure_curriculum_subject_v1',
-    {
-      p_release_id: releaseId,
-      p_subject_code: input.code,
-      p_subject_title: input.title,
-      p_subject_slug: input.slug,
-      p_position: input.position,
-    }
-  )
-
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data as string
 }
 
 export async function seedUnit(options: {
   board: BoardCode
   grade: number
+  academicYear?: string
   subjectSlug: string
   curriculumSubjectId: string
   unit: UnitInput
 }) {
-  const { board, grade, subjectSlug, curriculumSubjectId, unit } = options
+  const {
+    board,
+    grade,
+    academicYear = '2026-27',
+    subjectSlug,
+    curriculumSubjectId,
+    unit,
+  } = options
+
   const jobKey = [
     'averiq',
-    '2026-27',
+    academicYear,
     board,
     grade,
     subjectSlug,
     unit.slug,
   ].join(':')
 
-  const { data, error } = await supabaseAdmin.rpc('seed_curriculum_unit_v1', {
+  const { data, error } = await supabaseAdmin.rpc('seed_curriculum_unit_v2', {
     p_curriculum_subject_id: curriculumSubjectId,
     p_chapter_number: unit.number,
     p_title: unit.title,
@@ -121,13 +102,15 @@ export async function seedUnit(options: {
     p_job_key: jobKey,
   })
 
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data
 }
 
+/**
+ * Preferred high-volume import path.
+ * One RPC call seeds the subject and all of its units atomically through
+ * the server-only v2 ingestion pipeline.
+ */
 export async function seedSubject(options: {
   releaseId: string
   board: BoardCode
@@ -136,24 +119,37 @@ export async function seedSubject(options: {
   units: UnitInput[]
 }) {
   const { releaseId, board, grade, subject, units } = options
-  const subjectId = await ensureSubject(releaseId, subject)
-  console.log(`\n${subject.title}`)
 
-  for (const unit of units) {
-    try {
-      const result = await seedUnit({
-        board,
-        grade,
-        subjectSlug: subject.slug,
-        curriculumSubjectId: subjectId,
-        unit,
-      })
-      console.log(`✓ ${unit.number}. ${unit.title}`)
-      console.log(result)
-    } catch (error) {
-      console.error(`✗ ${unit.title}`, error)
-    }
+  if (units.length === 0) {
+    throw new Error(`Cannot seed ${subject.title}: no units supplied`)
   }
 
-  return subjectId
+  const source = units[0]
+  const payload = units.map(unit => ({
+    number: unit.number,
+    title: unit.title,
+    slug: unit.slug,
+    position: unit.position,
+    focus: unit.focus,
+    concepts: unit.concepts,
+  }))
+
+  const { data, error } = await supabaseAdmin.rpc('seed_subject_units_v2', {
+    p_release_id: releaseId,
+    p_subject_code: subject.code,
+    p_subject_title: subject.title,
+    p_subject_slug: subject.slug,
+    p_subject_position: subject.position,
+    p_board_code: board,
+    p_grade_level: grade,
+    p_units: payload,
+    p_source_name: source.sourceName,
+    p_source_url: source.sourceUrl,
+    p_source_document: source.sourceDocument,
+  })
+
+  if (error) throw error
+
+  console.log(`✓ ${subject.title}: ${units.length} units seeded`)
+  return data
 }

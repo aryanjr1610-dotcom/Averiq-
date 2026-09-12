@@ -2,6 +2,62 @@ import { supabase } from '../lib/supabase'
 
 export type BoardCode = 'cbse' | 'cisce'
 
+export type ResolvedCurriculum = {
+  status: 'ready' | 'profile_required' | 'profile_incomplete' | 'curriculum_pending'
+  board?: BoardCode
+  class_level?: number
+  academic_year?: string
+  release_id?: string
+  subjects: Array<{
+    id: string
+    subject_id: string
+    title: string
+    slug: string
+    position: number
+    chapters: Array<{
+      id: string
+      title: string
+      slug: string
+      position: number
+      chapter_number: string | null
+      description: string
+      topics: Array<{
+        id: string
+        title: string
+        slug: string
+        position: number
+        lessons: Array<{
+          id: string
+          title: string
+          slug: string
+          estimated_minutes: number | null
+          lesson_type: string
+        }>
+      }>
+    }>
+  }>
+}
+
+/**
+ * Preferred student-facing resolver.
+ * Supabase resolves the signed-in user's board, class, academic year and
+ * selected subjects. Draft academic releases remain invisible.
+ */
+export async function resolveMyCurriculum(): Promise<ResolvedCurriculum> {
+  const { data, error } = await supabase.rpc('resolve_my_curriculum')
+
+  if (error) throw error
+
+  return (data ?? {
+    status: 'curriculum_pending',
+    subjects: [],
+  }) as ResolvedCurriculum
+}
+
+/**
+ * Direct lookup is useful for catalog/admin screens. Student dashboards
+ * should prefer resolveMyCurriculum() so stream/subject choices are enforced.
+ */
 export async function getRelease(
   boardCode: BoardCode,
   gradeLevel: number,
@@ -13,9 +69,7 @@ export async function getRelease(
     .eq('code', boardCode)
     .single()
 
-  if (boardError) {
-    throw boardError
-  }
+  if (boardError) throw boardError
 
   const { data: year, error: yearError } = await supabase
     .from('academic_years')
@@ -23,42 +77,41 @@ export async function getRelease(
     .eq('code', academicYear)
     .single()
 
-  if (yearError) {
-    throw yearError
-  }
+  if (yearError) throw yearError
 
   const { data: tracks, error: trackError } = await supabase
     .from('curriculum_tracks')
-    .select(`
-      id,
-      minimum_grade,
-      maximum_grade
-    `)
+    .select('id, minimum_grade, maximum_grade')
     .eq('board_id', board.id)
     .eq('learning_context', 'school')
     .eq('status', 'active')
 
-  if (trackError) {
-    throw trackError
-  }
+  if (trackError) throw trackError
 
-  const track = tracks?.find(
-    item =>
-      (item.minimum_grade === null || item.minimum_grade <= gradeLevel) &&
-      (item.maximum_grade === null || item.maximum_grade >= gradeLevel)
-  )
+  const matchingTracks = (tracks ?? [])
+    .filter(
+      item =>
+        (item.minimum_grade === null || item.minimum_grade <= gradeLevel) &&
+        (item.maximum_grade === null || item.maximum_grade >= gradeLevel)
+    )
+    .sort((a, b) => {
+      const aSpan = (a.maximum_grade ?? 12) - (a.minimum_grade ?? 6)
+      const bSpan = (b.maximum_grade ?? 12) - (b.minimum_grade ?? 6)
+      return aSpan - bSpan
+    })
+
+  const track = matchingTracks[0]
 
   if (!track) {
-    throw new Error(
-      `No curriculum track found for ${boardCode} Class ${gradeLevel}`
-    )
+    throw new Error(`No curriculum track found for ${boardCode} Class ${gradeLevel}`)
   }
 
-  const { data: release, error: releaseError } = await supabase
+  const { data: releases, error: releaseError } = await supabase
     .from('curriculum_releases')
     .select(`
       id,
       grade_level,
+      revision,
       status,
       verification_status,
       source_name,
@@ -68,34 +121,23 @@ export async function getRelease(
     .eq('track_id', track.id)
     .eq('grade_level', gradeLevel)
     .eq('status', 'published')
-    .maybeSingle()
+    .eq('verification_status', 'verified')
+    .order('revision', { ascending: false })
+    .limit(1)
 
-  if (releaseError) {
-    throw releaseError
-  }
-
-  return release
+  if (releaseError) throw releaseError
+  return releases?.[0] ?? null
 }
 
 export async function getSubjects(releaseId: string) {
   const { data, error } = await supabase
     .from('curriculum_subjects')
-    .select(`
-      id,
-      subject_id,
-      title,
-      slug,
-      position,
-      status
-    `)
+    .select('id, subject_id, title, slug, position, status')
     .eq('release_id', releaseId)
     .eq('status', 'published')
     .order('position', { ascending: true })
 
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data ?? []
 }
 
@@ -116,10 +158,7 @@ export async function getChapters(curriculumSubjectId: string) {
     .eq('status', 'published')
     .order('position', { ascending: true })
 
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data ?? []
 }
 
@@ -145,10 +184,7 @@ export async function getChapterTree(chapterId: string) {
     .eq('status', 'published')
     .order('position', { ascending: true })
 
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data ?? []
 }
 
@@ -174,9 +210,6 @@ export async function getLessonContent(lessonId: string) {
     .limit(1)
     .maybeSingle()
 
-  if (error) {
-    throw error
-  }
-
+  if (error) throw error
   return data
 }
