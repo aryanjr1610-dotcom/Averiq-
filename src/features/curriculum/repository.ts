@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
 import { getSupabase } from '@/lib/supabase';
+import {
+  normalizedResourcesToDocument,
+  parseNormalizedResources,
+  type NormalizedStudyResources,
+} from './normalized-content';
 
 import {
   AcademicYearSchema,
@@ -119,6 +124,24 @@ async function cachedLookup<T>(
   });
 
   return value;
+}
+
+async function normalizedResources(versionId: string): Promise<NormalizedStudyResources> {
+  const { data, error } = await getSupabase()
+    .from('lesson_version_content_v3')
+    .select('version_id,lesson_id,blocks,key_terms,formulas,examples,exercises,sources')
+    .eq('version_id', versionId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) throw new AcademicUnavailableError('Normalized lesson content is unavailable.');
+  return parseNormalizedResources(data as Record<string, unknown>);
+}
+
+function usesNormalizedStorage(content: unknown, schemaVersion: number): boolean {
+  if (schemaVersion >= 3) return true;
+  if (typeof content !== 'object' || content === null) return false;
+  return (content as Record<string, unknown>).storage === 'normalized_v3';
 }
 
 export const curriculumRepository = {
@@ -280,7 +303,18 @@ export const curriculumRepository = {
     if (error) throw error;
     if (!data) throw new AcademicUnavailableError('No readable content version is available.');
 
-    return VersionSchema.parse(data);
+    const version = VersionSchema.parse(data);
+    if (!usesNormalizedStorage(version.content, version.content_schema_version)) return version;
+
+    const resources = await normalizedResources(version.id);
+    return {
+      ...version,
+      content: normalizedResourcesToDocument(resources),
+    };
+  },
+
+  getStudyResources(versionId: string) {
+    return normalizedResources(versionId);
   },
 
   async getReader(lessonId: string, preview = false): Promise<ReaderBundle> {
