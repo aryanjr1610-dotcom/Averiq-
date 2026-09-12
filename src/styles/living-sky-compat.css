@@ -1,0 +1,25 @@
+html[data-ui-style="living-sky"] .averiq-atmos {
+  background: transparent;
+}
+
+html[data-ui-style="living-sky"] .averiq-atmos__layers {
+  opacity: 0;
+}
+
+.living-sky__sun {
+  left: var(--sky-sun-x, 50%);
+  top: var(--sky-sun-y, 50%);
+}
+
+.living-sky__moon {
+  left: var(--sky-moon-x, 50%);
+  top: var(--sky-moon-y, 50%);
+}
+
+html[data-ui-style="living-sky"] body {
+  background: rgb(5 12 31);
+}
+
+html[data-ui-style="living-sky"] [data-surface="reading"] .living-sky {
+  filter: saturate(.78) brightness(.84);
+}

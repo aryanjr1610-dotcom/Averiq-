@@ -1,6 +1,8 @@
 'use client';
 import * as React from 'react';
 
+import { LivingSky } from '@/components/system/LivingSky';
+
 export type Stream = 'pcm' | 'pcb' | 'pcmb' | 'commerce' | 'humanities' | 'foundation';
 export type Subject = 'physics' | 'maths' | 'chemistry' | 'biology' | 'english' | 'history' | 'economics';
 export type SurfaceMode = 'app' | 'reading' | 'immersive';
@@ -27,6 +29,7 @@ export function Atmosphere({
       data-surface={surface}
       data-low-power={lowPowerMode ? 'true' : undefined}
     >
+      <LivingSky lowPowerMode={lowPowerMode} surface={surface} />
       <div className="averiq-atmos__layers" aria-hidden />
       <div className="averiq-atmos__content">{children}</div>
     </div>

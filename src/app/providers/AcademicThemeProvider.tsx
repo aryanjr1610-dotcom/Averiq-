@@ -31,9 +31,11 @@ const defaults: VisualPreferences = {
   motion: 'system',
   contrast: 'system',
   decoration: 'standard',
-  ambientMotion: false,
+  ambientMotion: true,
   pointerResponse: false,
   focusMode: false,
+  uiStyle: 'living-sky',
+  liveWeather: false,
 };
 
 function readPreferences(): VisualPreferences {
@@ -71,7 +73,9 @@ function readPreferences(): VisualPreferences {
           : defaults.decoration,
 
       ambientMotion:
-        'ambientMotion' in value && value.ambientMotion === true,
+        'ambientMotion' in value
+          ? value.ambientMotion === true
+          : defaults.ambientMotion,
 
       pointerResponse:
         'pointerResponse' in value && value.pointerResponse === true,
@@ -79,6 +83,12 @@ function readPreferences(): VisualPreferences {
       // Focus mode is temporary, not persisted across sessions.
       focusMode: false,
       largerText: 'largerText' in value && value.largerText === true,
+      uiStyle:
+        'uiStyle' in value && value.uiStyle === 'academic'
+          ? 'academic'
+          : 'living-sky',
+      liveWeather:
+        'liveWeather' in value && value.liveWeather === true,
     };
   } catch {
     return defaults;
@@ -162,6 +172,8 @@ export function AcademicThemeProvider({
     root.dataset.motion = reducedMotion ? 'reduce' : 'standard';
     root.dataset.decoration = preferences.decoration;
     root.dataset.textScale = preferences.largerText ? 'large' : 'normal';
+    root.dataset.uiStyle = preferences.uiStyle;
+    root.dataset.liveWeather = preferences.liveWeather ? 'true' : 'false';
     root.dataset.contrast =
       systemContrast || preferences.contrast === 'high'
         ? 'high'
@@ -190,6 +202,8 @@ export function AcademicThemeProvider({
     preferences.decoration,
     preferences.largerText,
     preferences.focusMode,
+    preferences.uiStyle,
+    preferences.liveWeather,
     theme,
   ]);
 
