@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { getSupabase } from '../../lib/supabase'
 import { progressRepository } from '../progress/repository'
-import { gamificationRepository } from '../gamification/repository'
 import {
 	FOCUS_PRESETS,
 	MIN_RECORDED_SECONDS,
@@ -52,7 +51,6 @@ export const FocusPage = () => {
 		persistFocus(state)
 	}, [state])
 
-	// Re-render once a second only to repaint the clock; time itself is derived.
 	useEffect(() => {
 		if (!state || state.status !== 'running') return undefined
 		const id = window.setInterval(() => setTick((value) => value + 1), 1000)
@@ -107,16 +105,7 @@ export const FocusPage = () => {
 				if (mode === 'completed' && seconds >= MIN_RECORDED_SECONDS) {
 					await progressRepository.recordSession({ activityType: 'focus', activeSeconds: seconds, startedAt: new Date(ended.startedAt).toISOString() })
 					await progressRepository.logActivity({ kind: 'focus_completed', metadata: { seconds, taskId } })
-					const result = await gamificationRepository.record(
-						userId,
-						{ kind: 'focus', minutes: seconds / 60, countedFocusMinutesToday: 0 },
-						{ focusSeconds: seconds, studySeconds: seconds },
-					)
-					setNote(
-						result.unlocked.length > 0
-							? `Session saved. Unlocked: ${result.unlocked.map((item) => item.title).join(', ')}.`
-							: `Session saved · ${Math.round(seconds / 60)} min${result.xpAwarded > 0 ? ` · +${result.xpAwarded} XP` : ''}`,
-					)
+					setNote(`Session saved · ${Math.round(seconds / 60)} min`)
 				} else if (mode === 'completed') {
 					setNote('Session was under a minute, so it was not counted.')
 				} else {
