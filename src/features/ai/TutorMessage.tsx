@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
+import { AIResponse } from '@/components/ai/AIResponse'
 
 function renderMath(source: string, display: boolean): string | null {
   try {
@@ -17,7 +18,7 @@ function renderMath(source: string, display: boolean): string | null {
   }
 }
 
-function MathText({ text }: { text: string }) {
+function MathText({ text, animate }: { text: string; animate: boolean }) {
   const parts = useMemo(() => text.split(/(\$\$[^$]+\$\$|\$[^$\n]+\$)/g), [text])
   return (
     <>
@@ -38,13 +39,13 @@ function MathText({ text }: { text: string }) {
           }
           return <code key={index}>{body}</code>
         }
-        return <span key={index}>{part}</span>
+        return animate ? <AIResponse key={index} text={part} /> : <span key={index}>{part}</span>
       })}
     </>
   )
 }
 
-export default function MessageBody({ content }: { content: string }) {
+export default function MessageBody({ content, animate = false }: { content: string; animate?: boolean }) {
   const blocks = content.split(/\n{2,}/)
   return (
     <>
@@ -55,16 +56,15 @@ export default function MessageBody({ content }: { content: string }) {
           return (
             <ul key={index} className="ai-list">
               {lines.map((line, position) => (
-                <li key={position}><MathText text={line.replace(/^\s*([-*•]|\d+[.)])\s+/, '')} /></li>
+                <li key={position}><MathText animate={animate} text={line.replace(/^\s*([-*•]|\d+[.)])\s+/, '')} /></li>
               ))}
             </ul>
           )
         }
         const heading = /^#{1,4}\s+/.test(block)
-        if (heading) return <h4 key={index}><MathText text={block.replace(/^#{1,4}\s+/, '')} /></h4>
-        return <p key={index}><MathText text={block} /></p>
+        if (heading) return <h4 key={index}><MathText animate={animate} text={block.replace(/^#{1,4}\s+/, '')} /></h4>
+        return <p key={index}><MathText animate={animate} text={block} /></p>
       })}
     </>
   )
 }
-
