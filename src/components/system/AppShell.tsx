@@ -53,8 +53,8 @@ export function AppShell({
           {showNav && <DesktopSidebar />}
           <div
             className={cn(
-              'flex min-w-0 flex-1 flex-col',
-              showNav && 'px-page-x pt-6 pb-24 md:pb-10 lg:pt-10',
+              'app-main flex min-w-0 flex-1 flex-col',
+              showNav && 'app-main--framed px-page-x pt-6 pb-24 md:pb-10 lg:pt-10',
             )}
           >
             <AnimatePresence mode="wait" initial={false}>
