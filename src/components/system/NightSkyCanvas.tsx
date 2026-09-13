@@ -10,6 +10,7 @@ type Star = {
   depth: number;
   speed: number;
   phase: number;
+  glow: number;
   tint: 'cool' | 'neutral' | 'warm';
 };
 
@@ -30,14 +31,14 @@ function mulberry32(seed: number) {
 }
 
 function starColor(tint: Star['tint'], alpha: number) {
-  if (tint === 'cool') return `rgba(202, 221, 249, ${alpha})`;
-  if (tint === 'warm') return `rgba(255, 237, 208, ${alpha})`;
+  if (tint === 'cool') return `rgba(198, 218, 248, ${alpha})`;
+  if (tint === 'warm') return `rgba(255, 230, 191, ${alpha})`;
   return `rgba(244, 247, 250, ${alpha})`;
 }
 
 function buildMilkyWay(width: number, height: number, quality: RenderQuality) {
   const layer = document.createElement('canvas');
-  const scale = quality === 'low' ? 0.58 : 0.72;
+  const scale = quality === 'low' ? 0.56 : 0.72;
   layer.width = Math.max(480, Math.round(width * scale));
   layer.height = Math.max(300, Math.round(height * scale));
   const ctx = layer.getContext('2d');
@@ -48,9 +49,9 @@ function buildMilkyWay(width: number, height: number, quality: RenderQuality) {
   const rng = mulberry32(0x3f6a21d9);
   const band = (t: number) => {
     const x = w * (-0.08 + t * 1.2);
-    const y = h * (0.88 - t * 0.7 + Math.sin((t - 0.1) * Math.PI) * 0.07);
+    const y = h * (0.9 - t * 0.72 + Math.sin((t - 0.12) * Math.PI) * 0.075);
     const dx = w * 1.2;
-    const dy = h * (-0.7 + Math.cos((t - 0.1) * Math.PI) * 0.07 * Math.PI);
+    const dy = h * (-0.72 + Math.cos((t - 0.12) * Math.PI) * 0.075 * Math.PI);
     const length = Math.max(1, Math.hypot(dx, dy));
     return { x, y, nx: -dy / length, ny: dx / length };
   };
@@ -58,40 +59,56 @@ function buildMilkyWay(width: number, height: number, quality: RenderQuality) {
   ctx.clearRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'screen';
 
-  const glowCount = quality === 'low' ? 170 : 320;
+  const glowCount = quality === 'low' ? 190 : 360;
   for (let i = 0; i < glowCount; i += 1) {
     const t = rng();
     const p = band(t);
-    const spread = (rng() - rng()) * h * (0.035 + Math.sin(Math.PI * t) * 0.045);
+    const spread = (rng() - rng()) * h * (0.04 + Math.sin(Math.PI * t) * 0.055);
     const x = p.x + p.nx * spread;
     const y = p.y + p.ny * spread;
-    const radius = 4 + rng() * 16;
-    const core = Math.max(0, 1 - Math.abs(t - 0.3) / 0.28);
-    const alpha = 0.004 + rng() * (0.01 + core * 0.012);
+    const radius = 5 + Math.pow(rng(), 0.7) * 22;
+    const core = Math.max(0, 1 - Math.abs(t - 0.31) / 0.3);
+    const alpha = 0.003 + rng() * (0.009 + core * 0.017);
     const glow = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    glow.addColorStop(0, `rgba(210, 222, 242, ${alpha})`);
-    glow.addColorStop(0.5, `rgba(185, 208, 236, ${alpha * 0.3})`);
-    glow.addColorStop(1, 'rgba(185, 208, 236, 0)');
+    glow.addColorStop(0, `rgba(216, 226, 244, ${alpha})`);
+    glow.addColorStop(0.42, `rgba(180, 201, 232, ${alpha * 0.38})`);
+    glow.addColorStop(1, 'rgba(165, 190, 224, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
   }
 
-  const dustCount = quality === 'low' ? 240 : 420;
+  const dustCount = quality === 'low' ? 230 : 440;
   for (let i = 0; i < dustCount; i += 1) {
     const t = rng();
     const p = band(t);
-    const spread = (rng() - rng()) * h * 0.05;
+    const spread = (rng() - rng()) * h * 0.052;
     const x = p.x + p.nx * spread;
     const y = p.y + p.ny * spread;
-    const radius = 0.2 + rng() * 0.55;
-    const alpha = 0.12 + rng() * 0.34;
-    ctx.fillStyle = starColor(rng() > 0.8 ? 'cool' : 'neutral', alpha);
+    const radius = 0.16 + Math.pow(rng(), 2.4) * 0.75;
+    const alpha = 0.09 + rng() * 0.31;
+    ctx.fillStyle = starColor(rng() > 0.82 ? 'cool' : 'neutral', alpha);
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
   }
 
+  // A darker central dust lane keeps the band from reading as a glowing stripe.
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(9, h * 0.023);
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.23)';
+  ctx.beginPath();
+  for (let i = 0; i <= 28; i += 1) {
+    const t = i / 28;
+    const p = band(t);
+    const x = p.x + p.nx * Math.sin(t * 8.2) * h * 0.007;
+    const y = p.y + p.ny * Math.sin(t * 8.2) * h * 0.007;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
   ctx.globalCompositeOperation = 'source-over';
+
   return layer;
 }
 
@@ -119,29 +136,36 @@ export function NightSkyCanvas({ visibility, quiet, cloudCover, quality = 'balan
     let targetPointerX = 0;
     let targetPointerY = 0;
     let lastDraw = 0;
-    const targetFrameMs = quality === 'low' ? 1000 / 20 : 1000 / 28;
+    const targetFrameMs = quality === 'low' ? 1000 / 18 : 1000 / 28;
     const eventRandom = mulberry32(0x5a71c3e9);
     let shootingStartedAt: number | null = null;
     let nextShootingAt = performance.now() + 58_000 + eventRandom() * 92_000;
 
     const buildStars = () => {
       const rng = mulberry32(0x89f3a772);
-      const areaCount = Math.round((width * height) / (quality === 'low' ? 2600 : 1750));
+      const areaCount = Math.round((width * height) / (quality === 'low' ? 2850 : 1850));
       const count = quality === 'low'
-        ? Math.min(700, Math.max(380, areaCount))
-        : Math.min(1250, Math.max(650, areaCount));
+        ? Math.min(620, Math.max(340, areaCount))
+        : Math.min(1120, Math.max(620, areaCount));
+
       stars = Array.from({ length: count }, () => {
-        const bright = rng() > 0.982;
+        // Most visible stars should be faint; bright points are intentionally rare.
+        const brightnessRoll = Math.pow(rng(), 4.2);
+        const veryBright = brightnessRoll > 0.84;
         const tintRoll = rng();
+        const y = rng();
         return {
           x: rng(),
-          y: rng(),
-          radius: bright ? 0.72 + rng() * 0.46 : 0.16 + rng() * 0.46,
-          alpha: bright ? 0.58 + rng() * 0.25 : 0.14 + rng() * 0.48,
-          depth: 0.22 + rng() * 0.84,
-          speed: 0.00022 + rng() * 0.00072,
+          y,
+          radius: veryBright
+            ? 0.72 + rng() * 0.58
+            : 0.18 + brightnessRoll * 0.5,
+          alpha: 0.12 + brightnessRoll * 0.74,
+          depth: 0.2 + rng() * 0.8,
+          speed: 0.00018 + rng() * 0.00058,
           phase: rng() * Math.PI * 2,
-          tint: tintRoll > 0.9 ? 'warm' : tintRoll > 0.66 ? 'cool' : 'neutral',
+          glow: veryBright ? 0.35 + rng() * 0.65 : 0,
+          tint: tintRoll > 0.91 ? 'warm' : tintRoll > 0.67 ? 'cool' : 'neutral',
         };
       });
     };
@@ -168,29 +192,56 @@ export function NightSkyCanvas({ visibility, quiet, cloudCover, quality = 'balan
 
     const drawMilkyWay = (time: number) => {
       if (!milkyWay) return;
-      const clearFactor = Math.max(0.04, 1 - cloudCover * 0.9);
+      const clearFactor = Math.max(0.03, 1 - cloudCover * 0.94);
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
-      ctx.globalAlpha = clearFactor * (quality === 'low' ? 0.48 : 0.62);
-      ctx.translate(width / 2 + pointerX * 1.4, height / 2 + pointerY * 1.1);
-      if (!quiet && quality !== 'low') ctx.rotate(Math.sin(time * 0.00002) * 0.002);
-      ctx.drawImage(milkyWay, -width / 2 - 16, -height / 2 - 16, width + 32, height + 32);
+      ctx.globalAlpha = clearFactor * (quality === 'low' ? 0.42 : 0.56);
+      ctx.translate(width / 2 + pointerX * 1.2, height / 2 + pointerY * 0.9);
+      if (!quiet && quality !== 'low') ctx.rotate(Math.sin(time * 0.000018) * 0.0016);
+      ctx.drawImage(milkyWay, -width / 2 - 18, -height / 2 - 18, width + 36, height + 36);
       ctx.restore();
     };
 
     const drawStars = (time: number) => {
-      const drift = quiet ? 0 : (time * 0.0000022) % 1;
-      const clearFactor = Math.max(0.08, 1 - cloudCover * 0.86);
+      const drift = quiet ? 0 : (time * 0.0000017) % 1;
+      const clearFactor = Math.max(0.05, 1 - cloudCover * 0.9);
+
       for (const star of stars) {
-        const twinkle = quiet ? 1 : 0.92 + Math.sin(time * star.speed + star.phase) * 0.08;
-        const parallaxX = quality === 'low' ? 0 : pointerX * star.depth;
-        const parallaxY = quality === 'low' ? 0 : pointerY * star.depth * 0.8;
-        let x = (star.x + drift * star.depth * 0.011) * width + parallaxX;
-        if (x > width + 3) x -= width + 6;
+        // Near-horizon extinction keeps the lower sky less artificially crowded.
+        const horizonExtinction = 1 - Math.pow(star.y, 2.4) * 0.48;
+        const twinkleAmount = star.radius > 0.72 ? 0.11 : 0.045;
+        const twinkle = quiet ? 1 : 1 - twinkleAmount + Math.sin(time * star.speed + star.phase) * twinkleAmount;
+        const parallaxX = quality === 'low' ? 0 : pointerX * star.depth * 0.8;
+        const parallaxY = quality === 'low' ? 0 : pointerY * star.depth * 0.58;
+        let x = (star.x + drift * star.depth * 0.009) * width + parallaxX;
+        if (x > width + 4) x -= width + 8;
         const y = star.y * height + parallaxY;
-        const alpha = star.alpha * twinkle * clearFactor;
+        const alpha = star.alpha * twinkle * clearFactor * horizonExtinction;
+
+        if (star.glow > 0 && quality !== 'low') {
+          const glowRadius = 2.5 + star.glow * 3.6;
+          const glow = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+          glow.addColorStop(0, starColor(star.tint, alpha * 0.42));
+          glow.addColorStop(1, starColor(star.tint, 0));
+          ctx.fillStyle = glow;
+          ctx.fillRect(x - glowRadius, y - glowRadius, glowRadius * 2, glowRadius * 2);
+        }
+
         ctx.fillStyle = starColor(star.tint, alpha);
-        ctx.fillRect(x, y, Math.max(0.45, star.radius * 1.35), Math.max(0.45, star.radius * 1.35));
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0.3, star.radius), 0, Math.PI * 2);
+        ctx.fill();
+
+        if (star.glow > 0.7 && quality !== 'low') {
+          ctx.strokeStyle = starColor(star.tint, alpha * 0.24);
+          ctx.lineWidth = 0.45;
+          ctx.beginPath();
+          ctx.moveTo(x - star.radius * 2.1, y);
+          ctx.lineTo(x + star.radius * 2.1, y);
+          ctx.moveTo(x, y - star.radius * 1.8);
+          ctx.lineTo(x, y + star.radius * 1.8);
+          ctx.stroke();
+        }
       }
     };
 
@@ -227,8 +278,8 @@ export function NightSkyCanvas({ visibility, quiet, cloudCover, quality = 'balan
       frame = requestAnimationFrame(draw);
       if (!quiet && time - lastDraw < targetFrameMs) return;
       lastDraw = time;
-      pointerX += (targetPointerX - pointerX) * 0.08;
-      pointerY += (targetPointerY - pointerY) * 0.08;
+      pointerX += (targetPointerX - pointerX) * 0.07;
+      pointerY += (targetPointerY - pointerY) * 0.07;
       ctx.clearRect(0, 0, width, height);
       drawMilkyWay(time);
       drawStars(time);
