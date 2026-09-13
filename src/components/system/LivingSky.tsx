@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
 import { Meteors } from '@/components/design/Meteors';
+import { NatureSceneCanvas } from '@/components/system/NatureSceneCanvas';
 import { NightSkyCanvas } from '@/components/system/NightSkyCanvas';
 import { PrecipitationCanvas } from '@/components/system/PrecipitationCanvas';
 import { useEnvironment } from '@/features/environment/EnvironmentProvider';
@@ -45,6 +46,16 @@ function cloudOpacity(weather: SkyWeather, cover: number): number {
   if (weather === 'partly-cloudy') return Math.max(observed, 0.38);
   if (weather === 'mostly-clear') return Math.max(observed, 0.16);
   return Math.min(observed, 0.12);
+}
+
+function lunarPhase(date: Date) {
+  const synodicMonth = 29.53058867;
+  const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+  const days = (date.getTime() - knownNewMoon) / 86_400_000;
+  const phase = ((days % synodicMonth) + synodicMonth) % synodicMonth / synodicMonth;
+  const illumination = (1 - Math.cos(phase * Math.PI * 2)) / 2;
+  const waxing = phase < 0.5;
+  return { phase, illumination, waxing };
 }
 
 function StormLight({ active }: { active: boolean }) {
@@ -102,13 +113,12 @@ export function LivingSky({
   const quiet = lowPowerMode || reducedMotion || surface !== 'app';
   const cover = cloudOpacity(environment.weather, environment.cloudCover);
   const isPrecipitating = ['rain', 'heavy-rain', 'storm', 'snow'].includes(environment.weather);
-  const sunX = 6 + environment.sunProgress * 88;
-  const sunY = 78 - Math.sin(environment.sunProgress * Math.PI) * 65;
-  const moonX = 7 + environment.moonProgress * 86;
-  const moonY = 80 - Math.sin(environment.moonProgress * Math.PI) * 62;
-  const horizontalWind = -Math.sin(environment.windDirection * Math.PI / 180);
-  const cloudDirection = horizontalWind < 0 ? -1 : 1;
-  const cloudDuration = clamp(210 - environment.windSpeed * 4.2, 72, 210);
+  const sunX = 4 + environment.sunProgress * 92;
+  const sunY = 82 - Math.sin(environment.sunProgress * Math.PI) * 69;
+  const moonX = 5 + environment.moonProgress * 90;
+  const moonY = 79 - Math.sin(environment.moonProgress * Math.PI) * 65;
+  const moon = lunarPhase(environment.now);
+  const moonShadow = (moon.waxing ? -1 : 1) * (1 - moon.illumination) * 74;
   const previousRootValues = React.useRef<Map<string, string> | null>(null);
   const previousMetaTheme = React.useRef<string | null>(null);
 
@@ -182,26 +192,22 @@ export function LivingSky({
     '--sky-glow-color': `rgb(${rgbChannels(environment.palette.glow)})`,
     '--sky-sun-x': `${sunX}%`,
     '--sky-sun-y': `${sunY}%`,
-    '--sky-sun-opacity': clamp((1 - environment.nightIntensity) * (1 - cover * 0.56)),
+    '--sky-sun-opacity': clamp((1 - environment.nightIntensity) * (1 - cover * 0.62)),
     '--sky-moon-x': `${moonX}%`,
     '--sky-moon-y': `${moonY}%`,
-    '--sky-moon-opacity': environment.moonVisibility,
+    '--sky-moon-opacity': environment.moonVisibility * (0.52 + moon.illumination * 0.48),
+    '--sky-moon-shadow-x': `${moonShadow}%`,
+    '--sky-moon-shadow-opacity': clamp(0.12 + (1 - moon.illumination) * 0.88),
     '--sky-star-opacity': environment.starVisibility,
     '--sky-cloud-opacity': cover,
     '--sky-horizon-glow': environment.horizonGlow,
     '--sky-night-intensity': environment.nightIntensity,
     '--sky-golden-intensity': environment.goldenHourIntensity,
     '--sky-twilight-intensity': environment.twilightIntensity,
-    '--sky-weather-dim': clamp(cover * 0.24 + (isPrecipitating ? 0.16 : 0)),
-    '--sky-cloud-start': cloudDirection > 0 ? '-72vw' : '108vw',
-    '--sky-cloud-travel': `${cloudDirection * 190}vw`,
-    '--sky-cloud-quiet-position': `${cloudDirection * 54}vw`,
-    '--sky-cloud-far-duration': `${Math.round(cloudDuration * 1.34)}s`,
-    '--sky-cloud-mid-duration': `${Math.round(cloudDuration)}s`,
-    '--sky-cloud-near-duration': `${Math.round(cloudDuration * 0.78)}s`,
+    '--sky-weather-dim': clamp(cover * 0.2 + (isPrecipitating ? 0.2 : 0)),
   } as React.CSSProperties;
 
-  const showMeteors = !quiet && environment.starVisibility > 0.34 && cover < 0.46 && !isPrecipitating;
+  const showMeteors = !quiet && environment.starVisibility > 0.4 && cover < 0.36 && !isPrecipitating;
 
   return (
     <div
@@ -220,12 +226,20 @@ export function LivingSky({
           quiet={quiet}
           cloudCover={cover}
         />
-        {showMeteors ? <Meteors number={4} minDelay={10} maxDelay={46} minDuration={0.72} maxDuration={1.3} /> : null}
+        {showMeteors ? <Meteors number={3} minDelay={15} maxDelay={58} minDuration={0.72} maxDuration={1.3} /> : null}
         <div className="living-sky__sun" />
         <div className="living-sky__moon"><span /></div>
-        <div className="living-sky__cloud living-sky__cloud--far" />
-        <div className="living-sky__cloud living-sky__cloud--mid" />
-        <div className="living-sky__cloud living-sky__cloud--near" />
+        <NatureSceneCanvas
+          weather={environment.weather}
+          cloudCover={environment.cloudCover}
+          windSpeed={environment.windSpeed}
+          windDirection={environment.windDirection}
+          nightIntensity={environment.nightIntensity}
+          goldenHourIntensity={environment.goldenHourIntensity}
+          twilightIntensity={environment.twilightIntensity}
+          horizonGlow={environment.horizonGlow}
+          quiet={quiet}
+        />
         <PrecipitationCanvas
           weather={environment.weather}
           precipitation={environment.precipitation}
@@ -234,8 +248,6 @@ export function LivingSky({
           quiet={quiet}
         />
         <StormLight active={environment.weather === 'storm' && !quiet} />
-        <div className="living-sky__horizon" />
-        <div className="living-sky__foreground" />
         <div className="living-sky__vignette" />
         <div className="living-sky__grain" />
       </div>
