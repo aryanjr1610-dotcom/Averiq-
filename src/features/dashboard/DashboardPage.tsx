@@ -9,6 +9,7 @@ import { type SectionState } from './dashboard-data'
 import { useEnvironment } from '@/features/environment/EnvironmentProvider'
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider'
 import { environmentTip } from '@/features/environment/environment'
+import { DashboardExperience } from './DashboardExperience'
 import { useDashboardData } from './useDashboardData'
 import './dashboard.css'
 
@@ -101,6 +102,8 @@ export function DashboardPage() {
   const activeExam = exams.find((exam) => exam.key === context)
   const showBiology = profile.stream ? /pcb|pcmb/i.test(profile.stream) : false
   const neetUser = exams.some((exam) => exam.key === 'neet')
+  const subjects = data?.subjects.status === 'ready' ? data.subjects.data.map((subject) => ({ id: subject.id, name: subject.name })) : []
+  const recentActivity = data?.recentActivity.status === 'ready' ? data.recentActivity.data : []
 
   return (
     <div className="dashboard">
@@ -302,31 +305,14 @@ export function DashboardPage() {
         </section>
       ) : null}
 
-      <section className="dash-block dash-tools">
-        <h2>Tools</h2>
-        <div className="dash-chips">
-          {tutor.available ? <button type="button" onClick={() => tutor.openTutor()}>Ask Averiq AI</button> : null}
-          <Link to="/app/revision">Revision</Link>
-          <Link to="/app/practice">Practice</Link>
-          <Link to="/app/formulas">Formulae</Link>
-          <Link to="/app/visual-lab/electric-field-2d">Visual Lab</Link>
-          <Link to="/app/notes">Saved learning</Link>
-          <Link to="/app/search">Search</Link>
-          {showBiology || neetUser ? <Link to="/app/anatomy">Anatomy Explorer</Link> : null}
-        </div>
-        {!showBiology && !neetUser ? (
-          <p className="dash-note"><Link to="/app/anatomy">Anatomy Explorer</Link> is available to explore any time.</p>
-        ) : null}
-      </section>
-
-      {data?.recentActivity.status === 'ready' ? (
-        <section className="dash-block">
-          <h2>Recent activity</h2>
-          <ul className="dash-activity">
-            {data.recentActivity.data.slice(0, 5).map((entry, index) => <li key={index}>{entry}</li>)}
-          </ul>
-        </section>
-      ) : null}
+      <DashboardExperience
+        subjects={subjects}
+        recentActivity={recentActivity}
+        tutorAvailable={tutor.available}
+        openTutor={() => tutor.openTutor()}
+        showBiology={showBiology}
+        neetUser={neetUser}
+      />
     </div>
   )
 }
