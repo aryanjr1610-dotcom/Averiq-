@@ -8,8 +8,6 @@ import { SECONDARY_SLIDE_ITEMS } from '@/components/nav/secondarySlideMenu';
 import { Sheet } from '@/components/ui/Sheet';
 import { isImmersive } from '@/components/nav/navConfig';
 import { PageTransition } from '@/components/system/PageTransition';
-import { SmoothCursor } from '@/components/design/SmoothCursor';
-import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
 import { cn } from '@/lib/cn';
 import { Atmosphere } from '@/components/system/Atmosphere';
 import type { Stream, Subject } from '@/components/system/Atmosphere';
@@ -27,7 +25,6 @@ export function AppShell({
   subject?: Subject;
 }) {
   const pathname = usePathname();
-  const { preferences, reducedMotion } = useAcademicTheme();
   const [moreOpen, setMoreOpen] = React.useState(false);
   const [lowPower, setLowPower] = React.useState(false);
 
@@ -41,7 +38,6 @@ export function AppShell({
   const immersive = isImmersive(pathname);
   const isProductRoute = pathname.startsWith('/app') || pathname.startsWith('/admin');
   const showNav = isProductRoute && !immersive;
-  const showLivingCursor = preferences.uiStyle === 'living-sky' && !reducedMotion && !lowPower && !immersive;
 
   return (
     <LowPowerContext.Provider value={lowPower}>
@@ -51,8 +47,6 @@ export function AppShell({
         surface={immersive ? 'immersive' : pathname.startsWith('/app/learn/') ? 'reading' : 'app'}
         lowPowerMode={lowPower}
       >
-        <SmoothCursor enabled={showLivingCursor} />
-
         <div className="min-h-dvh w-full">
           <div
             className={cn(
