@@ -1,12 +1,13 @@
 'use client';
 import * as React from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
+import { MotionSlideMenu } from '@/components/design/MotionSlideMenu';
 import { DesktopSidebar } from '@/components/nav/DesktopSidebar';
 import { MobileTabBar } from '@/components/nav/MobileTabBar';
+import { SECONDARY_SLIDE_ITEMS } from '@/components/nav/secondarySlideMenu';
 import { Sheet } from '@/components/ui/Sheet';
-import { SECONDARY_NAV, isImmersive } from '@/components/nav/navConfig';
+import { isImmersive } from '@/components/nav/navConfig';
 import { PageTransition } from '@/components/system/PageTransition';
 import { SmoothCursor } from '@/components/design/SmoothCursor';
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
@@ -72,30 +73,13 @@ export function AppShell({
 
         <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="More">
           <div className="pb-4">
-            {SECONDARY_NAV.map((group) => (
-              <div key={group.group} className="mb-5 last:mb-0">
-                <p className="text-label text-ink-tertiary mb-1.5">{group.group}</p>
-                <div className="overflow-hidden rounded-lg border border-edge-subtle bg-surface-1">
-                  {group.items.map((item, i) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.key}
-                        href={item.href}
-                        onClick={() => setMoreOpen(false)}
-                        className={
-                          'flex min-h-[52px] items-center gap-3 px-4 text-body active:bg-surface-2 ' +
-                          (i > 0 ? 'border-t border-edge-subtle' : '')
-                        }
-                      >
-                        <Icon size={18} strokeWidth={1.75} className="text-ink-secondary" aria-hidden />
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+            <MotionSlideMenu
+              items={SECONDARY_SLIDE_ITEMS}
+              className="motion-slide-menu--sheet"
+              rootLabel="Averiq tools"
+              onItemSelect={() => setMoreOpen(false)}
+              maxHeight="min(70dvh, 34rem)"
+            />
           </div>
         </Sheet>
       </Atmosphere>

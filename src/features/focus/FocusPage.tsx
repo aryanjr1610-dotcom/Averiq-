@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { AnimateDigits } from '@/components/design/AnimateDigits'
+import { AppleSwitch } from '@/components/design/AppleSwitch'
 import { useAuth } from '../auth/useAuth'
 import { getSupabase } from '../../lib/supabase'
 import { progressRepository } from '../progress/repository'
@@ -140,7 +142,7 @@ export const FocusPage = () => {
 
 			<div className="focus-stage">
 				<p className="focus-clock" aria-live="polite">
-					{formatClock(remaining)}
+					<AnimateDigits value={formatClock(remaining)} direction="down" gap={1} enterY={26} enterBlur={18} enterScale={0.84} />
 				</p>
 				<p className="focus-label">{state ? state.label : label}</p>
 
@@ -200,10 +202,15 @@ export const FocusPage = () => {
 					</div>
 				)}
 
-				<label className="focus-toggle">
-					<input type="checkbox" checked={distractionFree} onChange={(event) => setDistractionFree(event.target.checked)} />
-					Distraction-reduced view
-				</label>
+				<AppleSwitch
+					className="focus-apple-switch"
+					checked={distractionFree}
+					onCheckedChange={setDistractionFree}
+					label="Distraction-reduced view"
+					description="Quiet the surrounding interface while you study."
+					labelSide="left"
+					size="sm"
+				/>
 				{note ? (
 					<p className="focus-note" role="status">
 						{note}

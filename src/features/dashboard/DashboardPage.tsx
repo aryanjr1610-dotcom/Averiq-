@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, BookOpen, Check, Circle, Clock3, CloudFog, CloudLightning, CloudRain, CloudSun, Cloudy, MapPin, MoonStar, Snowflake, SunMedium } from 'lucide-react'
+import { AnimateDigits } from '@/components/design/AnimateDigits'
 import { ProgressBar } from '@/components/progress/MasteryBar'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useProfile } from '@/features/profile/ProfileProvider'
@@ -78,7 +79,7 @@ export function DashboardPage() {
 
   const hello = useMemo(() => greetingForMinute(environment.minuteOfDay, profile.name), [environment.minuteOfDay, profile.name])
   const exams = data?.exams.status === 'ready' ? data.exams.data : []
-  const localTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: environment.timezone ?? undefined }).format(environment.now)
+  const localTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZone: environment.timezone ?? undefined }).format(environment.now)
   const liveWeather = environment.status === 'live'
   const weatherTip = liveWeather && preferences.weatherTips ? environmentTip(environment, environment.phase) : null
   const contextLine = [profile.board?.toUpperCase(), profile.classLevel ? `Class ${profile.classLevel}` : undefined, profile.stream?.toUpperCase()]
@@ -119,7 +120,7 @@ export function DashboardPage() {
             <span className="dash-environment__separator" aria-hidden="true">·</span>
             <span>{environment.status === 'locating' ? 'Finding local weather' : liveWeather ? environment.conditionLabel : 'Local time'}</span>
             <span className="dash-environment__separator" aria-hidden="true">·</span>
-            <time dateTime={environment.now.toISOString()}>{localTime}</time>
+            <time className="dash-live-time" dateTime={environment.now.toISOString()}><AnimateDigits value={localTime} enterY={12} enterBlur={8} enterScale={0.9} /></time>
             {liveWeather && environment.locationLabel ? (
               <><span className="dash-environment__separator" aria-hidden="true">·</span><span className="dash-environment__location"><MapPin size={14} strokeWidth={1.8} aria-hidden="true" />{environment.locationLabel}</span></>
             ) : null}
