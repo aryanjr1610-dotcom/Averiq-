@@ -1,5 +1,6 @@
 import * as React from "react";
 import { forwardRef } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
 type Variant = "primary" | "secondary" | "ghost" | "subject" | "danger" | "outline" | "quiet";
@@ -10,13 +11,12 @@ const base = [
   "font-sans font-medium whitespace-nowrap",
   "rounded-md border",
   "transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-standard",
-  "active:scale-[0.98] motion-reduce:active:scale-100",
+  "active:scale-[0.97] motion-reduce:active:scale-100",
   "disabled:pointer-events-none disabled:opacity-45",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(var(--focus-ring))]",
 ].join(" ");
 
 const variants: Record<Variant, string> = {
-  // High contrast, zero gradient.
   primary:
     "bg-content text-canvas border-transparent shadow-e1 hover:bg-content/90 hover:shadow-e2 active:shadow-e1",
   secondary:
@@ -54,29 +54,38 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   { variant = "secondary", size = "md", loading = false, icon, iconEnd,
     fullWidth, className = "", children, disabled, ...rest }, ref
 ) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <button
       ref={ref}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      data-loading={loading || undefined}
       className={`${base} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
       {...rest}
     >
-      {/* Label keeps its box while loading — no width jump, no layout shift. */}
-      <span
-        className="inline-flex items-center gap-2 transition-opacity duration-fast"
-        style={{ opacity: loading ? 0 : 1 }}
-      >
+      <AnimatePresence initial={false}>
+        {loading ? (
+          <motion.span
+            key="loader"
+            aria-hidden="true"
+            className="inline-flex shrink-0 items-center justify-center overflow-hidden"
+            initial={reduceMotion ? false : { width: 0, opacity: 0, marginRight: -8 }}
+            animate={{ width: 16, opacity: 1, marginRight: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { width: 0, opacity: 0, marginRight: -8 }}
+            transition={reduceMotion ? { duration: 0 } : { type: 'spring', duration: 0.25, bounce: 0.1 }}
+          >
+            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none stroke-[2]" />
+          </motion.span>
+        ) : null}
+      </AnimatePresence>
+
+      <span className="inline-flex min-w-0 items-center gap-2">
         {icon && <span className="[&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-[1.75]">{icon}</span>}
         {children}
         {iconEnd && <span className="[&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-[1.75]">{iconEnd}</span>}
       </span>
-      {loading && (
-        <span className="absolute inset-0 grid place-items-center">
-          <Loader2 className="h-4 w-4 animate-spin stroke-[2]" aria-hidden />
-          <span className="sr-only">Loading</span>
-        </span>
-      )}
     </button>
   );
 });
