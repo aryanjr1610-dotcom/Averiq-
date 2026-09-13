@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
+import { AIOrb } from '@/components/ai/AIOrb'
+import { Button } from '@/components/ui/Button'
 import { useAITutor } from './AITutorProvider'
 import type { AIMode } from './tutor'
 import './ai.css'
+import './smooth-ai.css'
 
 type Anchor = { x: number; y: number; text: string; lessonId?: string; blockId?: string }
 
@@ -41,10 +44,12 @@ export function LessonSelectionAI() {
         blockId: block?.getAttribute('data-block-id') ?? undefined,
       })
     }
+    const onScroll = () => setAnchor(null)
     document.addEventListener('selectionchange', onSelection)
-    window.addEventListener('scroll', () => setAnchor(null), { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       document.removeEventListener('selectionchange', onSelection)
+      window.removeEventListener('scroll', onScroll)
     }
   }, [])
 
@@ -52,10 +57,13 @@ export function LessonSelectionAI() {
 
   return (
     <div className="ai-selection" style={{ left: `${anchor.x}px`, top: `${Math.max(anchor.y - 46, 8)}px` }} role="toolbar" aria-label="AI actions for selected text">
+      <AIOrb state="idle" size={20} />
       {ACTIONS.map((action) => (
-        <button
+        <Button
           key={action.label}
           type="button"
+          size="sm"
+          variant="ghost"
           onClick={() => {
             tutor.openTutor(action.mode, action.prompt, {
               selectedContent: anchor.text,
@@ -65,10 +73,12 @@ export function LessonSelectionAI() {
           }}
         >
           {action.label}
-        </button>
+        </Button>
       ))}
-      <button
+      <Button
         type="button"
+        size="sm"
+        variant="primary"
         onClick={() => {
           tutor.setLearningContext({ lessonId: anchor.lessonId, blockId: anchor.blockId })
           tutor.openTutor()
@@ -76,7 +86,7 @@ export function LessonSelectionAI() {
         }}
       >
         Ask AI
-      </button>
+      </Button>
     </div>
   )
 }
