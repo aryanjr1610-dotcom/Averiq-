@@ -121,7 +121,7 @@ function Dock({
     <motion.div
       className={cn(
         'flex max-w-full overflow-visible',
-        orientation === 'horizontal' ? 'items-end' : 'justify-end',
+        orientation === 'horizontal' ? 'items-end' : 'justify-start',
       )}
       style={outerStyle}
     >
@@ -136,8 +136,10 @@ function Dock({
           pointerPosition.set(Number.POSITIVE_INFINITY);
         }}
         className={cn(
-          'relative mx-auto flex w-fit rounded-2xl border border-edge-subtle bg-surface-3/80 p-2 shadow-3 backdrop-blur-xl',
-          orientation === 'horizontal' ? 'flex-row items-center gap-2' : 'flex-col items-center gap-2',
+          'relative flex w-fit rounded-2xl border border-edge-subtle bg-surface-3/80 p-2 shadow-3 backdrop-blur-xl',
+          orientation === 'horizontal'
+            ? 'mx-auto flex-row items-center gap-2'
+            : 'flex-col items-center gap-2',
           className,
         )}
         style={panelStyle}
