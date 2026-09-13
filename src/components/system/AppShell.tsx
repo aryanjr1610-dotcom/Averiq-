@@ -8,6 +8,8 @@ import { MobileTabBar } from '@/components/nav/MobileTabBar';
 import { Sheet } from '@/components/ui/Sheet';
 import { SECONDARY_NAV, isImmersive } from '@/components/nav/navConfig';
 import { PageTransition } from '@/components/system/PageTransition';
+import { SmoothCursor } from '@/components/design/SmoothCursor';
+import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
 import { cn } from '@/lib/cn';
 import { Atmosphere } from '@/components/system/Atmosphere';
 import type { Stream, Subject } from '@/components/system/Atmosphere';
@@ -25,21 +27,21 @@ export function AppShell({
   subject?: Subject;
 }) {
   const pathname = usePathname();
+  const { preferences, reducedMotion } = useAcademicTheme();
   const [moreOpen, setMoreOpen] = React.useState(false);
   const [lowPower, setLowPower] = React.useState(false);
 
-  // respect the existing Reduced Visuals setting + battery saver hint
   React.useEffect(() => {
     const stored = localStorage.getItem('averiq:low-power');
     if (stored === 'true') setLowPower(true);
   }, []);
 
-  // close the sheet on navigation — animate skill: exits must be handled
   React.useEffect(() => setMoreOpen(false), [pathname]);
 
   const immersive = isImmersive(pathname);
   const isProductRoute = pathname.startsWith('/app') || pathname.startsWith('/admin');
   const showNav = isProductRoute && !immersive;
+  const showLivingCursor = preferences.uiStyle === 'living-sky' && !reducedMotion && !lowPower && !immersive;
 
   return (
     <LowPowerContext.Provider value={lowPower}>
@@ -49,6 +51,7 @@ export function AppShell({
         surface={immersive ? 'immersive' : pathname.startsWith('/app/learn/') ? 'reading' : 'app'}
         lowPowerMode={lowPower}
       >
+        <SmoothCursor enabled={showLivingCursor} />
         <div className="flex min-h-dvh w-full">
           {showNav && <DesktopSidebar />}
           <div
