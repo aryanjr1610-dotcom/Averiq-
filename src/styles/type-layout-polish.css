@@ -212,24 +212,24 @@ body {
 /* ============================================================
    DASHBOARD COMPOSITION
    ============================================================ */
-.dashboard {
+html .dashboard {
   width: min(100%, var(--product-dashboard-max));
   margin-inline: auto;
   gap: var(--product-section-gap);
 }
 
-.dash-head {
+html .dash-head {
   align-items: flex-end;
   gap: clamp(1rem, 2vw, 2rem);
   padding-block: clamp(.35rem, 1vw, .85rem) clamp(.3rem, .8vw, .6rem);
 }
 
-.dash-head__copy {
+html .dash-head__copy {
   gap: .5rem;
   max-width: min(100%, 760px);
 }
 
-.dash-head h1 {
+html .dash-head h1 {
   max-width: 22ch;
   font-family: var(--font-display-family);
   font-size: var(--font-title);
@@ -239,7 +239,7 @@ body {
   text-wrap: balance;
 }
 
-.dash-context {
+html .dash-context {
   max-width: var(--measure-ui-copy);
   font-size: .79rem;
   line-height: 1.4;
@@ -248,18 +248,18 @@ body {
   text-transform: uppercase;
 }
 
-.dash-note,
-.dash-environment__tip {
+html .dash-note,
+html .dash-environment__tip {
   max-width: var(--measure-ui-copy);
   line-height: 1.58;
 }
 
-.dash-block {
+html .dash-block {
   gap: var(--product-cluster-gap);
 }
 
-.dash-block h2,
-.dash-hero h2 {
+html .dash-block h2,
+html .dash-hero h2 {
   font-family: var(--font-display-family);
   font-size: var(--font-subsection);
   line-height: 1.25;
@@ -267,23 +267,23 @@ body {
   font-weight: 610;
 }
 
-.dash-hero {
+html .dash-hero {
   grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr);
   min-height: clamp(290px, 36vh, 360px);
   padding: clamp(1.5rem, 3.4vw, 3.15rem);
 }
 
-.dash-hero__copy {
+html .dash-hero__copy {
   gap: .8rem;
   align-content: center;
   max-width: 760px;
 }
 
-.dash-hero h2 {
+html .dash-hero h2 {
   margin-bottom: clamp(.9rem, 1.7vw, 1.4rem);
 }
 
-.dash-hero__subject {
+html .dash-hero__subject {
   font-size: .78rem;
   line-height: 1.3;
   letter-spacing: .045em;
@@ -291,7 +291,7 @@ body {
   text-transform: uppercase;
 }
 
-.dash-hero__title {
+html .dash-hero__title {
   max-width: 19ch;
   font-family: var(--font-display-family);
   font-size: clamp(2rem, 1.48rem + 2.05vw, 3.05rem);
@@ -301,32 +301,32 @@ body {
   text-wrap: balance;
 }
 
-.dash-hero__lesson {
+html .dash-hero__lesson {
   max-width: var(--measure-ui-copy);
   line-height: 1.55;
 }
 
-.dash-cta,
-.dash-chips a,
-.dash-chips button,
-.dash-switch button {
+html .dash-cta,
+html .dash-chips a,
+html .dash-chips button,
+html .dash-switch button {
   font-family: var(--font-text-family);
   letter-spacing: -.002em;
   font-weight: 580;
 }
 
-.dash-subject-copy strong {
+html .dash-subject-copy strong {
   font-family: var(--font-display-family);
   letter-spacing: -.01em;
   font-weight: 590;
 }
 
-.dash-subjects span,
-.dash-activity li {
+html .dash-subjects span,
+html .dash-activity li {
   line-height: 1.52;
 }
 
-.dash-metrics strong {
+html .dash-metrics strong {
   font-family: var(--font-display-family);
   font-size: clamp(1.45rem, 1.22rem + .9vw, 1.95rem);
   line-height: 1;
@@ -335,14 +335,14 @@ body {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-.dash-metrics span {
+html .dash-metrics span {
   display: block;
   margin-top: .42rem;
   line-height: 1.35;
   letter-spacing: .018em;
 }
 
-.dash-columns {
+html .dash-columns {
   gap: clamp(1rem, 2vw, 1.5rem);
   padding-block: clamp(1.25rem, 2.5vw, 2rem);
 }
@@ -351,7 +351,19 @@ body {
    LIVING NATURE TEXT TREATMENT
    Effects support hierarchy; they never replace contrast.
    ============================================================ */
-html[data-ui-style="living-sky"] .dash-head h1,
+html[data-ui-style="living-sky"] .dash-head h1 {
+  max-width: 22ch;
+  font-family: var(--font-display-family);
+  font-size: var(--font-title);
+  line-height: 1.06;
+  letter-spacing: -.032em;
+  font-weight: 585;
+  color: rgb(var(--text-primary));
+  text-shadow:
+    0 1px 0 rgb(var(--canvas) / .22),
+    0 8px 30px rgb(var(--canvas) / .28);
+}
+
 html[data-ui-style="living-sky"] .dash-hero__title {
   color: rgb(var(--text-primary));
   text-shadow:
@@ -418,9 +430,9 @@ html[data-text-scale="large"] {
 }
 
 @media (max-width: 1023px) {
-  .dashboard { gap: clamp(1.75rem, 4vw, 2.5rem); }
-  .dash-hero { grid-template-columns: minmax(0, 1fr); }
-  .dash-hero__copy { max-width: 680px; }
+  html .dashboard { gap: clamp(1.75rem, 4vw, 2.5rem); }
+  html .dash-hero { grid-template-columns: minmax(0, 1fr); }
+  html .dash-hero__copy { max-width: 680px; }
 }
 
 @media (max-width: 720px) {
@@ -429,33 +441,35 @@ html[data-text-scale="large"] {
     --font-title: clamp(1.65rem, 1.48rem + 1.9vw, 1.95rem);
   }
 
-  .dash-head {
+  html .dash-head {
     align-items: flex-start;
     padding-top: .15rem;
   }
 
-  .dash-head h1 {
+  html .dash-head h1,
+  html[data-ui-style="living-sky"] .dash-head h1 {
     max-width: 16ch;
+    font-size: var(--font-title);
     line-height: 1.08;
   }
 
-  .dash-context {
+  html .dash-context {
     font-size: .73rem;
     letter-spacing: .045em;
   }
 
-  .dash-hero {
+  html .dash-hero {
     min-height: 0;
     padding: 1.35rem;
   }
 
-  .dash-hero__title {
+  html .dash-hero__title {
     max-width: 16ch;
     font-size: clamp(1.8rem, 7vw, 2.25rem);
     line-height: 1.06;
   }
 
-  .dash-columns {
+  html .dash-columns {
     gap: .9rem;
   }
 
@@ -465,8 +479,8 @@ html[data-text-scale="large"] {
 }
 
 @media (min-width: 1600px) {
-  .dashboard { padding-inline: .5rem; }
-  .dash-head h1 { max-width: 25ch; }
+  html .dashboard { padding-inline: .5rem; }
+  html .dash-head h1 { max-width: 25ch; }
 }
 
 @media (prefers-reduced-motion: reduce) {
