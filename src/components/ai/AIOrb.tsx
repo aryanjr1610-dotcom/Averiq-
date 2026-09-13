@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import type { CSSProperties } from 'react'
 import { getAIStateMotion, type AIState } from './aiState'
 
 export type AIOrbProps = {
@@ -6,6 +7,8 @@ export type AIOrbProps = {
   size?: number
   className?: string
 }
+
+type OrbStyle = CSSProperties & Record<`--${string}`, string | number>
 
 /**
  * Compact Living Nature AI presence. It shares the tutor state vocabulary but
@@ -31,20 +34,22 @@ export function AIOrb({ state = 'idle', size = 36, className = '' }: AIOrbProps)
         ? { duration: 5.5, ease: 'easeInOut' as const, repeat: Number.POSITIVE_INFINITY }
         : { type: 'spring' as const, stiffness: 160, damping: 18 }
 
+  const style: OrbStyle = {
+    width: size,
+    height: size,
+    '--ai-orb-speed': `${Math.max(5.2, 12 / preset.speed)}s`,
+    '--ai-orb-glow': preset.glow,
+    '--ai-orb-saturation': preset.saturation,
+    '--ai-orb-hue': `${preset.hueRotate}deg`,
+  }
+
   return (
     <motion.span
       aria-hidden="true"
       animate={rootAnimate}
       className={`averiq-ai-orb ${className}`.trim()}
       data-state={state}
-      style={{
-        width: size,
-        height: size,
-        ['--ai-orb-speed' as string]: `${Math.max(5.2, 12 / preset.speed)}s`,
-        ['--ai-orb-glow' as string]: preset.glow,
-        ['--ai-orb-saturation' as string]: preset.saturation,
-        ['--ai-orb-hue' as string]: `${preset.hueRotate}deg`,
-      }}
+      style={style}
       transition={rootTransition}
     >
       <span className="averiq-ai-orb__mesh" />
