@@ -3,7 +3,11 @@ import { motion, type MotionValue, useMotionValue, useSpring, useTransform } fro
 
 import { cn } from '@/lib/cn'
 
-export interface DockProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DockProps {
+  className?: string
+  id?: string
+  title?: string
+  'aria-label'?: string
   iconSize?: number
   iconMagnification?: number
   disableMagnification?: boolean
@@ -12,12 +16,15 @@ export interface DockProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-export interface DockIconProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface DockIconProps {
   size?: number
   magnification?: number
   disableMagnification?: boolean
   distance?: number
   mouseX?: MotionValue<number>
+  className?: string
+  title?: string
+  'aria-label'?: string
   children?: React.ReactNode
 }
 
@@ -29,7 +36,8 @@ export const DockIcon = React.forwardRef<HTMLDivElement, DockIconProps>(function
   mouseX,
   className,
   children,
-  ...props
+  title,
+  'aria-label': ariaLabel,
 }, forwardedRef) {
   const localRef = React.useRef<HTMLDivElement | null>(null)
   const fallback = useMotionValue(Number.POSITIVE_INFINITY)
@@ -47,7 +55,13 @@ export const DockIcon = React.forwardRef<HTMLDivElement, DockIconProps>(function
   const springSize = useSpring(sizeTransform, { mass: 0.12, stiffness: 170, damping: 16 })
 
   return (
-    <motion.div ref={localRef} className={cn('magic-dock-icon', className)} style={{ width: springSize, height: springSize }} {...props}>
+    <motion.div
+      ref={localRef}
+      className={cn('magic-dock-icon', className)}
+      style={{ width: springSize, height: springSize }}
+      title={title}
+      aria-label={ariaLabel}
+    >
       <span className="magic-dock-icon__inner">{children}</span>
     </motion.div>
   )
@@ -61,17 +75,21 @@ export const Dock = React.forwardRef<HTMLDivElement, DockProps>(function Dock({
   disableMagnification = false,
   iconDistance = 126,
   direction = 'middle',
-  ...props
+  id,
+  title,
+  'aria-label': ariaLabel,
 }, ref) {
   const mouseX = useMotionValue(Number.POSITIVE_INFINITY)
 
   return (
     <motion.div
       ref={ref}
+      id={id}
+      title={title}
+      aria-label={ariaLabel}
       onMouseMove={(event) => mouseX.set(event.pageX)}
       onMouseLeave={() => mouseX.set(Number.POSITIVE_INFINITY)}
       className={cn('magic-dock', `magic-dock--${direction}`, className)}
-      {...props}
     >
       {React.Children.map(children, (child) => {
         if (!React.isValidElement<DockIconProps>(child) || child.type !== DockIcon) return child
