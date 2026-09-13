@@ -1,0 +1,305 @@
+/* Adaptive card/material polish for Living Nature.
+   Keeps daylight readable, night cinematic, and interactions GPU-cheap. */
+
+html[data-ui-style='living-sky'] {
+  --living-card-radius: 20px;
+  --living-card-transition: 180ms cubic-bezier(.23, 1, .32, 1);
+}
+
+html[data-ui-style='living-sky'][data-sky-light='light'] {
+  --living-card-bg: rgb(248 250 247 / .78);
+  --living-card-bg-strong: rgb(250 252 249 / .9);
+  --living-card-bg-soft: rgb(244 248 245 / .64);
+  --living-card-border: rgb(38 58 58 / .14);
+  --living-card-border-hover: rgb(38 58 58 / .24);
+  --living-card-text: rgb(22 34 35);
+  --living-card-text-secondary: rgb(61 76 76);
+  --living-card-text-tertiary: rgb(92 105 104);
+  --living-card-shadow: 0 16px 44px -34px rgb(25 42 44 / .38);
+  --living-card-shadow-hover: 0 22px 52px -32px rgb(25 42 44 / .48);
+}
+
+html[data-ui-style='living-sky'][data-sky-light='dark'] {
+  --living-card-bg: rgb(9 18 30 / .7);
+  --living-card-bg-strong: rgb(10 21 34 / .86);
+  --living-card-bg-soft: rgb(12 24 38 / .58);
+  --living-card-border: rgb(222 235 244 / .13);
+  --living-card-border-hover: rgb(222 235 244 / .22);
+  --living-card-text: rgb(242 247 249);
+  --living-card-text-secondary: rgb(198 211 219);
+  --living-card-text-tertiary: rgb(155 174 184);
+  --living-card-shadow: 0 18px 50px -34px rgb(0 5 14 / .78);
+  --living-card-shadow-hover: 0 26px 60px -34px rgb(0 5 14 / .9);
+}
+
+/* Dashboard materials */
+html[data-ui-style='living-sky'] :where(
+  .dash-hero,
+  .dash-columns .dash-block,
+  .magic-bento-card,
+  .dash-environment,
+  .dash-switch
+) {
+  border-color: var(--living-card-border) !important;
+  color: var(--living-card-text);
+  box-shadow: var(--living-card-shadow);
+}
+
+html[data-ui-style='living-sky'] .dash-hero {
+  background:
+    radial-gradient(70% 110% at 92% 6%, rgb(var(--accent) / .12), transparent 62%),
+    linear-gradient(145deg, var(--living-card-bg-strong), var(--living-card-bg)) !important;
+}
+
+html[data-ui-style='living-sky'] .dash-columns .dash-block,
+html[data-ui-style='living-sky'] .magic-bento-card {
+  background:
+    radial-gradient(74% 84% at 100% 0%, rgb(var(--accent) / .075), transparent 70%),
+    var(--living-card-bg) !important;
+}
+
+html[data-ui-style='living-sky'] .dash-environment,
+html[data-ui-style='living-sky'] .dash-switch,
+html[data-ui-style='living-sky'] .dash-cta,
+html[data-ui-style='living-sky'] .dash-chips a,
+html[data-ui-style='living-sky'] .dash-chips button,
+html[data-ui-style='living-sky'] .averiq-flow-node,
+html[data-ui-style='living-sky'] .averiq-activity-row,
+html[data-ui-style='living-sky'] .magic-bento-card__icon {
+  background: var(--living-card-bg-soft) !important;
+  border-color: var(--living-card-border) !important;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .dash-hero__title,
+  .dash-hero h2,
+  .dash-block h2,
+  .dash-subject-copy strong,
+  .dash-metrics strong,
+  .magic-bento-card h3,
+  .magic-bento-card__heading,
+  .averiq-flow-node
+) {
+  color: var(--living-card-text) !important;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .dash-hero__subject,
+  .dash-hero__lesson,
+  .dash-context,
+  .dash-note,
+  .dash-environment,
+  .dash-subjects span,
+  .dash-metrics span,
+  .dash-activity li,
+  .magic-bento-card__description,
+  .averiq-activity-row,
+  .averiq-quick-dock-hint
+) {
+  color: var(--living-card-text-secondary) !important;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .magic-bento-card__eyebrow,
+  .magic-section-kicker,
+  .dash-chip svg,
+  .dash-subjects a > svg
+) {
+  color: var(--living-card-text-tertiary) !important;
+}
+
+/* CTA stays unmistakable and readable in daylight. */
+html[data-ui-style='living-sky'] .dash-hero .dash-cta {
+  background: rgb(var(--accent)) !important;
+  color: rgb(var(--text-onaccent)) !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 28px -18px rgb(var(--accent) / .58);
+}
+
+/* Low-cost tactile response. Only genuinely interactive cards move. */
+html[data-ui-style='living-sky'] .magic-bento-card--interactive,
+html[data-ui-style='living-sky'] .dash-cta,
+html[data-ui-style='living-sky'] .dash-chips a,
+html[data-ui-style='living-sky'] .dash-chips button,
+html[data-ui-style='living-sky'] .dash-subjects a {
+  transition:
+    transform var(--living-card-transition),
+    border-color var(--living-card-transition),
+    box-shadow var(--living-card-transition),
+    background-color var(--living-card-transition),
+    color var(--living-card-transition) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-ui-style='living-sky'] .magic-bento-card--interactive:hover {
+    transform: translate3d(0, -3px, 0);
+    border-color: var(--living-card-border-hover) !important;
+    box-shadow: var(--living-card-shadow-hover) !important;
+  }
+
+  html[data-ui-style='living-sky'] :where(.dash-cta, .dash-chips a, .dash-chips button):hover {
+    transform: translate3d(0, -1px, 0);
+    border-color: var(--living-card-border-hover) !important;
+    color: var(--living-card-text) !important;
+    box-shadow: 0 10px 24px -20px rgb(20 35 40 / .45);
+  }
+
+  html[data-ui-style='living-sky'] .dash-subjects a:hover {
+    transform: translate3d(3px, 0, 0);
+    color: rgb(var(--accent)) !important;
+  }
+}
+
+html[data-ui-style='living-sky'] :where(
+  .magic-bento-card--interactive,
+  .dash-cta,
+  .dash-chips a,
+  .dash-chips button,
+  .dash-subjects a
+):focus-visible {
+  outline: 2px solid rgb(var(--focus-ring));
+  outline-offset: 3px;
+}
+
+/* AI uses the same atmospheric material instead of an unrelated white sheet. */
+html[data-ui-style='living-sky'] :where(.ai-panel, .ai-launcher, .ai-selection) {
+  color: var(--living-card-text) !important;
+  border-color: var(--living-card-border) !important;
+}
+
+html[data-ui-style='living-sky'] .ai-panel {
+  background:
+    radial-gradient(90% 44% at 100% 0%, rgb(var(--accent) / .08), transparent 68%),
+    var(--living-card-bg-strong) !important;
+  box-shadow: -24px 0 70px -48px rgb(0 8 18 / .48) !important;
+}
+
+html[data-ui-style='living-sky'] .ai-launcher,
+html[data-ui-style='living-sky'] .ai-selection {
+  background: var(--living-card-bg-strong) !important;
+  box-shadow: var(--living-card-shadow) !important;
+}
+
+html[data-ui-style='living-sky'] :where(.ai-panel__head, .ai-modes, .ai-composer) {
+  border-color: var(--living-card-border) !important;
+}
+
+html[data-ui-style='living-sky'] .ai-composer {
+  background: color-mix(in srgb, var(--living-card-bg-strong) 90%, transparent);
+}
+
+html[data-ui-style='living-sky'] .ai-composer textarea {
+  background: var(--living-card-bg-soft) !important;
+  border-color: var(--living-card-border) !important;
+  color: var(--living-card-text) !important;
+  caret-color: rgb(var(--accent));
+}
+
+html[data-ui-style='living-sky'] .ai-composer textarea::placeholder {
+  color: var(--living-card-text-tertiary);
+  opacity: .9;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .ai-note,
+  .ai-panel__state,
+  .ai-message-root__time,
+  .ai-loader,
+  .ai-status-detail,
+  .ai-tool-call__summary,
+  .ai-tool-call__chevron
+) {
+  color: var(--living-card-text-secondary) !important;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .ai-title,
+  .ai-empty-state h3,
+  .ai-message-root__bubble,
+  .ai-response,
+  .ai-tool-call__name
+) {
+  color: var(--living-card-text) !important;
+}
+
+html[data-ui-style='living-sky'] :where(
+  .ai-message-root__bubble--on,
+  .ai-tool-call,
+  .ai-conversation__latest,
+  .ai-mode,
+  .ai-chip,
+  .ai-panel__actions button
+) {
+  border-color: var(--living-card-border) !important;
+  background: var(--living-card-bg-soft) !important;
+  color: var(--living-card-text) !important;
+}
+
+html[data-ui-style='living-sky'] .ai-message-root--user .ai-message-root__bubble--on {
+  background: color-mix(in srgb, rgb(var(--accent) / .18) 68%, var(--living-card-bg-soft)) !important;
+  border-color: rgb(var(--accent) / .26) !important;
+}
+
+html[data-ui-style='living-sky'] .ai-mode--on {
+  background: color-mix(in srgb, rgb(var(--accent) / .16) 72%, var(--living-card-bg-soft)) !important;
+  outline-color: rgb(var(--accent) / .72);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html[data-ui-style='living-sky'] :where(
+    .ai-launcher,
+    .ai-mode,
+    .ai-panel__actions button,
+    .ai-conversation__latest,
+    .ai-message-action
+  ) {
+    transition: transform var(--living-card-transition), background-color var(--living-card-transition), border-color var(--living-card-transition), color var(--living-card-transition), box-shadow var(--living-card-transition);
+  }
+
+  html[data-ui-style='living-sky'] :where(
+    .ai-launcher,
+    .ai-mode,
+    .ai-panel__actions button,
+    .ai-conversation__latest
+  ):hover {
+    transform: translate3d(0, -1px, 0);
+    background: color-mix(in srgb, rgb(var(--accent) / .1) 65%, var(--living-card-bg-soft)) !important;
+    border-color: var(--living-card-border-hover) !important;
+  }
+}
+
+/* The custom cursor was removed. This also protects against a stale HMR body class
+   from hiding the native cursor until a hard refresh. */
+body.magic-smooth-cursor-enabled {
+  cursor: auto !important;
+}
+body.magic-smooth-cursor-enabled :where(a, button, [role='button'], summary, label, select) {
+  cursor: pointer !important;
+}
+body.magic-smooth-cursor-enabled :where(input, textarea, [contenteditable='true']) {
+  cursor: text !important;
+}
+
+/* Do not trade smoothness for polish on constrained hardware. */
+html[data-render-tier='low'][data-ui-style='living-sky'] :where(
+  .dash-hero,
+  .dash-columns .dash-block,
+  .magic-bento-card,
+  .ai-panel,
+  .ai-launcher,
+  .ai-selection
+) {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui-style='living-sky'] .magic-bento-card--interactive,
+  html[data-ui-style='living-sky'] .dash-cta,
+  html[data-ui-style='living-sky'] .dash-chips a,
+  html[data-ui-style='living-sky'] .dash-chips button,
+  html[data-ui-style='living-sky'] .dash-subjects a {
+    transition: none !important;
+    transform: none !important;
+  }
+}
