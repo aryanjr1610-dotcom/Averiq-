@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AppleSwitch } from '@/components/design/AppleSwitch'
 import { Dialog } from '@/components/ui/Dialog'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -26,13 +27,14 @@ const Choice = <T extends string>({ label, value, options, onChange }: { label: 
 )
 
 const Toggle = ({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (next: boolean) => void }) => (
-	<label className="set-toggle">
-		<input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
-		<span>
-			{label}
-			{hint ? <small>{hint}</small> : null}
-		</span>
-	</label>
+	<AppleSwitch
+		checked={checked}
+		onCheckedChange={onChange}
+		label={label}
+		description={hint}
+		labelSide="left"
+		tone="accent"
+	/>
 )
 
 function AccountChange({ kind, onSaved }: { kind: 'email' | 'password'; onSaved: (message: string) => void }) {
