@@ -3,8 +3,7 @@ import * as React from 'react';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { MotionSlideMenu } from '@/components/design/MotionSlideMenu';
-import { DesktopSidebar } from '@/components/nav/DesktopSidebar';
-import { MobileTabBar } from '@/components/nav/MobileTabBar';
+import { AppDock } from '@/components/nav/AppDock';
 import { SECONDARY_SLIDE_ITEMS } from '@/components/nav/secondarySlideMenu';
 import { Sheet } from '@/components/ui/Sheet';
 import { isImmersive } from '@/components/nav/navConfig';
@@ -53,12 +52,12 @@ export function AppShell({
         lowPowerMode={lowPower}
       >
         <SmoothCursor enabled={showLivingCursor} />
-        <div className="flex min-h-dvh w-full">
-          {showNav && <DesktopSidebar />}
+
+        <div className="min-h-dvh w-full">
           <div
             className={cn(
               'app-main flex min-w-0 flex-1 flex-col',
-              showNav && 'app-main--framed px-page-x pt-6 pb-24 md:pb-10 lg:pt-10',
+              showNav && 'app-main--framed px-page-x pt-6 pb-28 lg:pt-10 lg:pr-10 lg:pb-10 lg:pl-28',
             )}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -69,7 +68,7 @@ export function AppShell({
           </div>
         </div>
 
-        {showNav && <MobileTabBar onMore={() => setMoreOpen(true)} />}
+        {showNav ? <AppDock onMore={() => setMoreOpen(true)} /> : null}
 
         <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="More">
           <div className="pb-4">
