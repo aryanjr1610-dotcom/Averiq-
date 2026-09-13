@@ -21,6 +21,23 @@ function strings(value: unknown): string[] {
     : [];
 }
 
+function fallbackDefaults(
+  required: string[],
+  available: string[],
+  minimumValue: unknown,
+  existing: unknown,
+): string[] {
+  const existingDefaults = strings(existing);
+  if (existingDefaults.length > 0) return existingDefaults;
+
+  const minimum = typeof minimumValue === 'number' && Number.isInteger(minimumValue)
+    ? Math.max(1, minimumValue)
+    : required.length;
+
+  return [...new Set([...required, ...available])]
+    .slice(0, Math.max(required.length, minimum));
+}
+
 function pathCopy(id: string): { label: string; description: string } {
   if (id.endsWith('-pcmb')) return { label: 'PCMB', description: 'Physics · Chemistry · Mathematics · Biology' };
   if (id.endsWith('-pcm')) return { label: 'PCM', description: 'Physics · Chemistry · Mathematics' };
@@ -40,6 +57,8 @@ function normalizeCatalog(value: unknown): unknown {
 
   const config = value.config;
   const paths = Array.isArray(config.paths) ? config.paths : [];
+  const lowerRules = Array.isArray(config.lowerRules) ? config.lowerRules : [];
+
   const normalizedPaths = paths.map((entry) => {
     if (!isRecord(entry)) return entry;
 
@@ -47,23 +66,36 @@ function normalizeCatalog(value: unknown): unknown {
     const copy = pathCopy(id);
     const required = strings(entry.required);
     const optional = strings(entry.optional);
-    const existingDefaults = strings(entry.defaults);
-    const minimum = typeof entry.minimum === 'number' && Number.isInteger(entry.minimum)
-      ? Math.max(1, entry.minimum)
-      : required.length;
-    const fallbackDefaults = [...new Set([...required, ...optional])]
-      .slice(0, Math.max(required.length, minimum));
 
     return {
       ...entry,
       stream: entry.stream === 'arts' ? 'humanities' : entry.stream,
       label: typeof entry.label === 'string' && entry.label.trim() ? entry.label : copy.label,
       description: typeof entry.description === 'string' && entry.description.trim() ? entry.description : copy.description,
-      defaults: existingDefaults.length > 0 ? existingDefaults : fallbackDefaults,
+      defaults: fallbackDefaults(required, optional, entry.minimum, entry.defaults),
     };
   });
 
-  return { ...value, config: { ...config, paths: normalizedPaths } };
+  const normalizedLowerRules = lowerRules.map((entry) => {
+    if (!isRecord(entry)) return entry;
+
+    const required = strings(entry.required);
+    const available = strings(entry.available);
+
+    return {
+      ...entry,
+      defaults: fallbackDefaults(required, available, entry.minimum, entry.defaults),
+    };
+  });
+
+  return {
+    ...value,
+    config: {
+      ...config,
+      paths: normalizedPaths,
+      lowerRules: normalizedLowerRules,
+    },
+  };
 }
 
 export const profileService = {
