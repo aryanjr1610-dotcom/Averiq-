@@ -69,7 +69,7 @@ function AccountChange({ kind, onSaved }: { kind: 'email' | 'password'; onSaved:
 }
 
 export const SettingsPage = () => {
-	const { user } = useAuth()
+	const { user, session, signOut } = useAuth()
 	const { prefs, update, state } = usePreferences()
 	const [tab, setTab] = useState<Category>('Account')
 	const [message, setMessage] = useState<string | null>(null)
@@ -86,11 +86,44 @@ export const SettingsPage = () => {
 		}
 	}
 
+	const signOutCurrentDevice = async () => {
+		try {
+			await signOut()
+			setMessage('Signed out of this device.')
+		} catch {
+			setMessage('Sign out could not be completed. Refresh the page and try again.')
+		}
+	}
+
 	const deleteAccount = async () => {
 		if (confirmText !== 'DELETE') return
-		const result = await db().functions.invoke('delete-account', { body: { confirm: 'DELETE' } })
-		setMessage(result.error ? `Deletion failed: ${result.error.message}` : 'Account deletion requested. You will be signed out.')
-		if (!result.error) await db().auth.signOut()
+
+		const accessToken = session?.access_token
+		if (!accessToken) {
+			setMessage('Your session has expired. Sign in again before deleting your account.')
+			return
+		}
+
+		try {
+			const result = await db().functions.invoke('delete-account', {
+				body: { confirm: 'DELETE' },
+				headers: { Authorization: `Bearer ${accessToken}` },
+			})
+
+			if (result.error) {
+				setMessage(`Deletion failed: ${result.error.message}`)
+				return
+			}
+
+			setMessage('Account deleted. Signing you out…')
+
+			// The account no longer exists server-side. A local sign-out may therefore
+			// be rejected by Auth, so it is deliberately best-effort before redirect.
+			try { await signOut() } catch { /* deleted account: nothing else to revoke */ }
+			window.location.replace('/login')
+		} catch (error) {
+			setMessage(error instanceof Error ? `Deletion failed: ${error.message}` : 'Deletion failed. Nothing was removed.')
+		}
 	}
 
 	return (
@@ -116,7 +149,7 @@ export const SettingsPage = () => {
 						<div className="pf-row">
 							<AccountChange kind="email" onSaved={setMessage} />
 							<AccountChange kind="password" onSaved={setMessage} />
-							<button type="button" className="pf-ghost" onClick={() => void db().auth.signOut()}>Sign out</button>
+							<button type="button" className="pf-ghost" onClick={() => void signOutCurrentDevice()}>Sign out</button>
 						</div>
 						<h3>Delete account</h3>
 						<p className="pf-note">This permanently removes your profile, notes, progress and account. Type DELETE to confirm.</p>
