@@ -313,7 +313,7 @@
 }
 
 .motion-slide-menu__item--destructive {
-  color: rgb(var(--danger, var(--text-primary)) / .9);
+  color: rgb(var(--text-primary) / .9);
 }
 
 .motion-slide-menu__item--disabled {
@@ -329,6 +329,56 @@ html[data-ui-style="living-sky"] .sky-nav-popover .motion-slide-menu__frame,
 html[data-ui-style="living-sky"] .motion-slide-menu--sheet .motion-slide-menu__frame {
   backdrop-filter: blur(22px) saturate(1.14);
   background: linear-gradient(180deg, rgb(var(--glass-tint) / .3), rgb(var(--surface-base) / .64));
+}
+
+.sky-nav-brand--living {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  min-height: 38px;
+  text-decoration: none;
+}
+
+.sky-nav-brand__mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  place-items: center;
+  border: 1px solid rgb(var(--border-subtle) / .72);
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 30% 20%, rgb(var(--accent) / .2), transparent 62%),
+    rgb(var(--surface-interactive) / .58);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--text-primary) / .05),
+    0 8px 24px rgb(var(--canvas) / .18);
+  color: rgb(var(--text-primary));
+  font-family: var(--font-display-family);
+  font-size: .92rem;
+  font-weight: 720;
+}
+
+.sky-nav-brand__name,
+.sky-nav-brand__subtitle {
+  display: block;
+}
+
+.sky-nav-brand__name {
+  color: rgb(var(--text-primary));
+  font-size: .95rem;
+  line-height: 1.1;
+  font-weight: 680;
+  letter-spacing: -.025em;
+}
+
+.sky-nav-brand__subtitle {
+  margin-top: .18rem;
+  color: rgb(var(--text-tertiary));
+  font-size: .64rem;
+  line-height: 1.15;
+  font-weight: 520;
+  letter-spacing: .02em;
 }
 
 @media (max-width: 767px) {
