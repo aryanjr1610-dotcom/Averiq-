@@ -4,13 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { MoreHorizontal } from 'lucide-react';
-import { PRIMARY_NAV, SECONDARY_NAV } from './navConfig';
+import { MotionSlideMenu } from '@/components/design/MotionSlideMenu';
+import { SECONDARY_SLIDE_ITEMS } from './secondarySlideMenu';
+import { PRIMARY_NAV } from './navConfig';
 import { duration, ease } from '@/lib/motion';
 import { cn } from '@/lib/cn';
 
 export function DesktopSidebar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
+
+  React.useEffect(() => setMoreOpen(false), [pathname]);
 
   return (
     <nav
@@ -23,9 +27,12 @@ export function DesktopSidebar() {
       )}
       style={{ zIndex: 40 }}
     >
-      <Link href="/app/dashboard" className="sky-nav-brand mb-6 px-2 text-card-title tracking-tight text-ink">
-        <span className="xl:hidden">A</span>
-        <span className="hidden xl:inline">Averiq</span>
+      <Link href="/app/dashboard" className="sky-nav-brand sky-nav-brand--living mb-6 px-2 text-card-title tracking-tight text-ink">
+        <span className="sky-nav-brand__mark" aria-hidden="true">A</span>
+        <span className="hidden min-w-0 xl:block">
+          <span className="sky-nav-brand__name">Averiq</span>
+          <span className="sky-nav-brand__subtitle">Learn beyond the page</span>
+        </span>
       </Link>
 
       <ul className="flex flex-col gap-1">
@@ -52,9 +59,13 @@ export function DesktopSidebar() {
                     transition={{ duration: duration.base, ease: ease.standard }}
                   />
                 )}
-                <span className="sky-nav-icon">
-                  <Icon size={18} strokeWidth={1.75} className="shrink-0" aria-hidden />
-                </span>
+                <motion.span
+                  className="sky-nav-icon"
+                  animate={active ? { y: -1, scale: 1.03 } : { y: 0, scale: 1 }}
+                  transition={{ duration: duration.fast, ease: ease.standard }}
+                >
+                  <Icon size={18} strokeWidth={active ? 1.9 : 1.75} className="shrink-0" aria-hidden />
+                </motion.span>
                 <span className="hidden xl:inline">{item.label}</span>
               </Link>
             </li>
@@ -62,54 +73,44 @@ export function DesktopSidebar() {
         })}
       </ul>
 
-      <div className="mt-auto">
+      <div className="mt-auto relative">
         <button
           type="button"
           onClick={() => setMoreOpen((v) => !v)}
           aria-expanded={moreOpen}
+          aria-haspopup="menu"
           className={cn(
             'sky-nav-item flex h-10 w-full items-center gap-3 rounded-md px-3',
             'text-body-sm text-ink-secondary',
             'hover:bg-surface-2 hover:text-ink',
             'transition-colors duration-base',
+            moreOpen && 'sky-nav-item--active bg-surface-2 text-ink',
           )}
         >
           <span className="sky-nav-icon">
             <MoreHorizontal size={18} strokeWidth={1.75} aria-hidden />
           </span>
-          <span className="hidden xl:inline">More</span>
+          <span className="hidden xl:inline">Explore</span>
         </button>
 
         {moreOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            initial={{ opacity: 0, y: 8, scale: 0.975 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.985 }}
             transition={{ duration: duration.base, ease: ease.out }}
             className={cn(
-              'sky-nav-popover absolute bottom-16 left-3 w-[220px]',
-              'rounded-lg border border-edge',
-              'bg-surface-3 p-2 shadow-3',
+              'sky-nav-popover absolute bottom-14 left-0 w-[244px]',
+              'rounded-xl border border-edge',
+              'bg-surface-3 p-1.5 shadow-3',
             )}
           >
-            {SECONDARY_NAV.map((group) => (
-              <div key={group.group} className="mb-2 last:mb-0">
-                <p className="t-label px-2 py-1 text-ink-tertiary">{group.group}</p>
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className="sky-nav-subitem flex h-9 items-center gap-2.5 rounded-sm px-2 text-body-sm text-ink-secondary hover:bg-surface-2 hover:text-ink"
-                    >
-                      <Icon size={16} strokeWidth={1.75} aria-hidden />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            ))}
+            <MotionSlideMenu
+              items={SECONDARY_SLIDE_ITEMS}
+              rootLabel="Averiq tools"
+              onItemSelect={() => setMoreOpen(false)}
+              maxHeight="min(66dvh, 32rem)"
+            />
           </motion.div>
         )}
       </div>
