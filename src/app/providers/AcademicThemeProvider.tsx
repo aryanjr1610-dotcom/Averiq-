@@ -37,6 +37,7 @@ const defaults: VisualPreferences = {
   focusMode: false,
   uiStyle: 'living-sky',
   liveWeather: false,
+  weatherTips: true,
 };
 
 function readPreferences(): VisualPreferences {
@@ -90,6 +91,8 @@ function readPreferences(): VisualPreferences {
           : 'living-sky',
       liveWeather:
         'liveWeather' in value && value.liveWeather === true,
+      weatherTips:
+        !('weatherTips' in value) || value.weatherTips !== false,
     };
   } catch {
     return defaults;
@@ -175,6 +178,7 @@ export function AcademicThemeProvider({
     root.dataset.textScale = preferences.largerText ? 'large' : 'normal';
     root.dataset.uiStyle = preferences.uiStyle;
     root.dataset.liveWeather = preferences.liveWeather ? 'true' : 'false';
+    root.dataset.weatherTips = preferences.weatherTips ? 'true' : 'false';
     root.dataset.contrast =
       systemContrast || preferences.contrast === 'high'
         ? 'high'
@@ -205,6 +209,7 @@ export function AcademicThemeProvider({
     preferences.focusMode,
     preferences.uiStyle,
     preferences.liveWeather,
+    preferences.weatherTips,
     theme,
   ]);
 

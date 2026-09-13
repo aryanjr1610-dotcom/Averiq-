@@ -1,273 +1,319 @@
-html[data-ui-style="living-sky"] .averiq-atmos {
+html[data-ui-style='living-sky'] .averiq-atmos {
   background: transparent;
 }
 
-html[data-ui-style="living-sky"] .averiq-atmos__layers {
+html[data-ui-style='living-sky'] .averiq-atmos__layers {
   opacity: 0;
 }
 
-html[data-ui-style="living-sky"] body {
-  background: rgb(3 10 24);
+html[data-ui-style='living-sky'] body {
+  background: rgb(var(--canvas));
+  color: rgb(var(--text-primary));
 }
 
-html[data-ui-style="living-sky"] [data-surface="reading"] .living-sky {
-  filter: saturate(.78) brightness(.84);
+html[data-ui-style='living-sky'] .averiq-atmos__content {
+  color: rgb(var(--text-primary));
+  transition: color 12s linear;
 }
 
-/* Desktop navigation — treat the sidebar as a glass layer inside the sky. */
-html[data-ui-style="living-sky"] .sky-nav-shell {
-  border-right-color: rgb(183 215 244 / .13) !important;
+html[data-ui-style='living-sky'] [data-surface='reading'] .living-sky {
+  filter: saturate(.72) brightness(.78);
+}
+
+/* Navigation is one environment-aware material, not a separate black rail. */
+html[data-ui-style='living-sky'] .sky-nav-shell {
+  border-right-color: rgb(var(--border-subtle) / .16) !important;
   background:
-    linear-gradient(180deg, rgb(3 11 25 / .78), rgb(4 18 35 / .58) 58%, rgb(3 13 28 / .72)) !important;
-  backdrop-filter: blur(26px) saturate(124%) !important;
-  box-shadow:
-    14px 0 48px rgb(0 7 19 / .15),
-    inset -1px 0 rgb(225 241 255 / .025);
+    linear-gradient(180deg, rgb(var(--surface-base) / calc(var(--glass-alpha) + .08)), rgb(var(--surface-base) / var(--glass-alpha))) !important;
+  backdrop-filter: blur(24px) saturate(118%) !important;
+  box-shadow: 12px 0 36px -24px rgb(var(--canvas) / .7);
+  transition: background-color 12s linear, border-color 12s linear, color 12s linear;
 }
 
-html[data-ui-style="living-sky"][data-sky-phase="night"] .sky-nav-shell,
-html[data-ui-style="living-sky"][data-sky-phase="evening"] .sky-nav-shell {
-  background:
-    radial-gradient(90% 34% at 16% 8%, rgb(102 160 214 / .08), transparent 72%),
-    linear-gradient(180deg, rgb(2 8 19 / .83), rgb(4 18 34 / .61) 60%, rgb(2 11 25 / .78)) !important;
+html[data-ui-style='living-sky'] .sky-nav-brand {
+  color: rgb(var(--text-primary)) !important;
+  letter-spacing: -.018em;
+  text-shadow: 0 6px 24px rgb(var(--canvas) / .22);
 }
 
-html[data-ui-style="living-sky"] .sky-nav-brand {
-  color: rgb(242 248 255 / .94) !important;
-  text-shadow: 0 0 22px rgb(159 205 248 / .12);
-}
-
-html[data-ui-style="living-sky"] .sky-nav-item {
+html[data-ui-style='living-sky'] .sky-nav-item {
   border: 1px solid transparent;
-  color: rgb(205 220 236 / .75) !important;
+  color: rgb(var(--text-secondary)) !important;
   background: transparent !important;
   transition:
-    transform 220ms cubic-bezier(.2,.8,.2,1),
-    color 220ms ease,
-    background-color 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease;
+    transform 180ms var(--ease-out),
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-html[data-ui-style="living-sky"] .sky-nav-icon {
+html[data-ui-style='living-sky'] .sky-nav-icon {
   display: inline-flex;
   width: 26px;
   height: 26px;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  transition: background-color 180ms ease, transform 180ms var(--ease-out);
 }
 
-html[data-ui-style="living-sky"] .sky-nav-item--active {
-  color: rgb(245 250 255 / .98) !important;
-  border-color: rgb(171 213 249 / .14);
-  background:
-    linear-gradient(92deg, rgb(107 166 220 / .13), rgb(70 126 183 / .055) 64%, transparent) !important;
-  box-shadow:
-    inset 0 1px rgb(255 255 255 / .035),
-    0 7px 24px rgb(1 10 22 / .12);
+html[data-ui-style='living-sky'] .sky-nav-item--active {
+  color: rgb(var(--text-primary)) !important;
+  border-color: rgb(var(--border-default) / .17);
+  background: rgb(var(--accent) / .11) !important;
 }
 
-html[data-ui-style="living-sky"] .sky-nav-item--active .sky-nav-icon {
-  background: radial-gradient(circle at 38% 32%, rgb(187 224 255 / .16), rgb(85 145 201 / .08) 58%, transparent 76%);
-  box-shadow: 0 0 24px rgb(94 165 224 / .09);
+html[data-ui-style='living-sky'] .sky-nav-item--active .sky-nav-icon {
+  background: rgb(var(--accent) / .1);
 }
 
-html[data-ui-style="living-sky"] .sky-nav-item--active svg {
-  filter: drop-shadow(0 0 7px rgb(160 211 255 / .26));
+html[data-ui-style='living-sky'] .sky-nav-item--active svg {
+  filter: drop-shadow(0 2px 7px rgb(var(--accent) / .22));
 }
 
-html[data-ui-style="living-sky"] .sky-nav-indicator {
+html[data-ui-style='living-sky'] .sky-nav-indicator {
   width: 2px !important;
-  background: rgb(169 218 255 / .92) !important;
-  box-shadow: 0 0 9px rgb(113 190 249 / .58), 0 0 22px rgb(95 168 227 / .22);
+  background: rgb(var(--accent)) !important;
+  box-shadow: 0 2px 9px rgb(var(--accent) / .36);
 }
 
-html[data-ui-style="living-sky"] .sky-nav-popover {
-  border-color: rgb(176 213 245 / .16) !important;
-  background:
-    linear-gradient(150deg, rgb(9 27 48 / .9), rgb(4 15 31 / .9)) !important;
-  backdrop-filter: blur(26px) saturate(130%);
-  box-shadow: 0 24px 70px rgb(0 5 15 / .42), inset 0 1px rgb(255 255 255 / .045) !important;
+html[data-ui-style='living-sky'] .sky-nav-popover {
+  border-color: rgb(var(--border-default) / .2) !important;
+  background: rgb(var(--surface-raised) / .94) !important;
+  color: rgb(var(--text-primary));
+  backdrop-filter: blur(24px) saturate(118%);
+  box-shadow: var(--shadow-3) !important;
+  transform-origin: bottom left;
 }
 
-html[data-ui-style="living-sky"] .sky-nav-subitem {
-  color: rgb(206 222 239 / .76) !important;
-  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+html[data-ui-style='living-sky'] .sky-nav-subitem {
+  color: rgb(var(--text-secondary)) !important;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  html[data-ui-style="living-sky"] .sky-nav-item:hover {
-    color: rgb(246 251 255 / .96) !important;
-    border-color: rgb(175 216 249 / .1);
-    background: rgb(116 170 218 / .075) !important;
-    transform: translateX(2px);
+  html[data-ui-style='living-sky'] .sky-nav-item:hover {
+    color: rgb(var(--text-primary)) !important;
+    border-color: rgb(var(--border-subtle) / .13);
+    background: rgb(var(--accent) / .075) !important;
+    transform: translate3d(2px, 0, 0);
   }
 
-  html[data-ui-style="living-sky"] .sky-nav-item:hover .sky-nav-icon {
-    background: rgb(145 197 239 / .07);
-    transform: scale(1.035);
+  html[data-ui-style='living-sky'] .sky-nav-item:hover .sky-nav-icon,
+  html[data-ui-style='living-sky'] .sky-nav-subitem:hover {
+    background: rgb(var(--accent) / .08) !important;
   }
 
-  html[data-ui-style="living-sky"] .sky-nav-subitem:hover {
-    background: rgb(121 178 224 / .09) !important;
-    color: rgb(245 250 255 / .96) !important;
-    transform: translateX(2px);
+  html[data-ui-style='living-sky'] .sky-nav-subitem:hover {
+    color: rgb(var(--text-primary)) !important;
+    transform: translate3d(2px, 0, 0);
   }
 }
 
-/* Mobile navigation becomes a floating dock instead of a generic bottom strip. */
-html[data-ui-style="living-sky"] .sky-mobile-nav {
+/* Mobile navigation becomes a safe-area-aware floating environmental dock. */
+html[data-ui-style='living-sky'] .sky-mobile-nav {
   left: 12px !important;
   right: 12px !important;
   bottom: max(10px, env(safe-area-inset-bottom)) !important;
-  border: 1px solid rgb(183 218 247 / .15) !important;
-  border-radius: 20px;
+  border: 1px solid rgb(var(--border-default) / .18) !important;
+  border-radius: 18px;
   padding-bottom: 0 !important;
-  background:
-    linear-gradient(150deg, rgb(7 24 43 / .84), rgb(3 13 28 / .78)) !important;
-  backdrop-filter: blur(25px) saturate(128%) !important;
-  box-shadow: 0 18px 50px rgb(0 5 15 / .34), inset 0 1px rgb(255 255 255 / .04);
+  background: rgb(var(--surface-base) / .78) !important;
+  backdrop-filter: blur(24px) saturate(122%) !important;
+  box-shadow: 0 18px 46px -28px rgb(var(--canvas) / .88);
   overflow: hidden;
+  transition: background-color 12s linear, border-color 12s linear;
 }
 
-html[data-ui-style="living-sky"] .sky-mobile-tab {
-  color: rgb(204 221 238 / .72);
+html[data-ui-style='living-sky'] .sky-mobile-tab {
+  color: rgb(var(--text-secondary));
 }
 
-html[data-ui-style="living-sky"] .sky-mobile-icon {
+html[data-ui-style='living-sky'] .sky-mobile-icon {
   display: inline-flex;
   width: 30px;
   height: 26px;
   align-items: center;
   justify-content: center;
   border-radius: 9px;
-  transition: background-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: background-color 180ms ease, transform 180ms var(--ease-out);
 }
 
-html[data-ui-style="living-sky"] .sky-mobile-tab--active .sky-mobile-icon {
-  background: radial-gradient(circle at 45% 30%, rgb(186 224 255 / .18), rgb(91 154 210 / .08) 64%, transparent 78%);
-  box-shadow: 0 0 22px rgb(96 173 232 / .11);
-  transform: translateY(-1px);
+html[data-ui-style='living-sky'] .sky-mobile-tab--active .sky-mobile-icon {
+  background: rgb(var(--accent) / .12);
+  transform: translate3d(0, -1px, 0);
 }
 
-html[data-ui-style="living-sky"] .sky-mobile-indicator {
+html[data-ui-style='living-sky'] .sky-mobile-indicator {
   top: 3px !important;
   width: 24px !important;
-  background: rgb(175 220 255 / .88) !important;
-  box-shadow: 0 0 10px rgb(110 188 247 / .45);
+  background: rgb(var(--accent)) !important;
+  box-shadow: 0 2px 10px rgb(var(--accent) / .32);
 }
 
-/* Dashboard — translucent editorial surfaces that allow the sky to remain visible. */
-html[data-ui-style="living-sky"] .dashboard {
+/* Dashboard typography and surfaces inherit the live environment channels. */
+html[data-ui-style='living-sky'] .dashboard {
   position: relative;
   z-index: 1;
 }
 
-html[data-ui-style="living-sky"] .dash-head h1 {
-  color: rgb(247 251 255 / .98);
-  letter-spacing: -.028em;
-  text-shadow: 0 4px 28px rgb(0 7 18 / .22);
+html[data-ui-style='living-sky'] .dash-head h1 {
+  color: rgb(var(--text-primary));
+  font-size: clamp(1.75rem, 2.6vw, 2.35rem);
+  font-weight: 520;
+  line-height: 1.08;
+  letter-spacing: -.026em;
+  text-wrap: balance;
+  text-shadow: 0 6px 28px rgb(var(--canvas) / .18);
 }
 
-html[data-ui-style="living-sky"] .dash-context,
-html[data-ui-style="living-sky"] .dash-note {
-  color: rgb(211 226 240 / .7);
+html[data-ui-style='living-sky'] .dash-context,
+html[data-ui-style='living-sky'] .dash-note {
+  color: rgb(var(--text-secondary));
 }
 
-html[data-ui-style="living-sky"] .dash-hero {
-  border-color: rgb(183 217 245 / .13);
+html[data-ui-style='living-sky'] .dash-environment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 36px;
+  margin-top: 4px;
+  padding: 6px 10px;
+  border: 1px solid rgb(var(--border-subtle) / .15);
+  border-radius: 12px;
+  background: rgb(var(--surface-base) / .34);
+  color: rgb(var(--text-secondary));
+  font-size: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: blur(10px) saturate(112%);
+}
+
+html[data-ui-style='living-sky'] .dash-environment svg {
+  color: rgb(var(--accent));
+  flex: none;
+}
+
+html[data-ui-style='living-sky'] .dash-environment__primary {
+  color: rgb(var(--text-primary));
+  font-weight: 560;
+}
+
+html[data-ui-style='living-sky'] .dash-environment__separator {
+  color: rgb(var(--text-tertiary));
+}
+
+html[data-ui-style='living-sky'] .dash-environment__tip {
+  max-width: 64ch;
+  margin-top: 8px;
+  color: rgb(var(--text-secondary));
+  font-size: var(--font-body-sm);
+  line-height: 1.55;
+}
+
+html[data-ui-style='living-sky'] .dash-hero {
+  min-height: clamp(270px, 38vh, 340px);
+  border-color: rgb(var(--border-default) / .16);
   background:
-    radial-gradient(66% 110% at 86% 20%, rgb(106 170 219 / .085), transparent 62%),
-    linear-gradient(145deg, rgb(11 31 53 / .42), rgb(5 18 36 / .22) 58%, rgb(7 22 42 / .34));
-  backdrop-filter: blur(9px) saturate(112%);
-  box-shadow: inset 0 1px rgb(255 255 255 / .025), 0 24px 70px rgb(0 7 17 / .08);
+    radial-gradient(64% 110% at 86% 18%, rgb(var(--accent) / .09), transparent 64%),
+    rgb(var(--surface-base) / .38);
+  backdrop-filter: blur(8px) saturate(108%);
+  box-shadow: none;
 }
 
-html[data-ui-style="living-sky"][data-sky-phase="night"] .dash-hero {
-  border-color: rgb(178 216 247 / .12);
-  background:
-    radial-gradient(72% 120% at 80% 14%, rgb(88 157 216 / .08), transparent 63%),
-    linear-gradient(148deg, rgb(7 24 45 / .36), rgb(3 14 30 / .18) 58%, rgb(8 25 46 / .28));
-}
-
-html[data-ui-style="living-sky"] .dash-switch {
-  border-color: rgb(180 216 246 / .13);
-  background: rgb(6 22 40 / .34);
-  backdrop-filter: blur(16px);
-}
-
-html[data-ui-style="living-sky"] .dash-switch button {
-  color: rgb(211 226 241 / .7);
-}
-
-html[data-ui-style="living-sky"] .dash-switch button[aria-pressed="true"] {
-  color: rgb(247 251 255 / .96);
-  background: rgb(119 178 224 / .12);
-  box-shadow: inset 0 -2px rgb(169 218 255 / .72), 0 0 18px rgb(79 157 216 / .06);
-}
-
-html[data-ui-style="living-sky"] .dash-cta,
-html[data-ui-style="living-sky"] .dash-chips a,
-html[data-ui-style="living-sky"] .dash-chips button {
-  border-color: rgb(181 217 247 / .13);
-  background: rgb(9 27 48 / .24);
-  color: rgb(229 239 248 / .84);
+html[data-ui-style='living-sky'] .dash-switch {
+  border-color: rgb(var(--border-subtle) / .16);
+  background: rgb(var(--surface-base) / .42);
   backdrop-filter: blur(12px);
 }
 
-html[data-ui-style="living-sky"] .dash-hero .dash-cta {
-  color: rgb(249 252 255 / .98);
-  border-color: rgb(190 225 253 / .16);
-  background: linear-gradient(135deg, rgb(117 179 227 / .28), rgb(67 126 183 / .2));
-  box-shadow: inset 0 1px rgb(255 255 255 / .07), 0 12px 30px rgb(0 8 20 / .12);
+html[data-ui-style='living-sky'] .dash-switch button {
+  color: rgb(var(--text-secondary));
 }
 
-html[data-ui-style="living-sky"] .dash-columns {
-  border-block-color: rgb(180 215 244 / .1);
+html[data-ui-style='living-sky'] .dash-switch button[aria-pressed='true'] {
+  color: rgb(var(--text-primary));
+  background: rgb(var(--accent) / .12);
+  box-shadow: inset 0 -2px rgb(var(--accent) / .72);
 }
 
-html[data-ui-style="living-sky"] .dash-columns .dash-block {
+html[data-ui-style='living-sky'] .dash-cta,
+html[data-ui-style='living-sky'] .dash-chips a,
+html[data-ui-style='living-sky'] .dash-chips button {
+  border-color: rgb(var(--border-subtle) / .17);
+  background: rgb(var(--surface-base) / .32);
+  color: rgb(var(--text-secondary));
+  backdrop-filter: blur(9px);
+}
+
+html[data-ui-style='living-sky'] .dash-hero .dash-cta {
+  color: rgb(var(--text-onaccent));
+  border-color: transparent;
+  background: rgb(var(--accent));
+  box-shadow: 0 12px 30px -18px rgb(var(--canvas) / .72);
+}
+
+html[data-ui-style='living-sky'] .dash-columns {
+  border-block-color: rgb(var(--border-subtle) / .13);
+}
+
+html[data-ui-style='living-sky'] .dash-columns .dash-block {
   padding: clamp(14px, 2vw, 22px);
-  border: 1px solid rgb(181 216 245 / .085);
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgb(10 29 50 / .2), rgb(4 16 32 / .1));
+  border: 1px solid rgb(var(--border-subtle) / .13);
+  border-radius: 14px;
+  background: rgb(var(--surface-base) / .28);
   backdrop-filter: blur(6px);
 }
 
-html[data-ui-style="living-sky"] .dash-tools .dash-chips a,
-html[data-ui-style="living-sky"] .dash-tools .dash-chips button {
-  background: rgb(9 28 49 / .24);
+html[data-ui-style='living-sky'] .dash-tools .dash-chips a,
+html[data-ui-style='living-sky'] .dash-tools .dash-chips button {
+  background: rgb(var(--surface-base) / .32);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  html[data-ui-style="living-sky"] .dash-cta:hover,
-  html[data-ui-style="living-sky"] .dash-chips a:hover,
-  html[data-ui-style="living-sky"] .dash-chips button:hover {
-    border-color: rgb(188 223 251 / .2);
-    background: rgb(111 172 220 / .12);
-    color: rgb(248 251 255 / .98);
-    box-shadow: 0 9px 28px rgb(0 8 19 / .09);
+  html[data-ui-style='living-sky'] .dash-cta:hover,
+  html[data-ui-style='living-sky'] .dash-chips a:hover,
+  html[data-ui-style='living-sky'] .dash-chips button:hover {
+    border-color: rgb(var(--border-default) / .22);
+    background: rgb(var(--accent) / .1);
+    color: rgb(var(--text-primary));
   }
 
-  html[data-ui-style="living-sky"] .dash-hero .dash-cta:hover {
-    background: linear-gradient(135deg, rgb(136 194 237 / .36), rgb(76 141 198 / .28));
-    transform: translateY(-1px);
+  html[data-ui-style='living-sky'] .dash-hero .dash-cta:hover {
+    background: rgb(var(--accent-hover));
+    color: rgb(var(--text-onaccent));
+    transform: translate3d(0, -1px, 0);
   }
 }
 
-html[data-ui-style="living-sky"] .sky-nav-item:focus-visible,
-html[data-ui-style="living-sky"] .sky-nav-subitem:focus-visible,
-html[data-ui-style="living-sky"] .sky-mobile-nav a:focus-visible,
-html[data-ui-style="living-sky"] .sky-mobile-nav button:focus-visible {
-  outline: 2px solid rgb(176 221 255 / .76);
+html[data-ui-style='living-sky'] .sky-nav-item:focus-visible,
+html[data-ui-style='living-sky'] .sky-nav-subitem:focus-visible,
+html[data-ui-style='living-sky'] .sky-mobile-nav a:focus-visible,
+html[data-ui-style='living-sky'] .sky-mobile-nav button:focus-visible {
+  outline: 2px solid rgb(var(--focus-ring));
   outline-offset: 2px;
 }
 
-:root[data-motion="reduce"] .sky-nav-item,
-:root[data-motion="reduce"] .sky-nav-icon,
-:root[data-motion="reduce"] .sky-mobile-icon {
-  transition: none !important;
+@supports not (backdrop-filter: blur(1px)) {
+  html[data-ui-style='living-sky'] .sky-nav-shell,
+  html[data-ui-style='living-sky'] .sky-mobile-nav,
+  html[data-ui-style='living-sky'] .dash-hero,
+  html[data-ui-style='living-sky'] .dash-columns .dash-block {
+    background: rgb(var(--surface-base) / .94) !important;
+  }
+}
+
+:root[data-motion='reduce'] .sky-nav-item,
+:root[data-motion='reduce'] .sky-nav-icon,
+:root[data-motion='reduce'] .sky-mobile-icon {
+  transition: color 160ms ease, background-color 160ms ease !important;
   transform: none !important;
+}
+
+@media (max-width: 720px) {
+  html[data-ui-style='living-sky'] .dash-head h1 { font-size: clamp(1.65rem, 8vw, 2rem); }
+  html[data-ui-style='living-sky'] .dash-environment { gap: 6px; }
+  html[data-ui-style='living-sky'] .dash-environment__location { display: none; }
+  html[data-ui-style='living-sky'] .dash-hero { min-height: 250px; }
 }

@@ -74,6 +74,7 @@ export interface VisualPreferences {
   largerText?: boolean;
   uiStyle: UiStyle;
   liveWeather: boolean;
+  weatherTips: boolean;
 }
 
 export interface ThemeLayer {

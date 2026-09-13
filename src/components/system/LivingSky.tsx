@@ -2,158 +2,90 @@ import * as React from 'react';
 
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
 import { NightSkyCanvas } from '@/components/system/NightSkyCanvas';
+import { PrecipitationCanvas } from '@/components/system/PrecipitationCanvas';
+import { useEnvironment } from '@/features/environment/EnvironmentProvider';
+import { clamp, rgbChannels } from '@/features/environment/environment';
 
-export type SkyPhase = 'dawn' | 'morning' | 'noon' | 'golden' | 'evening' | 'night';
-export type SkyWeather = 'clear' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog';
+import type { SkyWeather } from '@/features/environment/environment';
 
-type WeatherState = {
-  temperature: number | null;
-  apparentTemperature: number | null;
-  weather: SkyWeather;
-  cloudCover: number;
-  precipitation: number;
-  sunriseMinutes: number | null;
-  sunsetMinutes: number | null;
-};
+const ROOT_ENV_PROPERTIES = [
+  '--canvas',
+  '--surface-base',
+  '--surface-raised',
+  '--surface-interactive',
+  '--surface-reading',
+  '--surface-overlay',
+  '--text-primary',
+  '--text-secondary',
+  '--text-tertiary',
+  '--text-onaccent',
+  '--border-subtle',
+  '--border-default',
+  '--border-strong',
+  '--accent',
+  '--accent-hover',
+  '--accent-text',
+  '--focus-ring',
+  '--glass-tint',
+  '--glass-alpha',
+  '--shadow-1',
+  '--shadow-2',
+  '--shadow-3',
+] as const;
 
-const EMPTY_WEATHER: WeatherState = {
-  temperature: null,
-  apparentTemperature: null,
-  weather: 'clear',
-  cloudCover: 0,
-  precipitation: 0,
-  sunriseMinutes: null,
-  sunsetMinutes: null,
-};
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-function minutesOfDay(date: Date): number {
-  return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60;
+function cloudOpacity(weather: SkyWeather, cover: number): number {
+  const observed = clamp(cover / 100, 0.04, 1);
+  if (weather === 'storm') return Math.max(observed, 0.88);
+  if (weather === 'heavy-rain') return Math.max(observed, 0.8);
+  if (weather === 'rain') return Math.max(observed, 0.65);
+  if (weather === 'fog') return Math.max(observed, 0.72);
+  if (weather === 'snow') return Math.max(observed, 0.62);
+  if (weather === 'cloudy') return Math.max(observed, 0.7);
+  if (weather === 'partly-cloudy') return Math.max(observed, 0.38);
+  if (weather === 'mostly-clear') return Math.max(observed, 0.16);
+  return Math.min(observed, 0.12);
 }
 
-function minutesFromIso(value?: string): number | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.getHours() * 60 + date.getMinutes();
-}
-
-function phaseForTime(now: Date, sunrise: number | null, sunset: number | null): SkyPhase {
-  const minute = minutesOfDay(now);
-  const rise = sunrise ?? 390;
-  const set = sunset ?? 1110;
-
-  if (minute < rise - 35 || minute >= set + 70) return 'night';
-  if (minute < rise + 35) return 'dawn';
-  if (minute < 660) return 'morning';
-  if (minute < set - 105) return 'noon';
-  if (minute < set + 10) return 'golden';
-  return 'evening';
-}
-
-function weatherFromCode(code: number, cloudCover: number, precipitation: number): SkyWeather {
-  if ([95, 96, 99].includes(code)) return 'storm';
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return 'snow';
-  if ([45, 48].includes(code)) return 'fog';
-  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code) || precipitation > 0.05) return 'rain';
-  if ([1, 2, 3].includes(code) || cloudCover > 38) return 'cloudy';
-  return 'clear';
-}
-
-function wellbeingTip(weather: WeatherState): string | null {
-  const apparent = weather.apparentTemperature ?? weather.temperature;
-
-  if (weather.weather === 'storm') return 'Stormy weather nearby — stay indoors when conditions become unsafe and keep study breaks calm.';
-  if (weather.weather === 'rain') return 'Rain around you — keep an umbrella handy and protect books or devices when heading out.';
-  if (weather.weather === 'snow') return 'Cold, snowy conditions — wear warm layers when you go outside.';
-  if (apparent !== null && apparent >= 32) return 'It feels hot outside — keep water nearby and take comfortable breaks in a cooler place.';
-  if (apparent !== null && apparent <= 16) return 'It feels cool outside — a warm layer or blanket can make study time more comfortable.';
-  if (weather.cloudCover < 20) return 'Clear skies — a short stretch or fresh-air break can be a nice reset between study sessions.';
-  return null;
-}
-
-function useClock(): Date {
-  const [now, setNow] = React.useState(() => new Date());
+function StormLight({ active }: { active: boolean }) {
+  const ref = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+    const element = ref.current;
+    if (!active || !element) return;
+    let timer = 0;
+    let disposed = false;
 
-  return now;
-}
-
-function useLocalWeather(enabled: boolean): WeatherState {
-  const [weather, setWeather] = React.useState<WeatherState>(EMPTY_WEATHER);
-
-  React.useEffect(() => {
-    if (!enabled || !('geolocation' in navigator)) {
-      setWeather(EMPTY_WEATHER);
-      return;
-    }
-
-    let active = true;
-    const controller = new AbortController();
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const query = new URLSearchParams({
-          latitude: latitude.toFixed(4),
-          longitude: longitude.toFixed(4),
-          current: 'temperature_2m,apparent_temperature,precipitation,weather_code,cloud_cover',
-          daily: 'sunrise,sunset',
-          forecast_days: '1',
-          timezone: 'auto',
-        });
-
-        void fetch(`https://api.open-meteo.com/v1/forecast?${query.toString()}`, { signal: controller.signal })
-          .then((response) => {
-            if (!response.ok) throw new Error('weather unavailable');
-            return response.json() as Promise<{
-              current?: {
-                temperature_2m?: number;
-                apparent_temperature?: number;
-                precipitation?: number;
-                weather_code?: number;
-                cloud_cover?: number;
-              };
-              daily?: { sunrise?: string[]; sunset?: string[] };
-            }>;
-          })
-          .then((data) => {
-            if (!active) return;
-            const cloudCover = data.current?.cloud_cover ?? 0;
-            const precipitation = data.current?.precipitation ?? 0;
-            const code = data.current?.weather_code ?? 0;
-            setWeather({
-              temperature: data.current?.temperature_2m ?? null,
-              apparentTemperature: data.current?.apparent_temperature ?? null,
-              weather: weatherFromCode(code, cloudCover, precipitation),
-              cloudCover,
-              precipitation,
-              sunriseMinutes: minutesFromIso(data.daily?.sunrise?.[0]),
-              sunsetMinutes: minutesFromIso(data.daily?.sunset?.[0]),
-            });
-          })
-          .catch(() => {
-            if (active) setWeather(EMPTY_WEATHER);
-          });
-      },
-      () => {
-        if (active) setWeather(EMPTY_WEATHER);
-      },
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 30 * 60 * 1000 },
-    );
-
-    return () => {
-      active = false;
-      controller.abort();
+    const schedule = () => {
+      if (disposed) return;
+      timer = window.setTimeout(() => {
+        if (document.hidden) {
+          schedule();
+          return;
+        }
+        const animation = element.animate(
+          [
+            { opacity: 0 },
+            { opacity: 0.3, offset: 0.1 },
+            { opacity: 0.04, offset: 0.23 },
+            { opacity: 0.18, offset: 0.34 },
+            { opacity: 0 },
+          ],
+          { duration: 920, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+        );
+        animation.onfinish = schedule;
+        animation.oncancel = schedule;
+      }, 18_000 + Math.random() * 30_000);
     };
-  }, [enabled]);
 
-  return weather;
+    schedule();
+    return () => {
+      disposed = true;
+      window.clearTimeout(timer);
+      element.getAnimations().forEach((animation) => animation.cancel());
+    };
+  }, [active]);
+
+  return <div ref={ref} className="living-sky__lightning" aria-hidden="true" />;
 }
 
 export function LivingSky({
@@ -164,53 +96,115 @@ export function LivingSky({
   surface: 'app' | 'reading' | 'immersive';
 }) {
   const { preferences, reducedMotion } = useAcademicTheme();
-  const now = useClock();
+  const environment = useEnvironment();
   const live = preferences.uiStyle === 'living-sky';
-  const weather = useLocalWeather(live && preferences.liveWeather);
-  const phase = phaseForTime(now, weather.sunriseMinutes, weather.sunsetMinutes);
-  const minute = minutesOfDay(now);
-  const rise = weather.sunriseMinutes ?? 390;
-  const set = weather.sunsetMinutes ?? 1110;
-  const sunProgress = clamp((minute - rise) / Math.max(1, set - rise), 0, 1);
-  const moonProgress = minute >= set
-    ? clamp((minute - set) / Math.max(1, 1440 - set + rise), 0, 1)
-    : clamp((minute + (1440 - set)) / Math.max(1, 1440 - set + rise), 0, 1);
-  const sunX = 6 + sunProgress * 86;
-  const sunY = 76 - Math.sin(sunProgress * Math.PI) * 62;
-  const moonX = 7 + moonProgress * 86;
-  const moonY = 78 - Math.sin(moonProgress * Math.PI) * 60;
-  const renderedWeather = preferences.liveWeather ? weather.weather : 'clear';
-  const tip = preferences.liveWeather ? wellbeingTip(weather) : null;
   const quiet = lowPowerMode || reducedMotion || surface !== 'app';
-  const cinematicNight = phase === 'night' || phase === 'evening';
+  const cover = cloudOpacity(environment.weather, environment.cloudCover);
+  const isPrecipitating = ['rain', 'heavy-rain', 'storm', 'snow'].includes(environment.weather);
+  const sunX = 6 + environment.sunProgress * 88;
+  const sunY = 78 - Math.sin(environment.sunProgress * Math.PI) * 65;
+  const moonX = 7 + environment.moonProgress * 86;
+  const moonY = 80 - Math.sin(environment.moonProgress * Math.PI) * 62;
+  const horizontalWind = -Math.sin(environment.windDirection * Math.PI / 180);
+  const cloudDirection = horizontalWind < 0 ? -1 : 1;
+  const cloudDuration = clamp(210 - environment.windSpeed * 4.2, 72, 210);
+  const previousRootValues = React.useRef<Map<string, string> | null>(null);
+  const previousMetaTheme = React.useRef<string | null>(null);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!live) return;
     const root = document.documentElement;
-    root.dataset.skyPhase = phase;
-    root.dataset.skyWeather = renderedWeather;
+    previousRootValues.current = new Map(ROOT_ENV_PROPERTIES.map((property) => [property, root.style.getPropertyValue(property)]));
+    previousMetaTheme.current = document.querySelector('meta[name="theme-color"]')?.getAttribute('content') ?? null;
 
     return () => {
-      if (root.dataset.skyPhase === phase) delete root.dataset.skyPhase;
-      if (root.dataset.skyWeather === renderedWeather) delete root.dataset.skyWeather;
+      for (const property of ROOT_ENV_PROPERTIES) {
+        const previous = previousRootValues.current?.get(property) ?? '';
+        if (previous) root.style.setProperty(property, previous);
+        else root.style.removeProperty(property);
+      }
+      if (previousMetaTheme.current) {
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', previousMetaTheme.current);
+      }
+      delete root.dataset.skyPhase;
+      delete root.dataset.skyWeather;
+      delete root.dataset.skyLight;
+      delete root.dataset.weatherStatus;
+      previousRootValues.current = null;
     };
-  }, [live, phase, renderedWeather]);
+  }, [live]);
+
+  React.useLayoutEffect(() => {
+    if (!live) return;
+    const root = document.documentElement;
+    const { chrome } = environment;
+    const shadow = rgbChannels(chrome.shadow);
+    const values: Record<(typeof ROOT_ENV_PROPERTIES)[number], string> = {
+      '--canvas': rgbChannels(chrome.canvas),
+      '--surface-base': rgbChannels(chrome.surface),
+      '--surface-raised': rgbChannels(chrome.raised),
+      '--surface-interactive': rgbChannels(chrome.interactive),
+      '--surface-reading': rgbChannels(chrome.reading),
+      '--surface-overlay': rgbChannels(chrome.raised),
+      '--text-primary': rgbChannels(chrome.text),
+      '--text-secondary': rgbChannels(chrome.secondaryText),
+      '--text-tertiary': rgbChannels(chrome.tertiaryText),
+      '--text-onaccent': rgbChannels(chrome.onAccent),
+      '--border-subtle': rgbChannels(chrome.border),
+      '--border-default': rgbChannels(chrome.border),
+      '--border-strong': rgbChannels(chrome.border),
+      '--accent': rgbChannels(chrome.accent),
+      '--accent-hover': rgbChannels(chrome.accentHover),
+      '--accent-text': rgbChannels(chrome.accent),
+      '--focus-ring': rgbChannels(chrome.accent),
+      '--glass-tint': rgbChannels(chrome.surface),
+      '--glass-alpha': String(chrome.surfaceAlpha),
+      '--shadow-1': `0 1px 3px rgb(${shadow} / .16)`,
+      '--shadow-2': `0 12px 36px -16px rgb(${shadow} / .32)`,
+      '--shadow-3': `0 24px 72px -24px rgb(${shadow} / .46)`,
+    };
+
+    for (const [property, value] of Object.entries(values)) root.style.setProperty(property, value);
+    root.dataset.skyPhase = environment.phase;
+    root.dataset.skyWeather = environment.weather;
+    root.dataset.skyLight = environment.nightIntensity > 0.46 ? 'dark' : 'light';
+    root.dataset.weatherStatus = environment.status;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', `rgb(${rgbChannels(environment.palette.top)})`);
+  }, [environment, live]);
 
   if (!live || surface === 'immersive') return null;
 
   const style = {
+    '--sky-top-color': `rgb(${rgbChannels(environment.palette.top)})`,
+    '--sky-mid-color': `rgb(${rgbChannels(environment.palette.middle)})`,
+    '--sky-horizon-color': `rgb(${rgbChannels(environment.palette.horizon)})`,
+    '--sky-glow-color': `rgb(${rgbChannels(environment.palette.glow)})`,
     '--sky-sun-x': `${sunX}%`,
     '--sky-sun-y': `${sunY}%`,
+    '--sky-sun-opacity': clamp((1 - environment.nightIntensity) * (1 - cover * 0.56)),
     '--sky-moon-x': `${moonX}%`,
     '--sky-moon-y': `${moonY}%`,
-    '--sky-cloud-cover': weather.cloudCover / 100,
+    '--sky-moon-opacity': environment.moonVisibility,
+    '--sky-star-opacity': environment.starVisibility,
+    '--sky-cloud-opacity': cover,
+    '--sky-horizon-glow': environment.horizonGlow,
+    '--sky-night-intensity': environment.nightIntensity,
+    '--sky-golden-intensity': environment.goldenHourIntensity,
+    '--sky-twilight-intensity': environment.twilightIntensity,
+    '--sky-weather-dim': clamp(cover * 0.24 + (isPrecipitating ? 0.16 : 0)),
+    '--sky-cloud-start': cloudDirection > 0 ? '-72vw' : '108vw',
+    '--sky-cloud-travel': `${cloudDirection * 190}vw`,
+    '--sky-cloud-quiet-position': `${cloudDirection * 54}vw`,
+    '--sky-cloud-far-duration': `${Math.round(cloudDuration * 1.34)}s`,
+    '--sky-cloud-mid-duration': `${Math.round(cloudDuration)}s`,
+    '--sky-cloud-near-duration': `${Math.round(cloudDuration * 0.78)}s`,
   } as React.CSSProperties;
 
   return (
     <div
       className="living-sky"
-      data-phase={phase}
-      data-weather={renderedWeather}
+      data-phase={environment.phase}
+      data-weather={environment.weather}
       data-quiet={quiet ? 'true' : 'false'}
       style={style}
     >
@@ -219,27 +213,28 @@ export function LivingSky({
         <div className="living-sky__airglow" />
         <div className="living-sky__haze" />
         <NightSkyCanvas
-          active={cinematicNight}
+          visibility={environment.starVisibility}
           quiet={quiet}
-          cloudCover={weather.cloudCover / 100}
+          cloudCover={cover}
         />
-        <div className="living-sky__stars living-sky__stars--a" />
-        <div className="living-sky__stars living-sky__stars--b" />
-        <div className="living-sky__shooting-star living-sky__shooting-star--one" />
-        <div className="living-sky__shooting-star living-sky__shooting-star--two" />
         <div className="living-sky__sun" />
         <div className="living-sky__moon"><span /></div>
-        <div className="living-sky__cloud living-sky__cloud--one" />
-        <div className="living-sky__cloud living-sky__cloud--two" />
-        <div className="living-sky__cloud living-sky__cloud--three" />
-        <div className="living-sky__rain" />
-        <div className="living-sky__lightning" />
+        <div className="living-sky__cloud living-sky__cloud--far" />
+        <div className="living-sky__cloud living-sky__cloud--mid" />
+        <div className="living-sky__cloud living-sky__cloud--near" />
+        <PrecipitationCanvas
+          weather={environment.weather}
+          precipitation={environment.precipitation}
+          windSpeed={environment.windSpeed}
+          windDirection={environment.windDirection}
+          quiet={quiet}
+        />
+        <StormLight active={environment.weather === 'storm' && !quiet} />
         <div className="living-sky__horizon" />
         <div className="living-sky__foreground" />
         <div className="living-sky__vignette" />
         <div className="living-sky__grain" />
       </div>
-      {tip ? <div className="living-sky__tip" role="status">{tip}</div> : null}
     </div>
   );
 }

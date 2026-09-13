@@ -179,19 +179,27 @@ export const SettingsPage = () => {
 							label="Interface style"
 							value={prefs.appearance.uiStyle}
 							options={[
-								{ id: 'living-sky', label: 'Living Sky' },
+								{ id: 'living-sky', label: 'Living Nature' },
 								{ id: 'academic', label: 'Academic' },
 							]}
 							onChange={(uiStyle) => void update('appearance', { uiStyle })}
 						/>
-						<p className="pf-note">Living Sky changes continuously with local time. Dawn, daylight, golden hour, evening, moonlight and stars blend naturally through the day.</p>
+						<p className="pf-note">Living Nature changes continuously with local time. Dawn, daylight, golden hour, evening, moonlight and stars blend naturally through the day.</p>
 						{prefs.appearance.uiStyle === 'living-sky' ? (
-							<Toggle
-								label="Use local weather and sunrise/sunset"
-								hint="When enabled, your browser asks for location permission. Averiq uses it only to request local sky and weather conditions."
-								checked={prefs.appearance.liveWeather}
-								onChange={(liveWeather) => void update('appearance', { liveWeather })}
-							/>
+							<>
+								<Toggle
+									label="Use local weather and sunrise/sunset"
+									hint="When enabled, your browser asks for location permission. Averiq refreshes conditions every 20 minutes and never stores your coordinates."
+									checked={prefs.appearance.liveWeather}
+									onChange={(liveWeather) => void update('appearance', { liveWeather })}
+								/>
+								<Toggle
+									label="Show gentle weather tips"
+									hint="Adds a short, non-blocking study suggestion when live weather is available."
+									checked={prefs.appearance.weatherTips}
+									onChange={(weatherTips) => void update('appearance', { weatherTips })}
+								/>
+							</>
 						) : null}
 						<Choice<ThemeMode> label="Theme" value={prefs.appearance.mode} options={[{ id: 'system', label: 'System' }, { id: 'dark', label: 'Dark' }, { id: 'light', label: 'Light' }]} onChange={(mode) => void update('appearance', { mode })} />
 						<Choice<Atmosphere> label="Atmosphere detail" value={prefs.appearance.atmosphere} options={[{ id: 'full', label: 'Full' }, { id: 'reduced', label: 'Reduced' }, { id: 'minimal', label: 'Minimal' }]} onChange={(atmosphere) => void update('appearance', { atmosphere })} />

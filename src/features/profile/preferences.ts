@@ -14,7 +14,7 @@ export type UIStyle = UiStyle
 
 export type Preferences = {
 	learning: { style: LearningStyle; dailyTargetMinutes: number }
-	appearance: { mode: ThemeMode; atmosphere: Atmosphere; visualQuality: VisualQuality; uiStyle: UIStyle; liveWeather: boolean }
+	appearance: { mode: ThemeMode; atmosphere: Atmosphere; visualQuality: VisualQuality; uiStyle: UIStyle; liveWeather: boolean; weatherTips: boolean }
 	notifications: { studyReminder: boolean; plannerReminder: boolean; revisionReminder: boolean; achievements: boolean }
 	ai: { depth: Depth; keepHistory: boolean }
 	accessibility: { motion: MotionMode; largerText: boolean }
@@ -23,7 +23,7 @@ export type Preferences = {
 
 export const DEFAULT_PREFERENCES: Preferences = {
 	learning: { style: 'balanced', dailyTargetMinutes: 30 },
-	appearance: { mode: 'system', atmosphere: 'full', visualQuality: 'auto', uiStyle: 'living-sky', liveWeather: false },
+	appearance: { mode: 'system', atmosphere: 'full', visualQuality: 'auto', uiStyle: 'living-sky', liveWeather: false, weatherTips: true },
 	notifications: { studyReminder: false, plannerReminder: false, revisionReminder: false, achievements: true },
 	ai: { depth: 'standard', keepHistory: true },
 	accessibility: { motion: 'system', largerText: false },
@@ -40,6 +40,7 @@ export function visualPreferencesFromSettings(prefs: Preferences): Partial<Visua
 		largerText: prefs.accessibility.largerText,
 		uiStyle: prefs.appearance.uiStyle,
 		liveWeather: prefs.appearance.liveWeather,
+		weatherTips: prefs.appearance.weatherTips,
 	}
 }
 
@@ -78,6 +79,7 @@ export const applyPreferences = (prefs: Preferences): void => {
 	root.dataset.atmosphere = prefs.appearance.atmosphere
 	root.dataset.uiStyle = prefs.appearance.uiStyle
 	root.dataset.liveWeather = prefs.appearance.liveWeather ? 'true' : 'false'
+	root.dataset.weatherTips = prefs.appearance.weatherTips ? 'true' : 'false'
 	root.dataset.textScale = prefs.accessibility.largerText ? 'large' : 'normal'
 	try {
 		const raw = window.localStorage.getItem(VISUAL_QUALITY_KEY)
@@ -89,6 +91,7 @@ export const applyPreferences = (prefs: Preferences): void => {
 				quality: prefs.appearance.visualQuality,
 				uiStyle: prefs.appearance.uiStyle,
 				liveWeather: prefs.appearance.liveWeather,
+				weatherTips: prefs.appearance.weatherTips,
 			}),
 		)
 	} catch {

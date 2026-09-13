@@ -11,7 +11,7 @@ const DARK = {
 const LIGHT = {
   canvas: [250, 249, 247], surface: [255, 255, 254], interactive: [243, 242, 239],
   primary: [24, 26, 30], secondary: [78, 84, 93], tertiary: [108, 115, 125],
-  accent: [154, 122, 64], ok: [82, 158, 112], bad: [198, 95, 88], warn: [197, 150, 66],
+  accent: [154, 122, 64], ok: [82, 158, 112], bad: [198, 95, 88], warn: [145, 99, 24],
 };
 
 const CHECKS = [

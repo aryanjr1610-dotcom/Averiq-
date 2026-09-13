@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, BookOpen, Check, Circle, Clock3 } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, Circle, Clock3, CloudFog, CloudLightning, CloudRain, CloudSun, Cloudy, MapPin, MoonStar, Snowflake, SunMedium } from 'lucide-react'
 import { ProgressBar } from '@/components/progress/MasteryBar'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useProfile } from '@/features/profile/ProfileProvider'
 import { useAITutor } from '@/features/ai/AITutorProvider'
-import { greeting, type SectionState } from './dashboard-data'
+import { type SectionState } from './dashboard-data'
+import { useEnvironment } from '@/features/environment/EnvironmentProvider'
+import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider'
+import { environmentTip } from '@/features/environment/environment'
 import { useDashboardData } from './useDashboardData'
 import './dashboard.css'
 
@@ -35,6 +38,22 @@ function readProfile(profile: unknown) {
   }
 }
 
+function greetingForMinute(minute: number, name?: string) {
+  const part = minute < 270 ? 'Good night' : minute < 720 ? 'Good morning' : minute < 1020 ? 'Good afternoon' : 'Good evening'
+  return name ? `${part}, ${name}` : part
+}
+
+function EnvironmentIcon({ weather, night }: { weather: string; night: boolean }) {
+  const props = { size: 16, strokeWidth: 1.8, 'aria-hidden': true as const }
+  if (weather === 'storm') return <CloudLightning {...props} />
+  if (weather === 'heavy-rain' || weather === 'rain') return <CloudRain {...props} />
+  if (weather === 'snow') return <Snowflake {...props} />
+  if (weather === 'fog') return <CloudFog {...props} />
+  if (weather === 'cloudy') return <Cloudy {...props} />
+  if (weather === 'partly-cloudy' || weather === 'mostly-clear') return <CloudSun {...props} />
+  return night ? <MoonStar {...props} /> : <SunMedium {...props} />
+}
+
 function SectionFallback<T>(props: { state: SectionState<T>; empty: string; onRetry: () => void }) {
   if (props.state.status === 'unavailable') {
     return (
@@ -51,11 +70,16 @@ export function DashboardPage() {
   const profileState = useProfile() as unknown as { profile?: unknown }
   const tutor = useAITutor()
   const { data, loading, refresh } = useDashboardData()
+  const environment = useEnvironment()
+  const { preferences } = useAcademicTheme()
   const profile = useMemo(() => readProfile(profileState.profile), [profileState.profile])
   const [context, setContext] = useState<'school' | string>('school')
 
-  const hello = useMemo(() => greeting(new Date(), profile.name), [profile.name])
+  const hello = useMemo(() => greetingForMinute(environment.minuteOfDay, profile.name), [environment.minuteOfDay, profile.name])
   const exams = data?.exams.status === 'ready' ? data.exams.data : []
+  const localTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: environment.timezone ?? undefined }).format(environment.now)
+  const liveWeather = environment.status === 'live'
+  const weatherTip = liveWeather && preferences.weatherTips ? environmentTip(environment, environment.phase) : null
   const contextLine = [profile.board?.toUpperCase(), profile.classLevel ? `Class ${profile.classLevel}` : undefined, profile.stream?.toUpperCase()]
     .filter(Boolean)
     .join(' • ')
@@ -81,8 +105,23 @@ export function DashboardPage() {
   return (
     <div className="dashboard">
       <header className="dash-head">
-        <div className="dash-head__copy"><h1>{hello}</h1>
-        {contextLine ? <p className="dash-context">{contextLine}{exams.length > 0 ? ` • ${exams.map((exam) => exam.shortName).join(' / ')}` : ''}</p> : null}
+        <div className="dash-head__copy">
+          <h1>{hello}</h1>
+          {contextLine ? <p className="dash-context">{contextLine}{exams.length > 0 ? ` • ${exams.map((exam) => exam.shortName).join(' / ')}` : ''}</p> : null}
+          <div className="dash-environment" role="status" aria-label="Current environment">
+            <EnvironmentIcon weather={environment.weather} night={environment.nightIntensity > 0.46} />
+            <span className="dash-environment__primary">
+              {liveWeather && environment.temperature !== null ? `${Math.round(environment.temperature)}°` : environment.phaseLabel}
+            </span>
+            <span className="dash-environment__separator" aria-hidden="true">·</span>
+            <span>{environment.status === 'locating' ? 'Finding local weather' : liveWeather ? environment.conditionLabel : 'Local time'}</span>
+            <span className="dash-environment__separator" aria-hidden="true">·</span>
+            <time dateTime={environment.now.toISOString()}>{localTime}</time>
+            {liveWeather && environment.locationLabel ? (
+              <><span className="dash-environment__separator" aria-hidden="true">·</span><span className="dash-environment__location"><MapPin size={14} strokeWidth={1.8} aria-hidden="true" />{environment.locationLabel}</span></>
+            ) : null}
+          </div>
+          {weatherTip ? <p className="dash-environment__tip">{weatherTip}</p> : null}
         </div>
 
       {exams.length > 0 ? (

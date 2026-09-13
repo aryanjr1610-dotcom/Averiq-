@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "project": {
+    "name": "averiq",
+    "productType": "adaptive education workspace",
+    "stack": [
+      "react",
+      "tailwind-v3",
+      "vite"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "src/styles/tokens.css",
+      "src/styles/typography.css",
+      "src/styles/living-sky.css"
+    ],
+    "components": [
+      "src/components/ui"
+    ],
+    "assets": [],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "time-aware light and dark",
+    "colors": {},
+    "typography": {},
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "comfortable application"
+  },
+  "components": {
+    "installed": [
+      "Button",
+      "Dialog",
+      "Divider",
+      "field",
+      "Input",
+      "Sheet",
+      "Slider",
+      "Surface",
+      "Tabs"
+    ],
+    "preferredPrimitives": [
+      "radix-ui"
+    ],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [
+      "Interpolate the environment continuously from local time and live sunrise/sunset when enabled.",
+      "Treat weather as atmosphere, never as a content-blocking interaction.",
+      "Preserve readable semantic surfaces and WCAG AA contrast across every sky state.",
+      "Honor reduced motion, lower visual quality, visibility state, and mobile safe areas."
+    ],
+    "avoid": [
+      "Full-screen photographic wallpaper behind application content.",
+      "Repeated star tiles, looping rain stripes, frequent shooting stars, and periodic lightning.",
+      "Hard scene cuts, layout-shifting animation, and decorative motion inside focus or reading modes."
+    ]
+  },
+  "decisions": [
+    "Keep the persisted UI key living-sky for backwards compatibility while labeling the experience Living Nature.",
+    "Use procedural CSS and canvas layers with normalized time, weather, sun, and moon values.",
+    "Use the existing custom Radix-style primitives instead of adding a parallel component library.",
+    "Use Segoe UI Variable Text and a 16px body floor for legibility without adding a remote font dependency."
+  ],
+  "evidence": [
+    {
+      "fact": "components.installed",
+      "source": "src/components/ui"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:tailwind-v3",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:vite",
+      "source": "package.json"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "src/styles/tokens.css"
+    },
+    {
+      "fact": "environment.engine",
+      "source": "src/features/environment/environment.ts"
+    }
+  ],
+  "generatedAt": "2026-09-13T03:20:15.349Z"
+}

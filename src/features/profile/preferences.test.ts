@@ -12,6 +12,7 @@ describe('settings to visual-system preferences', () => {
         visualQuality: 'low',
         uiStyle: 'living-sky',
         liveWeather: false,
+        weatherTips: true,
       },
     });
     expect(visual).toEqual({
@@ -21,6 +22,7 @@ describe('settings to visual-system preferences', () => {
       largerText: true,
       uiStyle: 'living-sky',
       liveWeather: false,
+      weatherTips: true,
     });
   });
 

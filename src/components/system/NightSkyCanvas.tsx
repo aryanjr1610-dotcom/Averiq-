@@ -12,7 +12,7 @@ type Star = {
 };
 
 type NightSkyCanvasProps = {
-  active: boolean;
+  visibility: number;
   quiet: boolean;
   cloudCover: number;
 };
@@ -118,11 +118,11 @@ function buildMilkyWay(width: number, height: number) {
   return layer;
 }
 
-export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProps) {
+export function NightSkyCanvas({ visibility, quiet, cloudCover }: NightSkyCanvasProps) {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
   React.useEffect(() => {
-    if (!active) return;
+    if (visibility <= 0.015) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -143,6 +143,9 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
     let pointerY = 0;
     let targetPointerX = 0;
     let targetPointerY = 0;
+    const eventRandom = mulberry32(0x5a71c3e9);
+    let shootingStartedAt: number | null = null;
+    let nextShootingAt = performance.now() + 45_000 + eventRandom() * 75_000;
 
     const buildStars = () => {
       const rng = mulberry32(0x89f3a772);
@@ -196,8 +199,8 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
       const drift = quiet ? 0 : (time * 0.0000035) % 1;
       for (const star of stars) {
         const twinkle = quiet ? 1 : 0.78 + Math.sin(time * star.speed + star.phase) * 0.22;
-        const parallaxX = pointerX * star.depth * 5.5;
-        const parallaxY = pointerY * star.depth * 3.5;
+        const parallaxX = pointerX * star.depth * 2;
+        const parallaxY = pointerY * star.depth * 1.5;
         let x = (star.x + drift * star.depth * 0.018) * width + parallaxX;
         if (x > width + 4) x -= width + 8;
         const y = star.y * height + parallaxY;
@@ -223,12 +226,42 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.globalAlpha = visibility * 0.98;
-      ctx.translate(width / 2 + pointerX * 8, height / 2 + pointerY * 5);
+      ctx.translate(width / 2 + pointerX * 3.5, height / 2 + pointerY * 2.5);
       if (!quiet) ctx.rotate(Math.sin(time * 0.000025) * 0.003);
       ctx.drawImage(milkyWay, -width / 2 - 30, -height / 2 - 30, width + 60, height + 60);
       ctx.restore();
     };
 
+    const drawShootingStar = (time: number) => {
+      if (quiet || visibility < 0.72) return;
+      if (shootingStartedAt === null && time >= nextShootingAt) shootingStartedAt = time;
+      if (shootingStartedAt === null) return;
+
+      const progress = (time - shootingStartedAt) / 980;
+      if (progress >= 1) {
+        shootingStartedAt = null;
+        nextShootingAt = time + 48_000 + eventRandom() * 82_000;
+        return;
+      }
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const startX = width * 0.83;
+      const startY = height * 0.13;
+      const x = startX - width * 0.22 * eased;
+      const y = startY + height * 0.18 * eased;
+      const alpha = Math.sin(progress * Math.PI) * 0.72;
+      const trailX = x + width * 0.075;
+      const trailY = y - height * 0.06;
+      const trail = ctx.createLinearGradient(x, y, trailX, trailY);
+      trail.addColorStop(0, `rgba(247, 251, 255, ${alpha})`);
+      trail.addColorStop(1, 'rgba(186, 218, 247, 0)');
+      ctx.strokeStyle = trail;
+      ctx.lineWidth = 1.15;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(trailX, trailY);
+      ctx.stroke();
+    };
     const drawHorizonGlow = () => {
       const glow = ctx.createRadialGradient(width * 0.18, height * 0.94, 0, width * 0.18, height * 0.94, width * 0.58);
       glow.addColorStop(0, 'rgba(169, 207, 255, 0.15)');
@@ -250,6 +283,7 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
       ctx.clearRect(0, 0, width, height);
       drawMilkyWay(time);
       drawStars(time);
+      drawShootingStar(time);
       drawHorizonGlow();
 
       if (!quiet) frame = requestAnimationFrame(draw);
@@ -272,7 +306,7 @@ export function NightSkyCanvas({ active, quiet, cloudCover }: NightSkyCanvasProp
       window.removeEventListener('pointerleave', onPointerLeave);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [active, quiet, cloudCover]);
+  }, [cloudCover, quiet, visibility]);
 
   return <canvas ref={canvasRef} className="living-sky__cosmos" aria-hidden="true" />;
 }
