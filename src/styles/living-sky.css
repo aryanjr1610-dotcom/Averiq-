@@ -50,10 +50,9 @@
 .living-sky__haze,
 .living-sky__vignette,
 .living-sky__lightning,
-.living-sky__horizon,
-.living-sky__foreground,
 .living-sky__grain,
 .living-sky__cosmos,
+.living-sky__nature,
 .living-sky__precipitation {
   position: absolute;
   inset: 0;
@@ -61,214 +60,223 @@
 
 .living-sky__gradient {
   background:
-    radial-gradient(70% 48% at var(--sky-sun-x, 50%) 112%, color-mix(in srgb, var(--sky-glow-color) 40%, transparent), transparent 68%),
-    radial-gradient(88% 44% at 8% 104%, color-mix(in srgb, var(--sky-glow-color) 24%, transparent), transparent 70%),
-    linear-gradient(178deg, var(--sky-top-color) 0%, var(--sky-mid-color) 56%, var(--sky-horizon-color) 100%);
-  filter: brightness(calc(1 - var(--sky-weather-dim)));
+    radial-gradient(72% 42% at var(--sky-sun-x, 50%) 108%, color-mix(in srgb, var(--sky-glow-color) 42%, transparent), transparent 68%),
+    radial-gradient(56% 30% at 11% 95%, color-mix(in srgb, var(--sky-glow-color) 18%, transparent), transparent 72%),
+    linear-gradient(180deg, var(--sky-top-color) 0%, var(--sky-mid-color) 55%, var(--sky-horizon-color) 100%);
+  filter: brightness(calc(1 - var(--sky-weather-dim))) saturate(calc(1 - var(--sky-weather-dim) * .3));
   transition:
-    --sky-top-color 45s linear,
-    --sky-mid-color 45s linear,
-    --sky-horizon-color 45s linear,
-    --sky-glow-color 45s linear,
+    --sky-top-color 36s linear,
+    --sky-mid-color 36s linear,
+    --sky-horizon-color 36s linear,
+    --sky-glow-color 36s linear,
     filter 12s linear;
 }
 
 .living-sky__airglow {
-  opacity: calc(var(--sky-night-intensity) * .74 + var(--sky-twilight-intensity) * .34);
+  opacity: calc(var(--sky-night-intensity) * .62 + var(--sky-twilight-intensity) * .38);
   background:
-    radial-gradient(72% 16% at 18% 84%, rgb(91 181 190 / .13), transparent 72%),
-    radial-gradient(58% 14% at 78% 90%, rgb(105 139 205 / .11), transparent 76%);
-  filter: blur(24px);
-  transition: opacity 24s linear;
+    radial-gradient(76% 15% at 18% 85%, rgb(73 162 179 / .12), transparent 72%),
+    radial-gradient(60% 14% at 79% 91%, rgb(97 126 190 / .09), transparent 76%);
+  filter: blur(28px);
+  transition: opacity 22s linear;
 }
 
 .living-sky__haze {
-  opacity: calc(.42 + var(--sky-horizon-glow) * .38 + var(--sky-cloud-opacity) * .18);
+  opacity: calc(.32 + var(--sky-horizon-glow) * .42 + var(--sky-cloud-opacity) * .12);
   background:
-    radial-gradient(68% 24% at 14% 94%, color-mix(in srgb, var(--sky-glow-color) 28%, transparent), transparent 74%),
-    radial-gradient(48% 18% at 64% 92%, rgb(234 243 250 / .08), transparent 78%);
-  filter: blur(26px);
+    radial-gradient(74% 23% at 13% 94%, color-mix(in srgb, var(--sky-glow-color) 25%, transparent), transparent 74%),
+    radial-gradient(52% 16% at 65% 93%, rgb(234 243 250 / .06), transparent 78%);
+  filter: blur(30px);
   transition: opacity 18s linear;
 }
 
-.living-sky__cosmos {
+.living-sky__cosmos,
+.living-sky__nature,
+.living-sky__precipitation {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.living-sky__cosmos {
   opacity: var(--sky-star-opacity);
-  transform: scale(1.012);
-  filter: saturate(1.04) contrast(1.025);
-  transition: opacity 30s linear;
+  transform: scale(1.008);
+  filter: saturate(.96) contrast(1.035);
+  transition: opacity 24s linear;
+}
+
+.living-sky__nature {
+  z-index: 4;
+  opacity: .98;
 }
 
 .living-sky__sun,
 .living-sky__moon {
   position: absolute;
-  width: clamp(50px, 5.3vw, 84px);
+  z-index: 3;
+  width: clamp(52px, 5vw, 82px);
   aspect-ratio: 1;
   border-radius: 50%;
   transform: translate3d(-50%, -50%, 0);
-  transition: left 45s linear, top 45s linear, opacity 24s linear;
+  transition: left 34s linear, top 34s linear, opacity 18s linear;
 }
 
 .living-sky__sun {
   left: var(--sky-sun-x, 50%);
   top: var(--sky-sun-y, 70%);
   opacity: var(--sky-sun-opacity);
-  background: radial-gradient(circle at 42% 39%, rgb(255 255 246), rgb(255 224 151) 45%, rgb(255 176 82) 82%);
-  box-shadow: 0 0 46px rgb(255 220 148 / .44), 0 0 124px rgb(255 180 100 / .18);
+  background:
+    radial-gradient(circle at 35% 31%, rgb(255 255 253) 0 11%, rgb(255 247 213) 28%, rgb(255 216 133) 66%, rgb(242 166 70) 100%);
+  box-shadow:
+    0 0 18px rgb(255 244 202 / .72),
+    0 0 64px rgb(255 213 135 / .48),
+    0 0 160px rgb(255 173 82 / .22);
+  filter: saturate(.95);
+}
+
+.living-sky__sun::before {
+  content: '';
+  position: absolute;
+  inset: -85%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 232 174 / .22) 0 24%, rgb(255 190 96 / .08) 38%, transparent 70%);
+  filter: blur(12px);
+}
+
+.living-sky[data-weather='cloudy'] .living-sky__sun,
+.living-sky[data-weather='rain'] .living-sky__sun,
+.living-sky[data-weather='heavy-rain'] .living-sky__sun,
+.living-sky[data-weather='storm'] .living-sky__sun,
+.living-sky[data-weather='fog'] .living-sky__sun {
+  filter: blur(1.5px) saturate(.72);
 }
 
 .living-sky__moon {
   left: var(--sky-moon-x, 50%);
   top: var(--sky-moon-y, 52%);
+  overflow: visible;
   opacity: var(--sky-moon-opacity);
   background:
-    radial-gradient(circle at 31% 30%, rgb(255 255 250 / .92) 0 7%, transparent 8%),
-    radial-gradient(circle at 65% 68%, rgb(102 128 151 / .16) 0 13%, transparent 14%),
-    radial-gradient(circle at 38% 44%, rgb(128 151 170 / .13) 0 10%, transparent 11%),
-    radial-gradient(circle at 41% 37%, rgb(247 250 246), rgb(205 219 231) 61%, rgb(136 160 183));
-  box-shadow: 0 0 30px rgb(192 223 255 / .2), 0 0 92px rgb(117 180 236 / .075);
+    radial-gradient(circle at 26% 31%, rgb(255 255 250 / .92) 0 5%, transparent 6%),
+    radial-gradient(circle at 64% 69%, rgb(97 113 126 / .22) 0 11%, transparent 12%),
+    radial-gradient(circle at 39% 45%, rgb(112 127 139 / .18) 0 8%, transparent 9%),
+    radial-gradient(circle at 69% 35%, rgb(123 135 146 / .13) 0 7%, transparent 8%),
+    radial-gradient(circle at 44% 38%, rgb(247 247 239), rgb(212 217 217) 52%, rgb(141 153 160) 100%);
+  box-shadow:
+    0 0 22px rgb(210 229 246 / .28),
+    0 0 74px rgb(134 181 220 / .12),
+    0 0 148px rgb(94 149 196 / .05);
+}
+
+.living-sky__moon::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  transform: translateX(var(--sky-moon-shadow-x, 0%));
+  opacity: var(--sky-moon-shadow-opacity, .3);
+  background: rgb(3 9 20 / .92);
+  box-shadow: 0 0 14px rgb(5 11 22 / .35);
 }
 
 .living-sky__moon::after {
   content: '';
   position: absolute;
-  inset: -20%;
+  inset: -34%;
+  z-index: -1;
   border-radius: inherit;
-  background: radial-gradient(circle, rgb(199 227 255 / .12), transparent 68%);
-  filter: blur(8px);
+  background: radial-gradient(circle, rgb(196 220 244 / .13), transparent 68%);
+  filter: blur(10px);
 }
 
 .living-sky__moon span {
   position: absolute;
-  width: 15%;
-  aspect-ratio: 1;
-  left: 27%;
-  top: 24%;
+  inset: 0;
   border-radius: 50%;
-  background: rgb(93 119 143 / .13);
-  box-shadow: 19px 14px 0 4px rgb(93 119 143 / .1), -5px 24px 0 1px rgb(93 119 143 / .08);
-}
-
-.living-sky__cloud {
-  position: absolute;
-  left: var(--sky-cloud-start, -72vw);
-  width: clamp(440px, 62vw, 1060px);
-  height: clamp(150px, 20vw, 330px);
-  opacity: var(--sky-cloud-opacity);
   background:
-    radial-gradient(ellipse at 15% 64%, rgb(229 239 246 / .5) 0 12%, transparent 46%),
-    radial-gradient(ellipse at 34% 43%, rgb(235 243 248 / .54) 0 18%, transparent 50%),
-    radial-gradient(ellipse at 54% 58%, rgb(220 233 242 / .48) 0 22%, transparent 56%),
-    radial-gradient(ellipse at 76% 39%, rgb(232 241 247 / .42) 0 15%, transparent 49%),
-    radial-gradient(ellipse at 88% 66%, rgb(188 208 222 / .3) 0 13%, transparent 48%),
-    radial-gradient(ellipse at 50% 72%, rgb(78 105 128 / .22) 0 34%, transparent 70%);
-  filter: blur(22px) saturate(.82);
-  mix-blend-mode: screen;
-  will-change: transform;
-}
-
-.living-sky[data-weather='rain'] .living-sky__cloud,
-.living-sky[data-weather='heavy-rain'] .living-sky__cloud,
-.living-sky[data-weather='storm'] .living-sky__cloud {
-  filter: blur(25px) brightness(.56) saturate(.64);
-  mix-blend-mode: normal;
-}
-
-.living-sky[data-weather='fog'] .living-sky__cloud {
-  filter: blur(31px) brightness(.92) saturate(.45);
-}
-
-.living-sky__cloud--far {
-  --cloud-scale: .58;
-  top: 2%;
-  opacity: calc(var(--sky-cloud-opacity) * .58);
-  animation: cloud-drift var(--sky-cloud-far-duration, 210s) linear -93s infinite;
-}
-
-.living-sky__cloud--mid {
-  --cloud-scale: .82;
-  top: 23%;
-  opacity: calc(var(--sky-cloud-opacity) * .76);
-  animation: cloud-drift var(--sky-cloud-mid-duration, 158s) linear -52s infinite;
-}
-
-.living-sky__cloud--near {
-  --cloud-scale: 1.08;
-  top: 46%;
-  animation: cloud-drift var(--sky-cloud-near-duration, 124s) linear -18s infinite;
+    radial-gradient(circle at 31% 23%, rgb(92 104 113 / .14) 0 7%, transparent 8%),
+    radial-gradient(circle at 53% 59%, rgb(91 103 112 / .11) 0 10%, transparent 11%),
+    radial-gradient(circle at 71% 44%, rgb(105 117 126 / .1) 0 5%, transparent 6%);
+  mix-blend-mode: multiply;
 }
 
 .living-sky__precipitation {
-  display: block;
-  width: 100%;
-  height: 100%;
-  opacity: .9;
-  mask-image: linear-gradient(to bottom, transparent 0 10%, rgb(0 0 0) 28% 100%);
+  z-index: 5;
+  opacity: .86;
+  mask-image: linear-gradient(to bottom, transparent 0 8%, rgb(0 0 0) 24% 100%);
 }
 
 .living-sky__lightning {
+  z-index: 7;
   opacity: 0;
   background:
-    radial-gradient(55% 68% at 62% 8%, rgb(230 242 255 / .3), transparent 66%),
-    rgb(213 232 252 / .08);
+    radial-gradient(54% 66% at 61% 7%, rgb(229 241 255 / .34), transparent 64%),
+    linear-gradient(to bottom, rgb(218 234 252 / .08), transparent 64%);
 }
 
-.living-sky__horizon {
-  inset: auto 0 0;
-  height: 25%;
-  opacity: calc(.28 + var(--sky-horizon-glow) * .72);
-  background:
-    radial-gradient(74% 100% at 12% 112%, color-mix(in srgb, var(--sky-glow-color) 27%, transparent), transparent 66%),
-    linear-gradient(to bottom, transparent, rgb(2 9 18 / .18) 68%, rgb(2 7 15 / .52));
-  transition: opacity 24s linear;
+.living-sky[data-weather='fog'] .living-sky__cosmos,
+.living-sky[data-weather='rain'] .living-sky__cosmos,
+.living-sky[data-weather='heavy-rain'] .living-sky__cosmos,
+.living-sky[data-weather='storm'] .living-sky__cosmos {
+  filter: blur(.5px) saturate(.72);
 }
 
-.living-sky__foreground {
-  inset: auto 0 0;
-  height: 11%;
-  opacity: calc(var(--sky-night-intensity) * .48);
-  background:
-    linear-gradient(to top, rgb(1 5 11 / .78), transparent),
-    linear-gradient(176deg, transparent 0 49%, rgb(2 8 15 / .62) 50% 100%);
-  clip-path: polygon(0 62%, 9% 55%, 17% 59%, 26% 48%, 34% 58%, 44% 50%, 53% 61%, 63% 53%, 72% 63%, 82% 51%, 91% 59%, 100% 50%, 100% 100%, 0 100%);
-  transition: opacity 24s linear;
+.living-sky[data-weather='storm'] .living-sky__gradient {
+  filter: brightness(.55) saturate(.64);
+}
+
+.living-sky[data-weather='heavy-rain'] .living-sky__gradient {
+  filter: brightness(.66) saturate(.72);
+}
+
+.living-sky[data-weather='rain'] .living-sky__gradient {
+  filter: brightness(.78) saturate(.78);
+}
+
+.living-sky[data-weather='fog'] .living-sky__gradient {
+  filter: brightness(.93) saturate(.5);
+}
+
+.living-sky[data-weather='snow'] .living-sky__gradient {
+  filter: brightness(.94) saturate(.72);
 }
 
 .living-sky__vignette {
+  z-index: 8;
   background:
-    radial-gradient(118% 96% at 50% 36%, transparent 50%, rgb(0 4 11 / .14) 80%, rgb(0 3 9 / .35) 100%),
-    linear-gradient(to right, rgb(0 4 11 / .1), transparent 13%, transparent 87%, rgb(0 4 11 / .09));
+    radial-gradient(120% 100% at 50% 36%, transparent 52%, rgb(0 4 11 / .11) 82%, rgb(0 3 9 / .28) 100%),
+    linear-gradient(to right, rgb(0 4 11 / .06), transparent 12%, transparent 88%, rgb(0 4 11 / .06));
 }
 
 .living-sky__grain {
-  opacity: .105;
+  z-index: 9;
+  opacity: .07;
   mix-blend-mode: soft-light;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.12'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.11'/></svg>");
   background-size: 180px 180px;
 }
 
-.living-sky[data-quiet='true'] .living-sky__cloud {
-  animation-play-state: paused;
-  will-change: auto;
+html[data-ui-style='living-sky'] .app-main {
+  background: transparent;
 }
 
-@keyframes cloud-drift {
-  from { transform: translate3d(0, 0, 0) scale(var(--cloud-scale)); }
-  to { transform: translate3d(var(--sky-cloud-travel, 190vw), 1.8vh, 0) scale(var(--cloud-scale)); }
+html[data-ui-style='living-sky'][data-sky-light='dark'] .dash-hero,
+html[data-ui-style='living-sky'][data-sky-light='dark'] .dash-block,
+html[data-ui-style='living-sky'][data-sky-light='dark'] .magic-bento-card {
+  backdrop-filter: blur(14px) saturate(108%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .living-sky__cloud { animation: none !important; transform: translate3d(var(--sky-cloud-quiet-position, 54vw), 0, 0) scale(var(--cloud-scale)); }
   .living-sky__sun,
   .living-sky__moon,
-  .living-sky__cosmos { transition: opacity 2s ease; }
+  .living-sky__cosmos {
+    transition: opacity 2s ease;
+  }
 }
 
 @media (max-width: 720px) {
   .living-sky__sun,
-  .living-sky__moon { width: clamp(44px, 13vw, 64px); }
-  .living-sky__cloud { width: clamp(400px, 112vw, 660px); }
-  .living-sky__foreground { height: 8%; }
+  .living-sky__moon {
+    width: clamp(44px, 12vw, 62px);
+  }
 }
