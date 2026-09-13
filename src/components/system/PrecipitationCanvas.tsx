@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import type { SkyWeather } from '@/features/environment/environment';
 
+type RenderQuality = 'low' | 'balanced';
+
 type Drop = {
   x: number;
   y: number;
@@ -16,6 +18,7 @@ type PrecipitationCanvasProps = {
   windSpeed: number;
   windDirection: number;
   quiet: boolean;
+  quality?: RenderQuality;
 };
 
 function seeded(seed: number) {
@@ -33,6 +36,7 @@ export function PrecipitationCanvas({
   windSpeed,
   windDirection,
   quiet,
+  quality = 'balanced',
 }: PrecipitationCanvasProps) {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
@@ -42,7 +46,7 @@ export function PrecipitationCanvas({
     if ((!raining && !snowing) || quiet) return;
 
     const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d', { alpha: true });
+    const context = canvas?.getContext('2d', { alpha: true, desynchronized: true });
     if (!canvas || !context) return;
 
     const ctx: CanvasRenderingContext2D = context;
@@ -55,26 +59,31 @@ export function PrecipitationCanvas({
     let disposed = false;
     let drops: Drop[] = [];
     let lastTime = performance.now();
+    let lastDraw = 0;
+    const targetFrameMs = quality === 'low' ? 1000 / 24 : 1000 / 30;
 
     const density = weather === 'storm' || weather === 'heavy-rain'
       ? 1
       : Math.min(0.72, 0.28 + precipitation * 0.12);
 
     const makeDrops = () => {
-      const count = Math.min(420, Math.max(90, Math.round((width * height) / 5600 * density)));
+      const areaCount = Math.round((width * height) / (quality === 'low' ? 9200 : 7200) * density);
+      const count = quality === 'low'
+        ? Math.min(150, Math.max(54, areaCount))
+        : Math.min(240, Math.max(72, areaCount));
       drops = Array.from({ length: count }, () => ({
         x: rng() * width,
         y: rng() * height,
         depth: 0.3 + rng() * 0.7,
-        length: snowing ? 1.4 + rng() * 2.3 : 8 + rng() * 18,
-        speed: snowing ? 24 + rng() * 42 : 520 + rng() * 620,
+        length: snowing ? 1.2 + rng() * 1.8 : 7 + rng() * 15,
+        speed: snowing ? 24 + rng() * 36 : 500 + rng() * 560,
       }));
     };
 
     const resize = () => {
       width = Math.max(1, window.innerWidth);
       height = Math.max(1, window.innerHeight);
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      dpr = quality === 'low' ? 1 : Math.min(window.devicePixelRatio || 1, 1.1);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
@@ -84,15 +93,18 @@ export function PrecipitationCanvas({
     };
 
     const windRadians = windDirection * Math.PI / 180;
-    const wind = Math.sin(windRadians) * Math.min(150, 28 + windSpeed * 2.6);
+    const wind = Math.sin(windRadians) * Math.min(125, 24 + windSpeed * 2.2);
 
     function draw(time: number) {
       if (disposed || hidden) {
         frame = 0;
         return;
       }
+      frame = requestAnimationFrame(draw);
+      if (time - lastDraw < targetFrameMs) return;
+      lastDraw = time;
 
-      const elapsed = Math.min(0.05, Math.max(0, (time - lastTime) / 1000));
+      const elapsed = Math.min(0.06, Math.max(0, (time - lastTime) / 1000));
       lastTime = time;
       ctx.clearRect(0, 0, width, height);
 
@@ -106,22 +118,20 @@ export function PrecipitationCanvas({
         }
 
         if (snowing) {
-          ctx.fillStyle = `rgba(245, 250, 255, ${0.22 + drop.depth * 0.42})`;
+          ctx.fillStyle = `rgba(245, 250, 255, ${0.18 + drop.depth * 0.36})`;
           ctx.beginPath();
           ctx.arc(drop.x, drop.y, drop.length, 0, Math.PI * 2);
           ctx.fill();
         } else {
           const tailX = drop.x - wind * 0.018 * drop.depth;
-          ctx.strokeStyle = `rgba(198, 224, 242, ${0.08 + drop.depth * 0.2})`;
-          ctx.lineWidth = 0.45 + drop.depth * 0.85;
+          ctx.strokeStyle = `rgba(198, 224, 242, ${0.07 + drop.depth * 0.18})`;
+          ctx.lineWidth = 0.4 + drop.depth * 0.72;
           ctx.beginPath();
           ctx.moveTo(drop.x, drop.y);
           ctx.lineTo(tailX, drop.y - drop.length);
           ctx.stroke();
         }
       }
-
-      frame = requestAnimationFrame(draw);
     }
 
     const onVisibility = () => {
@@ -141,7 +151,7 @@ export function PrecipitationCanvas({
       window.removeEventListener('resize', resize);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [precipitation, quiet, weather, windDirection, windSpeed]);
+  }, [precipitation, quality, quiet, weather, windDirection, windSpeed]);
 
   return <canvas ref={canvasRef} className="living-sky__precipitation" aria-hidden="true" />;
 }
