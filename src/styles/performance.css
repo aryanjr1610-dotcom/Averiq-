@@ -1,0 +1,58 @@
+/* Adaptive performance overrides for Living Nature.
+   The scene keeps the same composition while removing the GPU-expensive layers
+   on constrained devices (4 cores / <=4 GB device memory / touch layouts). */
+
+html[data-render-quality='low'] .living-sky__airglow,
+html[data-render-quality='low'] .living-sky__haze {
+  filter: none;
+}
+
+html[data-render-quality='low'] .living-sky__cosmos {
+  filter: none;
+  transform: none;
+}
+
+html[data-render-quality='low'] .living-sky__grain {
+  display: none;
+}
+
+html[data-render-quality='low'] .living-sky__sun::before,
+html[data-render-quality='low'] .living-sky__moon::after {
+  filter: none;
+  opacity: .55;
+}
+
+html[data-render-quality='low'][data-ui-style='living-sky'] .dash-hero,
+html[data-render-quality='low'][data-ui-style='living-sky'] .dash-block,
+html[data-render-quality='low'][data-ui-style='living-sky'] .magic-bento-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgb(var(--surface-base) / .72);
+}
+
+html[data-render-quality='low'] .magic-dock,
+html[data-render-quality='low'] [role='toolbar'],
+html[data-render-quality='low'] [role='tooltip'] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-render-quality='low'] .magic-bento-card,
+html[data-render-quality='low'] .dash-hero,
+html[data-render-quality='low'] .dash-block {
+  box-shadow: 0 12px 30px -24px rgb(var(--canvas) / .55);
+}
+
+html[data-render-quality='low'] .magic-ai-pulse span {
+  animation-duration: 5.4s;
+}
+
+html[data-render-quality='low'] .magic-meteors {
+  display: none;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .living-sky__grain { display: none; }
+  .living-sky__airglow,
+  .living-sky__haze { filter: none; }
+}
