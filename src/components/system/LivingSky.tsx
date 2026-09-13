@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
 import { Meteors } from '@/components/design/Meteors';
+import { MoonSurface } from '@/components/system/MoonSurface';
 import { NatureSceneCanvas } from '@/components/system/NatureSceneCanvas';
 import { NightSkyCanvas } from '@/components/system/NightSkyCanvas';
 import { PrecipitationCanvas } from '@/components/system/PrecipitationCanvas';
@@ -126,7 +127,6 @@ export function LivingSky({
   const moonX = 5 + environment.moonProgress * 90;
   const moonY = 79 - Math.sin(environment.moonProgress * Math.PI) * 65;
   const moon = lunarPhase(environment.now);
-  const moonShadow = (moon.waxing ? -1 : 1) * (1 - moon.illumination) * 74;
   const previousRootValues = React.useRef<Map<string, string> | null>(null);
   const previousMetaTheme = React.useRef<string | null>(null);
 
@@ -218,9 +218,8 @@ export function LivingSky({
     '--sky-sun-opacity': clamp((1 - environment.nightIntensity) * (1 - cover * 0.62)),
     '--sky-moon-x': `${moonX}%`,
     '--sky-moon-y': `${moonY}%`,
-    '--sky-moon-opacity': environment.moonVisibility * (0.52 + moon.illumination * 0.48),
-    '--sky-moon-shadow-x': `${moonShadow}%`,
-    '--sky-moon-shadow-opacity': clamp(0.12 + (1 - moon.illumination) * 0.88),
+    '--sky-moon-opacity': environment.moonVisibility * (0.46 + moon.illumination * 0.54),
+    '--sky-moon-halo': clamp(environment.moonVisibility * (0.12 + moon.illumination * 0.42) * (1 - cover * 0.68)),
     '--sky-star-opacity': environment.starVisibility,
     '--sky-cloud-opacity': cover,
     '--sky-horizon-glow': environment.horizonGlow,
@@ -230,8 +229,6 @@ export function LivingSky({
     '--sky-weather-dim': clamp(cover * 0.2 + (isPrecipitating ? 0.2 : 0)),
   } as React.CSSProperties;
 
-  // Quantize slow-changing environment values so the canvas scenes are not torn
-  // down and rebuilt every time the 30-second environment clock ticks.
   const renderStarVisibility = quantize(environment.starVisibility, 0.05);
   const renderCover = quantize(cover, 0.05);
   const renderCloudCover = quantize(environment.cloudCover, 5);
@@ -265,7 +262,9 @@ export function LivingSky({
         />
         {showMeteors ? <Meteors number={2} minDelay={18} maxDelay={62} minDuration={0.72} maxDuration={1.3} /> : null}
         <div className="living-sky__sun" />
-        <div className="living-sky__moon"><span /></div>
+        <div className="living-sky__moon">
+          <MoonSurface illumination={moon.illumination} waxing={moon.waxing} quality={renderQuality} />
+        </div>
         <NatureSceneCanvas
           weather={environment.weather}
           cloudCover={renderCloudCover}
