@@ -12,6 +12,7 @@ import { AIStatusDetail } from '@/components/ai/AIStatusDetail'
 import type { AIState } from '@/components/ai/aiState'
 import { Button } from '@/components/ui/Button'
 import './ai.css'
+import './smooth-ai.css'
 
 const QUICK_MODES: AIMode[] = ['explain', 'simplify', 'hint', 'solve-steps', 'quick-revision', 'make-notes']
 
