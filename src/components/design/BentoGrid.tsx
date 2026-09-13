@@ -7,7 +7,7 @@ export interface BentoGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-export interface BentoCardProps extends React.HTMLAttributes<HTMLElement> {
+export interface BentoCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
   title: React.ReactNode
   description?: React.ReactNode
   eyebrow?: string
