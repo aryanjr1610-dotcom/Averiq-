@@ -34,17 +34,27 @@ export function MasteryBar({ label, value }: { label: string; value: number }) {
   );
 }
 
+type ProgressBarProps = {
+  label: string;
+  value: number;
+  max?: number;
+  showValue?: boolean;
+  color?: string;
+  className?: string;
+  barClassName?: string;
+  labelClassName?: string;
+};
+
 export function ProgressBar({
   label,
   value,
   max = 100,
   showValue = true,
-}: {
-  label: string;
-  value: number;
-  max?: number;
-  showValue?: boolean;
-}) {
+  color,
+  className = '',
+  barClassName = '',
+  labelClassName = '',
+}: ProgressBarProps) {
   const reduceMotion = useReducedMotion();
   const safeMax = Number.isFinite(max) && max > 0 ? max : 100;
   const safeValue = Number.isFinite(value) ? value : 0;
@@ -52,8 +62,8 @@ export function ProgressBar({
   const percentage = (clamped / safeMax) * 100;
 
   return (
-    <div className="flex w-full flex-col gap-1.5">
-      <div className="flex items-center justify-between text-caption text-ink-secondary">
+    <div className={`flex w-full flex-col gap-1.5 ${className}`.trim()}>
+      <div className={`flex items-center justify-between text-caption text-ink-secondary ${labelClassName}`.trim()}>
         <span>{label}</span>
         {showValue && <span className="tabular">{Math.round(percentage)}%</span>}
       </div>
@@ -66,11 +76,11 @@ export function ProgressBar({
         className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3"
       >
         <motion.div
-          className="h-full origin-left rounded-full bg-accent"
+          className={`h-full origin-left rounded-full bg-accent ${barClassName}`.trim()}
           initial={reduceMotion ? false : { scaleX: 0 }}
           animate={{ scaleX: percentage / 100 }}
           transition={reduceMotion ? { duration: 0 } : spring}
-          style={{ width: '100%' }}
+          style={{ width: '100%', backgroundColor: color }}
         />
       </div>
     </div>
