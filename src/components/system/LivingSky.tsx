@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { useAcademicTheme } from '@/app/providers/AcademicThemeProvider';
+import { Meteors } from '@/components/design/Meteors';
 import { NightSkyCanvas } from '@/components/system/NightSkyCanvas';
 import { PrecipitationCanvas } from '@/components/system/PrecipitationCanvas';
 import { useEnvironment } from '@/features/environment/EnvironmentProvider';
@@ -200,6 +201,8 @@ export function LivingSky({
     '--sky-cloud-near-duration': `${Math.round(cloudDuration * 0.78)}s`,
   } as React.CSSProperties;
 
+  const showMeteors = !quiet && environment.starVisibility > 0.34 && cover < 0.46 && !isPrecipitating;
+
   return (
     <div
       className="living-sky"
@@ -217,6 +220,7 @@ export function LivingSky({
           quiet={quiet}
           cloudCover={cover}
         />
+        {showMeteors ? <Meteors number={4} minDelay={10} maxDelay={46} minDuration={0.72} maxDuration={1.3} /> : null}
         <div className="living-sky__sun" />
         <div className="living-sky__moon"><span /></div>
         <div className="living-sky__cloud living-sky__cloud--far" />
