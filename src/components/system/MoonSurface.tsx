@@ -18,9 +18,9 @@ function seeded(seed: number) {
 }
 
 /**
- * Procedural lunar surface used as a lightweight visual texture.
- * It intentionally avoids pretending to be an astronomical surface map: the
- * phase is data-driven, while maria/craters are deterministic visual detail.
+ * Lightweight procedural lunar texture. The illumination value is phase-driven;
+ * the crater/maria placement is deterministic visual detail rather than an
+ * astronomical surface map.
  */
 export function MoonSurface({ illumination, waxing, quality = 'balanced' }: MoonSurfaceProps) {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -60,7 +60,6 @@ export function MoonSurface({ illumination, waxing, quality = 'balanced' }: Moon
     ctx.fillStyle = base;
     ctx.fillRect(0, 0, size, size);
 
-    // Deterministic broad maria: soft, low-contrast basins rather than crisp dots.
     const maria = [
       [0.36, 0.36, 0.18, 0.12, -0.36],
       [0.58, 0.32, 0.15, 0.1, 0.24],
@@ -93,18 +92,17 @@ export function MoonSurface({ illumination, waxing, quality = 'balanced' }: Moon
       const y = center + Math.sin(angle) * distance;
       const r = size * (0.008 + Math.pow(rng(), 2.2) * 0.055);
 
-      const shadow = ctx.createRadialGradient(x - r * 0.22, y - r * 0.26, r * 0.08, x, y, r);
-      shadow.addColorStop(0, 'rgba(255, 255, 245, 0.16)');
-      shadow.addColorStop(0.34, 'rgba(166, 171, 168, 0.08)');
-      shadow.addColorStop(0.68, 'rgba(72, 82, 84, 0.18)');
-      shadow.addColorStop(1, 'rgba(65, 74, 77, 0)');
-      ctx.fillStyle = shadow;
+      const crater = ctx.createRadialGradient(x - r * 0.22, y - r * 0.26, r * 0.08, x, y, r);
+      crater.addColorStop(0, 'rgba(255, 255, 245, 0.16)');
+      crater.addColorStop(0.34, 'rgba(166, 171, 168, 0.08)');
+      crater.addColorStop(0.68, 'rgba(72, 82, 84, 0.18)');
+      crater.addColorStop(1, 'rgba(65, 74, 77, 0)');
+      ctx.fillStyle = crater;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Fine albedo variation to stop the surface reading as a flat vector circle.
     const specks = quality === 'low' ? 170 : 320;
     for (let i = 0; i < specks; i += 1) {
       const angle = rng() * Math.PI * 2;
@@ -118,47 +116,50 @@ export function MoonSurface({ illumination, waxing, quality = 'balanced' }: Moon
       ctx.fillRect(x, y, 0.55 + rng() * 0.85, 0.55 + rng() * 0.85);
     }
 
-    // Soft limb darkening gives the disc a spherical volume.
     const limb = ctx.createRadialGradient(center, center, radius * 0.55, center, center, radius);
     limb.addColorStop(0, 'rgba(15, 21, 24, 0)');
     limb.addColorStop(0.78, 'rgba(15, 21, 24, 0.03)');
     limb.addColorStop(1, 'rgba(10, 16, 20, 0.24)');
     ctx.fillStyle = limb;
     ctx.fillRect(0, 0, size, size);
+    ctx.restore();
 
-    // Phase shadow. The outer CSS halo stays independent so it remains soft.
     const lit = Math.max(0, Math.min(1, illumination));
     if (lit < 0.995) {
-      const shadowAlpha = 0.9 - lit * 0.16;
-      const offset = (waxing ? -1 : 1) * radius * (0.96 - lit * 0.92);
-      const terminatorScale = Math.max(0.08, Math.abs(1 - lit * 2));
+      const shadowLayer = document.createElement('canvas');
+      shadowLayer.width = size;
+      shadowLayer.height = size;
+      const shadowCtx = shadowLayer.getContext('2d', { alpha: true });
+      if (!shadowCtx) return;
 
-      ctx.fillStyle = `rgba(5, 10, 17, ${shadowAlpha})`;
-      ctx.beginPath();
-      ctx.arc(center, center, radius + 0.5, 0, Math.PI * 2);
-      ctx.fill();
+      shadowCtx.beginPath();
+      shadowCtx.arc(center, center, radius, 0, Math.PI * 2);
+      shadowCtx.clip();
+      shadowCtx.fillStyle = `rgba(3, 8, 15, ${0.9 - lit * 0.14})`;
+      shadowCtx.fillRect(0, 0, size, size);
 
-      // Restore the illuminated portion with a clipped, softly feathered copy.
-      ctx.globalCompositeOperation = 'destination-out';
-      const lightMask = ctx.createRadialGradient(
+      const offset = (waxing ? 1 : -1) * radius * (lit * 1.9 - 0.95);
+      const lightRadius = radius * (0.72 + Math.abs(lit - 0.5) * 0.62);
+      shadowCtx.globalCompositeOperation = 'destination-out';
+      const lightMask = shadowCtx.createRadialGradient(
+        center + offset,
+        center - radius * 0.03,
+        lightRadius * 0.08,
         center + offset,
         center,
-        radius * 0.04,
-        center + offset,
-        center,
-        radius * (0.96 + terminatorScale * 0.18),
+        lightRadius,
       );
       lightMask.addColorStop(0, 'rgba(0,0,0,1)');
-      lightMask.addColorStop(0.8, 'rgba(0,0,0,0.94)');
+      lightMask.addColorStop(0.78, 'rgba(0,0,0,0.96)');
       lightMask.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = lightMask;
-      ctx.beginPath();
-      ctx.arc(center + offset, center, radius * 1.02, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalCompositeOperation = 'source-over';
-    }
+      shadowCtx.fillStyle = lightMask;
+      shadowCtx.beginPath();
+      shadowCtx.arc(center + offset, center, lightRadius, 0, Math.PI * 2);
+      shadowCtx.fill();
+      shadowCtx.globalCompositeOperation = 'source-over';
 
-    ctx.restore();
+      ctx.drawImage(shadowLayer, 0, 0);
+    }
   }, [illumination, quality, waxing]);
 
   return <canvas ref={canvasRef} className="living-sky__moon-texture" aria-hidden="true" />;
