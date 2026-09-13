@@ -39,9 +39,9 @@
   overflow: hidden;
   background:
     radial-gradient(circle at 26% 22%, rgb(var(--accent) / .92), transparent 34%),
-    radial-gradient(circle at 78% 28%, rgb(var(--subject) / .76), transparent 40%),
+    radial-gradient(circle at 78% 28%, rgb(var(--subject-accent) / .76), transparent 40%),
     radial-gradient(circle at 66% 82%, rgb(var(--accent) / .62), transparent 42%),
-    conic-gradient(from 20deg, rgb(var(--accent) / .78), rgb(var(--subject) / .72), rgb(var(--accent) / .42), rgb(var(--subject) / .64), rgb(var(--accent) / .78));
+    conic-gradient(from 20deg, rgb(var(--accent) / .78), rgb(var(--subject-accent) / .72), rgb(var(--accent) / .42), rgb(var(--subject-accent) / .64), rgb(var(--accent) / .78));
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / .13), inset 0 -8px 14px rgb(0 0 0 / .2);
   animation: averiq-ai-orb-turn var(--ai-orb-speed) linear infinite;
 }
@@ -57,11 +57,11 @@
 }
 
 .averiq-ai-orb[data-state="error"]::before {
-  background: radial-gradient(circle, rgb(var(--bad) / .55), transparent 68%);
+  background: radial-gradient(circle, rgb(var(--bad-500) / .55), transparent 68%);
 }
 
 .averiq-ai-orb[data-state="done"]::before {
-  background: radial-gradient(circle, rgb(var(--success) / .5), transparent 68%);
+  background: radial-gradient(circle, rgb(var(--ok-500) / .5), transparent 68%);
 }
 
 @keyframes averiq-ai-orb-turn {
@@ -156,7 +156,6 @@
 
 .ai-empty-state h3 {
   margin: 0 0 .3rem;
-  font-family: var(--font-display-family);
   font-size: 1rem;
   font-weight: 630;
   letter-spacing: -.02em;
@@ -496,8 +495,8 @@
   border-right-color: transparent;
 }
 
-.ai-tool-call__badge[data-status="success"] { color: rgb(var(--success)); }
-.ai-tool-call__badge[data-status="error"] { color: rgb(var(--bad)); }
+.ai-tool-call__badge[data-status="success"] { color: rgb(var(--ok-500)); }
+.ai-tool-call__badge[data-status="error"] { color: rgb(var(--bad-500)); }
 
 .ai-tool-call__mark {
   position: relative;
@@ -556,9 +555,9 @@
   gap: .55rem;
   flex-wrap: wrap;
   padding: .55rem .65rem;
-  border: 1px solid rgb(var(--bad) / .24);
+  border: 1px solid rgb(var(--bad-500) / .24);
   border-radius: 12px;
-  background: rgb(var(--bad) / .07);
+  background: rgb(var(--bad-500) / .07);
 }
 
 .ai-launcher {
