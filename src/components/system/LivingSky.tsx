@@ -10,6 +10,9 @@ import { clamp, rgbChannels } from '@/features/environment/environment';
 
 import type { SkyWeather } from '@/features/environment/environment';
 
+type RenderQuality = 'low' | 'balanced';
+type NavigatorWithMemory = Navigator & { deviceMemory?: number };
+
 const ROOT_ENV_PROPERTIES = [
   '--canvas',
   '--surface-base',
@@ -34,6 +37,10 @@ const ROOT_ENV_PROPERTIES = [
   '--shadow-2',
   '--shadow-3',
 ] as const;
+
+function quantize(value: number, step: number) {
+  return Math.round(value / step) * step;
+}
 
 function cloudOpacity(weather: SkyWeather, cover: number): number {
   const observed = clamp(cover / 100, 0.04, 1);
@@ -111,6 +118,7 @@ export function LivingSky({
   const environment = useEnvironment();
   const live = preferences.uiStyle === 'living-sky';
   const quiet = lowPowerMode || reducedMotion || surface !== 'app';
+  const [renderQuality, setRenderQuality] = React.useState<RenderQuality>('low');
   const cover = cloudOpacity(environment.weather, environment.cloudCover);
   const isPrecipitating = ['rain', 'heavy-rain', 'storm', 'snow'].includes(environment.weather);
   const sunX = 4 + environment.sunProgress * 92;
@@ -121,6 +129,19 @@ export function LivingSky({
   const moonShadow = (moon.waxing ? -1 : 1) * (1 - moon.illumination) * 74;
   const previousRootValues = React.useRef<Map<string, string> | null>(null);
   const previousMetaTheme = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    const query = window.matchMedia('(max-width: 900px), (pointer: coarse)');
+    const updateQuality = () => {
+      const cores = navigator.hardwareConcurrency || 4;
+      const memory = (navigator as NavigatorWithMemory).deviceMemory ?? 4;
+      const constrained = query.matches || cores <= 4 || memory <= 4 || lowPowerMode || reducedMotion;
+      setRenderQuality(constrained ? 'low' : 'balanced');
+    };
+    updateQuality();
+    query.addEventListener('change', updateQuality);
+    return () => query.removeEventListener('change', updateQuality);
+  }, [lowPowerMode, reducedMotion]);
 
   React.useLayoutEffect(() => {
     if (!live) return;
@@ -141,6 +162,7 @@ export function LivingSky({
       delete root.dataset.skyWeather;
       delete root.dataset.skyLight;
       delete root.dataset.weatherStatus;
+      delete root.dataset.renderQuality;
       previousRootValues.current = null;
     };
   }, [live]);
@@ -180,8 +202,9 @@ export function LivingSky({
     root.dataset.skyWeather = environment.weather;
     root.dataset.skyLight = environment.nightIntensity > 0.46 ? 'dark' : 'light';
     root.dataset.weatherStatus = environment.status;
+    root.dataset.renderQuality = renderQuality;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', `rgb(${rgbChannels(environment.palette.top)})`);
-  }, [environment, live]);
+  }, [environment, live, renderQuality]);
 
   if (!live || surface === 'immersive') return null;
 
@@ -207,7 +230,19 @@ export function LivingSky({
     '--sky-weather-dim': clamp(cover * 0.2 + (isPrecipitating ? 0.2 : 0)),
   } as React.CSSProperties;
 
-  const showMeteors = !quiet && environment.starVisibility > 0.4 && cover < 0.36 && !isPrecipitating;
+  // Quantize slow-changing environment values so the canvas scenes are not torn
+  // down and rebuilt every time the 30-second environment clock ticks.
+  const renderStarVisibility = quantize(environment.starVisibility, 0.05);
+  const renderCover = quantize(cover, 0.05);
+  const renderCloudCover = quantize(environment.cloudCover, 5);
+  const renderWindSpeed = quantize(environment.windSpeed, 2);
+  const renderWindDirection = quantize(environment.windDirection, 10);
+  const renderNight = quantize(environment.nightIntensity, 0.05);
+  const renderGolden = quantize(environment.goldenHourIntensity, 0.05);
+  const renderTwilight = quantize(environment.twilightIntensity, 0.05);
+  const renderHorizon = quantize(environment.horizonGlow, 0.05);
+  const renderPrecipitation = quantize(environment.precipitation, 0.25);
+  const showMeteors = renderQuality === 'balanced' && !quiet && environment.starVisibility > 0.4 && cover < 0.36 && !isPrecipitating;
 
   return (
     <div
@@ -215,6 +250,7 @@ export function LivingSky({
       data-phase={environment.phase}
       data-weather={environment.weather}
       data-quiet={quiet ? 'true' : 'false'}
+      data-quality={renderQuality}
       style={style}
     >
       <div className="living-sky__visuals" aria-hidden="true">
@@ -222,32 +258,35 @@ export function LivingSky({
         <div className="living-sky__airglow" />
         <div className="living-sky__haze" />
         <NightSkyCanvas
-          visibility={environment.starVisibility}
+          visibility={renderStarVisibility}
           quiet={quiet}
-          cloudCover={cover}
+          cloudCover={renderCover}
+          quality={renderQuality}
         />
-        {showMeteors ? <Meteors number={3} minDelay={15} maxDelay={58} minDuration={0.72} maxDuration={1.3} /> : null}
+        {showMeteors ? <Meteors number={2} minDelay={18} maxDelay={62} minDuration={0.72} maxDuration={1.3} /> : null}
         <div className="living-sky__sun" />
         <div className="living-sky__moon"><span /></div>
         <NatureSceneCanvas
           weather={environment.weather}
-          cloudCover={environment.cloudCover}
-          windSpeed={environment.windSpeed}
-          windDirection={environment.windDirection}
-          nightIntensity={environment.nightIntensity}
-          goldenHourIntensity={environment.goldenHourIntensity}
-          twilightIntensity={environment.twilightIntensity}
-          horizonGlow={environment.horizonGlow}
+          cloudCover={renderCloudCover}
+          windSpeed={renderWindSpeed}
+          windDirection={renderWindDirection}
+          nightIntensity={renderNight}
+          goldenHourIntensity={renderGolden}
+          twilightIntensity={renderTwilight}
+          horizonGlow={renderHorizon}
           quiet={quiet}
+          quality={renderQuality}
         />
         <PrecipitationCanvas
           weather={environment.weather}
-          precipitation={environment.precipitation}
-          windSpeed={environment.windSpeed}
-          windDirection={environment.windDirection}
+          precipitation={renderPrecipitation}
+          windSpeed={renderWindSpeed}
+          windDirection={renderWindDirection}
           quiet={quiet}
+          quality={renderQuality}
         />
-        <StormLight active={environment.weather === 'storm' && !quiet} />
+        <StormLight active={environment.weather === 'storm' && !quiet && renderQuality === 'balanced'} />
         <div className="living-sky__vignette" />
         <div className="living-sky__grain" />
       </div>
