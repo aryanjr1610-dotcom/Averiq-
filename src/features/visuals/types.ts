@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react';
 
+import type { AdaptiveVisualFamily } from './curriculum';
+
 export type Parameters = Readonly<Record<string, number>>;
 export type Quality = 'auto' | 'low' | 'medium' | 'high';
 
@@ -9,12 +11,19 @@ export type VisualSelection = {
   description: string;
 };
 
+export type VisualContext = {
+  family: AdaptiveVisualFamily;
+  topic: string;
+  animatedByClock?: boolean;
+};
+
 export type VisualProps = {
   parameters: Parameters;
   elapsed: number;
   labels: boolean;
   quality: Quality;
   resetToken: number;
+  context?: VisualContext;
   onSelect: (value: VisualSelection | null) => void;
 };
 
@@ -42,5 +51,6 @@ export type VisualizationDefinition = {
   parameters: readonly ParameterDefinition[];
   animated?: boolean;
   fallbackId?: string;
+  context?: VisualContext;
   load: () => Promise<{ default: ComponentType<VisualProps> }>;
 };
