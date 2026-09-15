@@ -6,6 +6,10 @@ import {
   parseNormalizedResources,
   type NormalizedStudyResources,
 } from './normalized-content';
+import {
+  ensureCurriculumVisual,
+  type CurriculumVisualSeed,
+} from '@/features/visuals/curriculum';
 
 import {
   AcademicYearSchema,
@@ -144,6 +148,27 @@ function usesNormalizedStorage(content: unknown, schemaVersion: number): boolean
   return (content as Record<string, unknown>).storage === 'normalized_v3';
 }
 
+async function visualSeedForLesson(lessonId: string): Promise<CurriculumVisualSeed> {
+  return cachedLookup(`visual-seed:${lessonId}`, async () => {
+    const lesson = await one('lessons', LessonSchema, lessonId);
+    const topic = await one('topics', TopicSchema, lesson.topic_id);
+    const chapter = await one('chapters', ChapterSchema, topic.chapter_id);
+    const placement = await one(
+      'curriculum_subjects',
+      PlacementSchema,
+      chapter.curriculum_subject_id,
+    );
+    const subject = await one('subjects', SubjectSchema, placement.subject_id);
+
+    return {
+      subjectCode: subject.code,
+      lessonTitle: lesson.title,
+      topicTitle: topic.title,
+      chapterTitle: chapter.title,
+    };
+  });
+}
+
 export const curriculumRepository = {
   clearCache() {
     lookupCache.clear();
@@ -272,7 +297,11 @@ export const curriculumRepository = {
     }));
   },
 
-  async getLatestContent(lessonId: string, preview = false) {
+  async getLatestContent(
+    lessonId: string,
+    preview = false,
+    visualSeed?: CurriculumVisualSeed,
+  ) {
     if (preview) {
       await curriculumRepository.requireReviewer();
     } else {
@@ -304,12 +333,18 @@ export const curriculumRepository = {
     if (!data) throw new AcademicUnavailableError('No readable content version is available.');
 
     const version = VersionSchema.parse(data);
-    if (!usesNormalizedStorage(version.content, version.content_schema_version)) return version;
+    let content: unknown = version.content;
 
-    const resources = await normalizedResources(version.id);
+    if (usesNormalizedStorage(version.content, version.content_schema_version)) {
+      const resources = await normalizedResources(version.id);
+      content = normalizedResourcesToDocument(resources);
+    }
+
+    const seed = visualSeed ?? await visualSeedForLesson(lessonId);
+
     return {
       ...version,
-      content: normalizedResourcesToDocument(resources),
+      content: ensureCurriculumVisual(content, seed),
     };
   },
 
@@ -356,6 +391,12 @@ export const curriculumRepository = {
     const version = await curriculumRepository.getLatestContent(
       lessonId,
       preview,
+      {
+        subjectCode: subject.code,
+        lessonTitle: lesson.title,
+        topicTitle: topic.title,
+        chapterTitle: chapter.title,
+      },
     );
 
     return {
