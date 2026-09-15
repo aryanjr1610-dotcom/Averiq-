@@ -79,7 +79,7 @@ function ProcessVisual({
   onSelect: VisualProps['onSelect'];
 }) {
   const names = [labels[0] ?? 'Input', labels[1] ?? 'Change', labels[2] ?? 'Result', labels[3] ?? 'Feedback'];
-  const xs = [120, 340, 560, 780];
+  const xs = [120, 340, 560, 780] as const;
 
   return (
     <>
@@ -90,7 +90,7 @@ function ProcessVisual({
           id={`stage-${index}`}
           label={title(name)}
           description={`Stage ${index + 1} in the conceptual model for ${topic}. Compare it with the lesson text for the exact subject-specific mechanism.`}
-          x={xs[index]}
+          x={xs[index] ?? 120}
           y={220}
           active={index === stage}
           onSelect={onSelect}
@@ -108,19 +108,19 @@ function TimelineVisual({ labels, stage, topic, onSelect }: {
   onSelect: VisualProps['onSelect'];
 }) {
   const names = labels.length >= 4 ? labels.slice(0, 4) : ['Context', 'Trigger', 'Change', 'Legacy'];
-  const xs = [130, 345, 560, 775];
+  const xs = [130, 345, 560, 775] as const;
 
   return (
     <>
       <line className="adaptive-link" x1="100" y1="235" x2="810" y2="235" />
       {names.map((name, index) => (
         <g key={`${name}:${index}`}>
-          <line className="adaptive-tick" x1={xs[index]} y1="195" x2={xs[index]} y2="275" />
+          <line className="adaptive-tick" x1={xs[index] ?? 130} y1="195" x2={xs[index] ?? 130} y2="275" />
           <Selectable
             id={`event-${index}`}
             label={title(name)}
             description={`A timeline checkpoint for ${topic}. Use it as a causal organizer rather than an exact historical date unless the lesson provides a date.`}
-            x={xs[index]}
+            x={xs[index] ?? 130}
             y={index % 2 === 0 ? 135 : 335}
             active={index === stage}
             onSelect={onSelect}
@@ -170,6 +170,7 @@ function GraphVisual({ stage, topic, onSelect }: {
 }) {
   const offset = stage * 24;
   const path = `M100 350 C210 ${320 - offset} 275 ${115 + offset} 390 205 S600 ${360 - offset} 790 ${105 + offset / 2}`;
+  const select = () => onSelect(nodeSelection('graph', 'Graph relationship', `The curve is a conceptual relationship for ${topic}. Read exact axes, equations and units from the lesson.`));
 
   return (
     <>
@@ -181,9 +182,12 @@ function GraphVisual({ stage, topic, onSelect }: {
         role="button"
         tabIndex={0}
         aria-label={`Graph for ${topic}`}
-        onClick={() => onSelect(nodeSelection('graph', 'Graph relationship', `The curve is a conceptual relationship for ${topic}. Read exact axes, equations and units from the lesson.`))}
+        onClick={select}
         onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') onSelect(nodeSelection('graph', 'Graph relationship', `The curve is a conceptual relationship for ${topic}. Read exact axes, equations and units from the lesson.`));
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            select();
+          }
         }}
       >
         <rect x="95" y="75" width="730" height="310" fill="transparent" />
@@ -231,19 +235,28 @@ function ParticleVisual({ stage, topic, onSelect }: {
   return (
     <>
       <rect className="adaptive-vessel" x="170" y="80" width="560" height="320" rx="28" />
-      {particles.map(([x, y], index) => (
-        <circle
-          key={index}
-          className={`adaptive-particle${index % 3 === 0 ? ' adaptive-particle--accent' : ''}`}
-          cx={x}
-          cy={y}
-          r={11}
-          role="button"
-          tabIndex={0}
-          aria-label={`Particle ${index + 1}`}
-          onClick={() => onSelect(nodeSelection(`particle-${index}`, 'Particle model', `A representative particle in the conceptual model for ${topic}. Particle size and spacing are not to scale.`))}
-        />
-      ))}
+      {particles.map(([x, y], index) => {
+        const select = () => onSelect(nodeSelection(`particle-${index}`, 'Particle model', `A representative particle in the conceptual model for ${topic}. Particle size and spacing are not to scale.`));
+        return (
+          <circle
+            key={index}
+            className={`adaptive-particle${index % 3 === 0 ? ' adaptive-particle--accent' : ''}`}
+            cx={x}
+            cy={y}
+            r={11}
+            role="button"
+            tabIndex={0}
+            aria-label={`Particle ${index + 1}`}
+            onClick={select}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                select();
+              }
+            }}
+          />
+        );
+      })}
       <text className="adaptive-caption" x="450" y="445" textAnchor="middle">Particle model · spacing is exaggerated so changes are visible.</text>
     </>
   );
