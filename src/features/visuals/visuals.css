@@ -181,6 +181,111 @@
   gap: 20px;
 }
 
+.adaptive-curriculum-visual {
+  min-height: 280px;
+}
+
+.adaptive-topic {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+
+.adaptive-caption,
+.adaptive-warning {
+  font-size: 15px !important;
+  fill: rgb(var(--text-secondary)) !important;
+}
+
+.adaptive-warning {
+  font-weight: 650 !important;
+}
+
+.adaptive-link,
+.adaptive-tick {
+  fill: none;
+  stroke: rgb(var(--text-secondary));
+  stroke-width: 3;
+}
+
+.adaptive-link--dashed {
+  stroke-dasharray: 10 9;
+}
+
+.adaptive-arrowhead {
+  fill: rgb(var(--text-secondary));
+}
+
+.adaptive-node {
+  cursor: pointer;
+  color: rgb(var(--text-primary));
+  outline: none;
+}
+
+.adaptive-node circle,
+.adaptive-node rect {
+  fill: var(--surface-2);
+  stroke: var(--academic-a);
+  stroke-width: 3;
+  transition: stroke-width 160ms ease, opacity 160ms ease;
+}
+
+.adaptive-node text {
+  font-size: 14px;
+  font-weight: 650;
+  pointer-events: none;
+}
+
+.adaptive-node--active circle,
+.adaptive-node--active rect,
+.adaptive-node:focus-visible circle,
+.adaptive-node:focus-visible rect {
+  stroke: rgb(var(--accent));
+  stroke-width: 7;
+}
+
+.adaptive-region,
+.adaptive-vessel,
+.adaptive-body,
+.adaptive-geometry {
+  fill: var(--surface-2);
+  stroke: var(--academic-a);
+  stroke-width: 3;
+}
+
+.adaptive-map-grid {
+  fill: none;
+  stroke: rgb(var(--border-default) / var(--border-default-a));
+  stroke-width: 1.5;
+  stroke-dasharray: 7 8;
+}
+
+.adaptive-particle {
+  fill: var(--surface-3);
+  stroke: var(--academic-a);
+  stroke-width: 2.5;
+  cursor: pointer;
+  outline: none;
+}
+
+.adaptive-particle--accent {
+  stroke: rgb(var(--accent));
+}
+
+.adaptive-particle:focus-visible {
+  stroke-width: 6;
+}
+
+.adaptive-hit {
+  cursor: pointer;
+  outline: none;
+}
+
+.adaptive-hit:focus-visible rect {
+  stroke: rgb(var(--accent));
+  stroke-width: 3;
+  fill: transparent;
+}
+
 @media (max-width: 767px) {
   .visual-expanded {
     grid-template-columns: minmax(0, 1fr);
@@ -188,6 +293,25 @@
 
   .visual-stage {
     padding: 4px;
+  }
+
+  .adaptive-curriculum-visual {
+    min-height: 220px;
+  }
+
+  .adaptive-curriculum-visual text {
+    font-size: 17px;
+  }
+
+  .adaptive-node text {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adaptive-node circle,
+  .adaptive-node rect {
+    transition: none;
   }
 }
 
