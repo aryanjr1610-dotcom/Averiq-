@@ -200,7 +200,7 @@ export function ensureCurriculumVisual(document: unknown, seed: CurriculumVisual
   const autoBlock = {
     id: 'auto_curriculum_visual',
     type: 'visualizationReference',
-    tags: ['learn', 'concept'],
+    tags: ['learn', 'concept', 'exam'],
     data: {
       resourceId,
       title: `Explore ${topic}`,
