@@ -252,8 +252,8 @@ function adaptiveDefinition(id: string): VisualizationDefinition | null {
   const match = /^adaptive_([a-z0-9-]+)__([a-z0-9-]+)$/.exec(id);
   if (!match) return null;
 
-  const family = match[1] as AdaptiveVisualFamily;
-  const topic = titleFromSlug(match[2]);
+  const family = (match[1] ?? 'general-concept') as AdaptiveVisualFamily;
+  const topic = titleFromSlug(match[2] ?? 'concept');
   const meta = metaFor(family);
   const animated = family === 'physics-wave'
     || family === 'chemistry-particles'
